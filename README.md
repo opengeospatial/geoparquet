@@ -12,7 +12,55 @@ in slightly different ways, requiring users do advanced spatial ETL to take it f
 sort of standard (WKT, WKB, EWKT, GeoJSON), but all handle it in slightly different ways. 
 
 OGC is helping to convene a small group of key participants to provide leadership to the industry, aligning on the interoperable formats so that 
-geospatial information can flow between the various systems with ease.
+geospatial information can flow between the various systems with ease. The initial kick-off meeting happened August 28, 2021, with representatives from
+Google (BigQuery), Snowflake, Amazon (Redshift), Microsoft (Planetery Computer), Carto and Planet.
+
+## Goals
+
+The primary goal established by the group was to focus on interoperability of import and export of the geospatial elements of common Cloud Data Warehouse formats. 
+As most already support geospatial import and export in several formats the goal is not to necessarily align on a single one, but to fully document how each of
+the relevant formats should use geospatial columns in a consistent way. 
+
+Future work may involve finding a format that can be used directly, without having to import, but the group decided to keep that out of scope for the initial 
+collaboration, to get a clear win on import and export before tackling the more challenging problem of getting a format that will perform adequetly. 
+
+
+## Interoperability Notes
+
+TODO: Likely turn these each into their own pages.
+
+### CSV
+
+Every implementation supports import and export of CSV, and all have some mechanism to include geospatial information in it. 
+
+|                           | Snowflake | BigQuery                                                  | Oracle | Redshift   |
+|---------------------------|-----------|-----------------------------------------------------------|--------|------------|
+| **Default Export Format** | GeoJSON   | WKT in 4326 (geodesic edges, oriented polygons) as STRING |        | Hex EWKB   |
+| **Import**                |           |                                                           |        |            |
+| GeoJSON                   | Yes       | Yes                                                       | Yes    | Yes        |
+| WKT                       | Yes       | Yes                                                       | Yes    | Yes        |
+| WKB                       | Yes       | Yes                                                       | Yes    | Yes        |
+| EWKT                      | Yes       | ?                                                         | ?      | Yes        |
+| EWKB                      | Yes       | ?                                                         | ?      | Yes        |
+| Hex-encoded WKB           | ?         | Yes                                                       | ?      | Yes (EWKB) |
+|                           |           |                                                           |        |            |
+
+### JSON
+
+TODO: Lots of subtleties with new line JSON, etc.
+
+### Parquet
+
+TODO: list support, ideas / issues
+
+### Avro
+
+TODO: flesh out
+
+[CSV](csv.md) - Most widely 
+[JSON](json.md)
+[Parquet](parquet.md)
+[Avro](avro.md)
 
 ## Current Support
 
