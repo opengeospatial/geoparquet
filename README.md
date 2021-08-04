@@ -33,17 +33,25 @@ TODO: Likely turn these each into their own pages.
 
 Every implementation supports import and export of CSV, and all have some mechanism to include geospatial information in it. 
 
+The following table details what each can use for geometries. A 'yes' means that it supports both import and export.
+
 |                           | Snowflake | BigQuery                                                  | Oracle | Redshift   |
 |---------------------------|-----------|-----------------------------------------------------------|--------|------------|
-| **Default Export Format** | GeoJSON   | WKT in 4326 (geodesic edges, oriented polygons) as STRING |        | Hex EWKB   |
-| **Import**                |           |                                                           |        |            |
-| GeoJSON                   | Yes       | Yes                                                       | Yes    | Yes        |
-| WKT                       | Yes       | Yes                                                       | Yes    | Yes        |
-| WKB                       | Yes       | Yes                                                       | Yes    | Yes        |
-| EWKT                      | Yes       | ?                                                         | ?      | Yes        |
-| EWKB                      | Yes       | ?                                                         | ?      | Yes        |
-| Hex-encoded WKB           | ?         | Yes                                                       | ?      | Yes (EWKB) |
+| **Default Export Format** | GeoJSON   | WKT in 4326 (geodesic edges, oriented polygons) as STRING |    ?   | Hex EWKB   |
 |                           |           |                                                           |        |            |
+| GeoJSON Geometries        | Yes       | Yes                                                       | Yes    | Yes        |
+| WKT                       | Yes       | Yes                                                       | Yes    | Yes        |
+| WKB                       | Yes       | Import Only                                               | Yes    | Yes        |
+| EWKT                      | Yes       | ?                                                         | No     | Yes        |
+| EWKB                      | Yes       | ?                                                         | No     | Yes        |
+| Hex-encoded WKB           | ?         | Yes                                                       | ?      | Yes (?)    |
+| Hex-encoded EWKB          | ?         | No(?)                                                     | No     | Yes (EWKB) |
+
+Note EWKT and EWKB are formats defined by PostGIS, that include an inline SRID. Others are starting to support it, but OGC SQL/MM chose not to
+include it as there is no guarantee that a given SRID is the same across different spatial databases. PostGIS gets around this by always shipping
+a spatial_ref_sys that directly maps EPSG to SRID. But Oracle does not do the same (afaik), so EWKT / EWKT won't work well with it.
+
+TODO: Add links to the docs for each vendor.
 
 ### JSON
 
