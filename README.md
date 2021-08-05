@@ -65,11 +65,6 @@ TODO: list support, ideas / issues
 
 TODO: flesh out
 
-[CSV](csv.md) - Most widely 
-[JSON](json.md)
-[Parquet](parquet.md)
-[Avro](avro.md)
-
 ## Current Support
 
 This table aims captures the current state of play between various implementations.
