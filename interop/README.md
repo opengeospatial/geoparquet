@@ -20,21 +20,21 @@ TODO: Add more datasets here.
 
 #### Export Data
 
-| **Data Type**             | **Link** | **Notes** |
-|---------------------------|----------|-----------|
-| CSV w/ GeoJSON geometries |          |           |
-| CSV w/ WKT                |          |           |
-| CSV w/ WKB                |          |           |
-| CSV w/ EWKT               |          |           |
-| CSV w/ EWKB               |          |           |
-| GeoJSON                   |          |           |
-| Avro                      |          |           |
-| Parquet                   |          |           |
+| **Data Type**             | **Link NE Admin 1** | **Notes** |
+|---------------------------|---------------------|-----------|
+| CSV w/ GeoJSON geometries |                     |           |
+| CSV w/ WKT                |                     |           |
+| CSV w/ WKB                |                     |           |
+| CSV w/ EWKT               |                     |           |
+| CSV w/ EWKB               |                     |           |
+| GeoJSON                   |                     |           |
+| Avro                      |                     |           |
+| Parquet                   |                     |           |
 
 #### Import Status
 
-Enter 'Success' if all works perfectly, 'N/A' if the provider does not export to the format, and 'Nope' with a brief note of what went wrong. 
-Use the space below the table to explain anything in more details
+Enter 'Success' if every dataset works perfectly, 'N/A' if the provider does not export to the format, and 'Nope' with a brief note of what 
+went wrong with any of the datasets. Use the space below the table to explain anything in more details.
 
 |                           | **Oracle** | **BigQuery** | **Redshift** |
 |---------------------------|------------|--------------|--------------|
@@ -52,21 +52,21 @@ Use the space below the table to explain anything in more details
 
 #### Export Data
 
-| **Data Type**             | **Link** | **Notes** |
-|---------------------------|----------|-----------|
-| CSV w/ GeoJSON geometries |          |           |
-| CSV w/ WKT                |          |           |
-| CSV w/ WKB                |          |           |
-| CSV w/ EWKT               |          |           |
-| CSV w/ EWKB               |          |           |
-| GeoJSON                   |          |           |
-| Avro                      |          |           |
-| Parquet                   |          |           |
+| **Data Type**             | **Link NE Admin 1** | **Notes** |
+|---------------------------|---------------------|-----------|
+| CSV w/ GeoJSON geometries |                     |           |
+| CSV w/ WKT                |                     |           |
+| CSV w/ WKB                |                     |           |
+| CSV w/ EWKT               |                     |           |
+| CSV w/ EWKB               |                     |           |
+| GeoJSON                   |                     |           |
+| Avro                      |                     |           |
+| Parquet                   |                     |           |
 
 #### Import Status
 
-Enter 'Success' if all works perfectly, 'N/A' if the provider does not export to the format, and 'Nope' with a brief note of what went wrong. 
-Use the space below the table to explain anything in more details
+Enter 'Success' if every dataset works perfectly, 'N/A' if the provider does not export to the format, and 'Nope' with a brief note of what 
+went wrong with any of the datasets. Use the space below the table to explain anything in more details.
 
 |                           | **Oracle** | **BigQuery** | **Redshift** |
 |---------------------------|------------|--------------|--------------|
@@ -84,21 +84,21 @@ Use the space below the table to explain anything in more details
 
 #### Export Data
 
-| **Data Type**             | **Link** | **Notes** |
-|---------------------------|----------|-----------|
-| CSV w/ GeoJSON geometries |          |           |
-| CSV w/ WKT                |          |           |
-| CSV w/ WKB                |          |           |
-| CSV w/ EWKT               |          |           |
-| CSV w/ EWKB               |          |           |
-| GeoJSON                   |          |           |
-| Avro                      |          |           |
-| Parquet                   |          |           |
+| **Data Type**             | **Link NE Admin 1** | **Notes** |
+|---------------------------|---------------------|-----------|
+| CSV w/ GeoJSON geometries |                     |           |
+| CSV w/ WKT                |                     |           |
+| CSV w/ WKB                |                     |           |
+| CSV w/ EWKT               |                     |           |
+| CSV w/ EWKB               |                     |           |
+| GeoJSON                   |                     |           |
+| Avro                      |                     |           |
+| Parquet                   |                     |           |
 
 #### Import Status
 
-Enter 'Success' if all works perfectly, 'N/A' if the provider does not export to the format, and 'Nope' with a brief note of what went wrong. 
-Use the space below the table to explain anything in more details
+Enter 'Success' if every dataset works perfectly, 'N/A' if the provider does not export to the format, and 'Nope' with a brief note of what 
+went wrong with any of the datasets. Use the space below the table to explain anything in more details.
 
 |                           | **Oracle** | **BigQuery** | **Redshift** |
 |---------------------------|------------|--------------|--------------|
@@ -116,21 +116,21 @@ Use the space below the table to explain anything in more details
 
 #### Export Data
 
-| **Data Type**             | **Link** | **Notes** |
-|---------------------------|----------|-----------|
-| CSV w/ GeoJSON geometries |          |           |
-| CSV w/ WKT                |          |           |
-| CSV w/ WKB                |          |           |
-| CSV w/ EWKT               |          |           |
-| CSV w/ EWKB               |          |           |
-| GeoJSON                   |          |           |
-| Avro                      |          |           |
-| Parquet                   |          |           |
+| **Data Type**             | **Link NE Admin 1** | **Notes** |
+|---------------------------|---------------------|-----------|
+| CSV w/ GeoJSON geometries |                     |           |
+| CSV w/ WKT                |                     |           |
+| CSV w/ WKB                |                     |           |
+| CSV w/ EWKT               |                     |           |
+| CSV w/ EWKB               |                     |           |
+| GeoJSON                   |                     |           |
+| Avro                      |                     |           |
+| Parquet                   |                     |           |
 
 #### Import Status
 
-Enter 'Success' if all works perfectly, 'N/A' if the provider does not export to the format, and 'Nope' with a brief note of what went wrong. 
-Use the space below the table to explain anything in more details
+Enter 'Success' if every dataset works perfectly, 'N/A' if the provider does not export to the format, and 'Nope' with a brief note of what 
+went wrong with any of the datasets. Use the space below the table to explain anything in more details.
 
 |                           | **Oracle** | **BigQuery** | **Redshift** |
 |---------------------------|------------|--------------|--------------|
