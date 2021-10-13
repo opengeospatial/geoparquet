@@ -7,7 +7,7 @@ should be stored in parquet format, including the representation of geometries a
 
 ## Geometry columns
 
-Geometry columns are stored using the `BYTE_ARRAY` parquet type. They are encoded as WKB.
+Geometry columns are stored using the `BYTE_ARRAY` parquet type. They are encoded as [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary).
 
 ## Metadata
 
@@ -18,11 +18,18 @@ geoparquet files include additional metadata at two levels:
 
 ## File metadata
 
+All file-level metadata should be included under the "geoparquet" key in the parquet metadata.
+
 |     Field Name     |  Type  |                             Description                              |
 | ------------------ | ------ | -------------------------------------------------------------------- |
 | geoparquet_version | string | **REQUIRED** The version of the metadata standard used when writing. |
-| primary_column     | string | The "primary" geometry column.                                       |
+| primary_column     | string | The name of the "primary" geometry column.                           |
 
+
+### Additional file metadata information
+
+**primary_column**: This indicates the "primary" or "active" geometry for systems that can store multiple geometries,
+but have a default geometry used for geospatial operations.
 
 ## Column metadata
 
@@ -30,10 +37,7 @@ Each geometry column should include additional metadata
 
 | Field Name |                               Type                                      |                                                                   Description                                                                     |
 | ---------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| epsg       | integer\| null                                                          | **REQUIRED.** [EPSG code](http://www.epsg-registry.org/) of the datasource                                                                        |
-| bbox       | \[number]                                                               | Bounding Box of the asset represented by this Item, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5).  |                                                                                                                                                                                      |
-| wkt2       | string\| null                                                           | [WKT2](http://docs.opengeospatial.org/is/12-063r5/12-063r5.html) string representing the Coordinate Reference System (CRS) used by the geometries |
-| projjson   | [PROJJSON Object](https://proj.org/specifications/projjson.html)\| null | PROJJSON object representing the Coordinate Reference System (CRS) that the `proj:geometry` and `proj:bbox` fields represent                      |
+| epsg       | integer\| null                                                          | **REQUIRED.** [EPSG code](http://www.epsg-registry.org/) of the datasource. Must be 4326                                                          |
 
 ### Additional information
 
