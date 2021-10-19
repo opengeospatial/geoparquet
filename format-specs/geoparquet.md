@@ -28,7 +28,7 @@ All file-level metadata should be included under the "geo" key in the parquet me
 
 |     Field Name     |  Type  |                             Description                              |
 | ------------------ | ------ | -------------------------------------------------------------------- |
-| schema_version     | string | **REQUIRED** The version of the metadata standard used when writing.   |
+| version     | string | **REQUIRED** The version of the geoparquet metadata standard used when writing.   |
 | primary_column     | string | **REQUIRED** The name of the "primary" geometry column.                |
 | columns            | \[[Column Metadata](#column-metadata)\]  | **REQUIRED** Metadata about geometry columns. |
 
