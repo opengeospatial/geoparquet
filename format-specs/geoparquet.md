@@ -28,9 +28,9 @@ All file-level metadata should be included under the "geo" key in the parquet me
 
 |     Field Name     |  Type  |                             Description                              |
 | ------------------ | ------ | -------------------------------------------------------------------- |
-| version     | string | **REQUIRED** The version of the geoparquet metadata standard used when writing.   |
+| version     		 | string | **REQUIRED** The version of the geoparquet metadata standard used when writing.   |
 | primary_column     | string | **REQUIRED** The name of the "primary" geometry column.                |
-| columns            | \[[Column Metadata](#column-metadata)\]  | **REQUIRED** Metadata about geometry columns. |
+| columns            | Map<key, [Colum Metadata](#column-metadata)> | **REQUIRED** Metadata about geometry columns, with each key is the name of a geometry column in the table. |
 
 
 ### Additional file metadata information
@@ -40,7 +40,7 @@ All file-level metadata should be included under the "geo" key in the parquet me
 This indicates the "primary" or "active" geometry for systems that can store multiple geometries,
 but have a default geometry used for geospatial operations.
 
-#### schema_version
+#### version
 
 Version of the geoparquet spec used, currently 0.1.0
 
