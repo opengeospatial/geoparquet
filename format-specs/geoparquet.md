@@ -7,7 +7,7 @@ should be stored in parquet format, including the representation of geometries a
 
 ## Version
 
-This is version 0.1.0 of the geoparquest specification.
+This is version 0.1.0 of the geoparquet specification.
 
 ## Geometry columns
 

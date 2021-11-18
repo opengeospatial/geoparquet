@@ -6,7 +6,7 @@ You can print the metadata with:
 .. code-block:: python
 
    >>> import json, pprint, pyarrow.parquet
-   >>> pprint.pprint(json.loads(pq.read_schema("example.parquet").metadata[b"geoparquet"]))
+   >>> pprint.pprint(json.loads(pq.read_schema("example.parquet").metadata[b"geo"]))
    {'columns': {'geometry': {'crs': 'GEOGCRS["WGS 84",ENSEMBLE["World Geodetic '
                                     'System 1984 ensemble",MEMBER["World Geodetic '
                                     'System 1984 (Transit)"],MEMBER["World '
@@ -53,7 +53,7 @@ metadata = {
 
 schema = (
     table.schema
-    .with_metadata({"geoparquet": json.dumps(metadata)})
+    .with_metadata({"geo": json.dumps(metadata)})
 )
 table = table.cast(schema)
 
