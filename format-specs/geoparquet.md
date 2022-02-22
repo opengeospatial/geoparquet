@@ -20,7 +20,7 @@ geoparquet files include additional metadata at two levels:
 1. File metadata indicating things like the version of this specification used
 2. Column metadata with additional metadata for each geometry column
 
-These are both stored under a "geo" key in the parquet metadata.
+These are both stored under a "geo" key in the parquet metadata as a JSON-encoded UTF-8 string.
 
 ## File metadata
 
