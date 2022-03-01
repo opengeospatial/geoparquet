@@ -20,7 +20,7 @@ geoparquet files include additional metadata at two levels:
 1. File metadata indicating things like the version of this specification used
 2. Column metadata with additional metadata for each geometry column
 
-These are both stored under a "geo" key in the parquet metadata.
+These are both stored under a "geo" key in the parquet metadata as a JSON-encoded UTF-8 string.
 
 ## File metadata
 
@@ -82,9 +82,8 @@ of the spec may support alternative encodings.
 
 ## TODO
 
-1. Figure out what parquet allows for metadata. Might be forced to use bytes?
-2. Do we want to include the [bounding box](https://github.com/geopandas/geo-arrow-spec/blob/dac0d4fe28ad2871ea1042aa72ea8d6b236e2fa8/metadata.md#bounding-boxes) metadata? Should probably explain how it would be used as partitions for individual files.
-3. What all is required on the column metadata?
+1. Do we want to include the [bounding box](https://github.com/geopandas/geo-arrow-spec/blob/dac0d4fe28ad2871ea1042aa72ea8d6b236e2fa8/metadata.md#bounding-boxes) metadata? Should probably explain how it would be used as partitions for individual files.
+2. What all is required on the column metadata?
 
 
 [parquet]: https://parquet.apache.org/
