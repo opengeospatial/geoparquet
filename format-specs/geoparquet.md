@@ -76,7 +76,7 @@ Data that is better served in particular projections can choose to use an altern
 
 This is the binary format that the geometry is encoded in. The string 'WKB' to represent 
 [Well Known Binary](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary) is the only current option, but future versions
-of the spec may support alternative encodings. This should be the ["standard"](https://libgeos.org/specifications/wkb/) WKB representation.
+of the spec may support alternative encodings. This should be the ["standard"](https://libgeos.org/specifications/wkb/#standard-wkb) WKB representation.
 
 ### Additional information
 
