@@ -28,7 +28,7 @@ There are a few core goals driving the initial development.
  enable cross-language in-memory analytics of geospatial information with Arrow. Parquet is already well-supported by Arrow as the key on disk persistance format.
 * **Support for data partitioning** - Parquet has a nice ability to partition data into different files for efficiency, and we aim to enable geospatial partitions.
 * **Work with both planar and spherical coordinates** - Most cloud data warehouses support spherical coordinates, and so GeoParquet aims to help persist those 
- and be clear about whatis supported.
+ and be clear about what is supported.
 * **Support multiple spatial reference systems** - While we'll aim for a clear default recommendation to better enable interoperability it is important to support
  different spatial reference systems for the best performance on diverse data.
 * **Enable spatial indices** - To enable top performance a spatial index is essential. This will be the focus of the [0.2](https://github.com/opengeospatial/geoparquet/milestone/2) release.
