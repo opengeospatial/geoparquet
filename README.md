@@ -43,9 +43,9 @@ A quick overview of what geoparquet supports (or at least plans to support
  native projection. But we do provide a clear default recommendation to better enable interoperability, giving a clear target for implementations that don't want to
  worry about projections.
 * **Multiple Geometries** - There is a default geometry column, but additional geometry columns can be included.
-* **Support for data partitioning** - Parquet has a nice ability to partition data into different files for efficiency, and we aim to enable geospatial partitions.
 * **Work with both planar and spherical coordinates** - Most cloud data warehouses support spherical coordinates, and so GeoParquet aims to help persist those 
  and be clear about what is supported.
+* **Support for data partitioning** - Parquet has a nice ability to partition data into different files for efficiency, and we aim to enable geospatial partitions.
 * **Enable spatial indices** - To enable top performance a spatial index is essential. This will be the focus of the 
  [0.2](https://github.com/opengeospatial/geoparquet/milestone/2) release.
 
