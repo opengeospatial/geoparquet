@@ -14,7 +14,7 @@ please sound in on the issues and contribute PR's! But please do not start conve
 Early contributors include developers from Voltron Data, Microsoft, Carto, Azavea, Planet & Unfolded. Anyone is welcome to join us, by building 
 implementations, trying it out, giving feedback through issues and contributing to the spec via pull requests.
 
-Note that verison 0.1 only supports 2d geometries, as we are not supporting [EWKB](https://libgeos.org/specifications/wkb/#extended-wkb) or 
+Note that version 0.1 only supports 2d geometries, as we are not supporting [EWKB](https://libgeos.org/specifications/wkb/#extended-wkb) or 
 [ISO WKB](https://libgeos.org/specifications/wkb/#iso-wkb). We expect to expand WKB to support 3D in the future, if you have thoughts please 
 sound in on #18 and/or follow along there.
 
