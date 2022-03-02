@@ -3,7 +3,7 @@
 ## About
 
 This repository defines how to store geospatial information (point, lines, polygons) in [Parquet](https://parquet.apache.org/), a popular 
-[columnar storage format](https://en.wikipedia.org/wiki/Column-oriented_DBMS). Our goal is to standardize how geospatial data is represented
+[columnar storage format](https://en.wikipedia.org/wiki/Column-oriented_DBMS) for tabular data. Our goal is to standardize how geospatial data is represented
 in Parquet to further geospatial interoperability among tools using Parquet today, and hopefully help push forward what's possible with 
 'cloud-native geospatial' workflows. 
 
