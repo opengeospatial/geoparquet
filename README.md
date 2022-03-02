@@ -11,7 +11,7 @@ in Parquet to further geospatial interoperability among tools using Parquet toda
 please sound in on the issues and contribute PR's! But please do not start converting all your data to this format, as it will change 
 (and possibly in a backwards incompatible way, see the [versioning](#versioning) section below.
 
-Early contributors include developers from GeoPandas, GeoTrellis, OpenLayers, Voltron Data, Microsoft, Carto, Azavea, Planet & Unfolded. 
+Early contributors include developers from GeoPandas, GeoTrellis, OpenLayers, Vis.gl, Voltron Data, Microsoft, Carto, Azavea, Planet & Unfolded. 
 Anyone is welcome to join us, by building implementations, trying it out, giving feedback through issues and contributing to the spec via pull requests.
 
 Note that version 0.1 only supports 2d geometries, as we are not supporting [EWKB](https://libgeos.org/specifications/wkb/#extended-wkb) or 
@@ -37,17 +37,24 @@ And our broader goal is to innovate with 'cloud-native vector' providing a stabl
 
 ## Features
 
-A quick overview of what geoparquet supports (or at least plans to support
+A quick overview of what geoparquet supports (or at least plans to support).
 
-* **Support multiple spatial reference systems** - Many tools will use GeoParquet for high-performance analysis, so it's important to be able to use data in its
+* **Multiple spatial reference systems** - Many tools will use GeoParquet for high-performance analysis, so it's important to be able to use data in its
  native projection. But we do provide a clear default recommendation to better enable interoperability, giving a clear target for implementations that don't want to
  worry about projections.
 * **Multiple geometry columns** - There is a default geometry column, but additional geometry columns can be included.
+* **Great compression / small files** - Parquet is well-designed to compress very well, so data benefits by taking up less disk space & being more efficient over
+ the network. cheap reading of a subset of columns (the columnar nature), the type system (eg nested types), filtering chunks based on column statistics, ..)
 * **Work with both planar and spherical coordinates** - Most cloud data warehouses support spherical coordinates, and so GeoParquet aims to help persist those 
  and be clear about what is supported.
+* **Great at Read-heavy analytic workflows** - Columnar formats enable cheap reading of a subset of columns, and Parquet in particular enables efficient filtering 
+ of chunks based on column statistics, so the format will perform well in a variety of modern analytic workflows.
 * **Support for data partitioning** - Parquet has a nice ability to partition data into different files for efficiency, and we aim to enable geospatial partitions.
 * **Enable spatial indices** - To enable top performance a spatial index is essential. This will be the focus of the 
  [0.2](https://github.com/opengeospatial/geoparquet/milestone/2) release.
+ 
+It should be noted what GeoParquet is less good for. The biggest one is that it is not a good choice for write-heavy interactions. A row-based format
+will work much better if it is backing a system that is constantly updating the data and adding new data. 
 
 ## Roadmap
 
