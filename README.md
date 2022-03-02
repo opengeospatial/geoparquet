@@ -42,7 +42,7 @@ A quick overview of what geoparquet supports (or at least plans to support
 * **Support multiple spatial reference systems** - Many tools will use GeoParquet for high-performance analysis, so it's important to be able to use data in its
  native projection. But we do provide a clear default recommendation to better enable interoperability, giving a clear target for implementations that don't want to
  worry about projections.
-* **Multiple Geometries** - There is a default geometry column, but additional geometry columns can be included.
+* **Multiple geometry columns** - There is a default geometry column, but additional geometry columns can be included.
 * **Work with both planar and spherical coordinates** - Most cloud data warehouses support spherical coordinates, and so GeoParquet aims to help persist those 
  and be clear about what is supported.
 * **Support for data partitioning** - Parquet has a nice ability to partition data into different files for efficiency, and we aim to enable geospatial partitions.
