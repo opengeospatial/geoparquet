@@ -2,8 +2,8 @@
 
 ## About
 
-This repository defines how to store geospatial information (point, lines, polygons) in [Parquet](https://parquet.apache.org/), a popular 
-[columnar storage format](https://en.wikipedia.org/wiki/Column-oriented_DBMS) for tabular data. Our goal is to standardize how geospatial data is represented
+This repository defines how to store geospatial [vector data](https://gisgeography.com/spatial-data-types-vector-raster/) (point, lines, polygons) in 
+[Parquet](https://parquet.apache.org/), a popular columnar storage format for tabular data. Our goal is to standardize how geospatial data is represented
 in Parquet to further geospatial interoperability among tools using Parquet today, and hopefully help push forward what's possible with 
 'cloud-native geospatial' workflows. 
 
@@ -11,8 +11,8 @@ in Parquet to further geospatial interoperability among tools using Parquet toda
 please sound in on the issues and contribute PR's! But please do not start converting all your data to this format, as it will change 
 (and possibly in a backwards incompatible way, see the [versioning](#versioning) section below.
 
-Early contributors include developers from Voltron Data, Microsoft, Carto, Azavea, Planet & Unfolded. Anyone is welcome to join us, by building 
-implementations, trying it out, giving feedback through issues and contributing to the spec via pull requests.
+Early contributors include developers from GeoPandas, GeoTrellis, OpenLayers, Voltron Data, Microsoft, Carto, Azavea, Planet & Unfolded. 
+Anyone is welcome to join us, by building implementations, trying it out, giving feedback through issues and contributing to the spec via pull requests.
 
 Note that version 0.1 only supports 2d geometries, as we are not supporting [EWKB](https://libgeos.org/specifications/wkb/#extended-wkb) or 
 [ISO WKB](https://libgeos.org/specifications/wkb/#iso-wkb). We expect to expand WKB to support 3D in the future, if you have thoughts please 
@@ -22,19 +22,32 @@ sound in on #18 and/or follow along there.
 
 There are a few core goals driving the initial development.
 
+* **Establish a great geospatial format for workflows that excel with columnar data** - Most data science and 'business intelligence' workflows have been moving
+ towards columnar data, but current geospatial formats can not be as efficiently loaded as other data. So we aim to bring geospatial data best practices to one
+ of the most popular formats, and hopefully establish a good pattern for how to do so.
+* **Introduce columnar data formats to the geospatial world** - And most of the geospatial world is not yet benefitting from all the breakthroughs in data analysis
+ in the broader IT world, so we are excited to enable interesting geospatial analysis with a wider range of tools.
 * **Enable interoperability among cloud data warehouses** - BigQuery, Snowflake, Redshift and others all support spatial operations but importing and exporting data 
  with existing formats can be problematic. All support and often recommend Parquet, so defining a solid GeoParquet can help enable interoperability.
 * **Persist geospatial data from Apache Arrow** - GeoParquet is developed in parallel with a [GeoArrow spec](https://github.com/geopandas/geo-arrow-spec), to 
  enable cross-language in-memory analytics of geospatial information with Arrow. Parquet is already well-supported by Arrow as the key on disk persistance format.
+
+And our broader goal is to innovate with 'cloud-native vector' providing a stable base to try out new ideas for cloud-native & streaming workflows. 
+
+
+## Features
+
+A quick overview of what geoparquet supports (or at least plans to support
+
+* **Support multiple spatial reference systems** - Many tools will use GeoParquet for high-performance analysis, so it's important to be able to use data in its
+ native projection. But we do provide a clear default recommendation to better enable interoperability, giving a clear target for implementations that don't want to
+ worry about projections.
+* **Multiple Geometries** - There is a default geometry column, but additional geometry columns can be included.
 * **Support for data partitioning** - Parquet has a nice ability to partition data into different files for efficiency, and we aim to enable geospatial partitions.
 * **Work with both planar and spherical coordinates** - Most cloud data warehouses support spherical coordinates, and so GeoParquet aims to help persist those 
  and be clear about what is supported.
-* **Support multiple spatial reference systems** - While we'll aim for a clear default recommendation to better enable interoperability it is important to support
- different spatial reference systems for the best performance on diverse data.
-* **Enable spatial indices** - To enable top performance a spatial index is essential. This will be the focus of the [0.2](https://github.com/opengeospatial/geoparquet/milestone/2) release.
-* **Support multiple spatial reference systems** - While we'll aim for a clear default recommendation to better enable interoperability it is important to suppo
-
-And our broader goal is to innovate with 'cloud-native vector' providing a stable base to try out new ideas for cloud-native & streaming workflows. 
+* **Enable spatial indices** - To enable top performance a spatial index is essential. This will be the focus of the 
+ [0.2](https://github.com/opengeospatial/geoparquet/milestone/2) release.
 
 ## Roadmap
 
