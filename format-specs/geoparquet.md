@@ -50,25 +50,42 @@ Each geometry column in the dataset must be included in the columns field above 
 
 | Field Name |                               Type                                      |                                                                   Description                                                                     |
 | ---------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| crs       | string   | **REQUIRED** [WKT2](http://docs.opengeospatial.org/is/12-063r5/12-063r5.html) string representing the Coordinate Reference System (CRS) of the geometry.  |
+| crs       | string   | **REQUIRED**  string representing the Coordinate Reference System (CRS) of the geometry.  |
 | encoding | string | **REQUIRED** Name of the geometry encoding format. Currently only 'WKB' is supported. |
 
 #### crs
 
-It is strongly recommended to use [EPSG:4326 (lat, long)](https://spatialreference.org/ref/epsg/4326/) for all data, so in most cases the value of the crs should be:
+The Coordinate Reference System (CRS) is a mandatory parameter for all the geometries defined in geoparquet format. 
+
+The CRS needs to be provided in [WKT](https://en.wikipedia.org/wiki/Well-known_text_representation_of_coordinate_reference_systems) version 2, also known as **WKT2**. WKT2 has several revisions, this specification supports the revisions from [2015](http://docs.opengeospatial.org/is/12-063r5/12-063r5.html) and [2019](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html): WKT2_2015, WKT2_2015_SIMPLIFIED, WKT2_2019, WKT_2019_SIMPLIFIED. 
+
+
+As the most common CRS for datasets is latitude/longitude, for the widest interoperability we recommend [OGC:84](http://www.opengis.net/def/crs/OGC/1.3/CRS84) (WGS84 longitude, latitude) for all data, so in most cases the value of the crs should be:
 
 ```
-GEOGCS["WGS 84",
-    DATUM["WGS_1984",
-        SPHEROID["WGS 84",6378137,298.257223563,
-            AUTHORITY["EPSG","7030"]],
-        AUTHORITY["EPSG","6326"]],
-    PRIMEM["Greenwich",0,
-        AUTHORITY["EPSG","8901"]],
-    UNIT["degree",0.01745329251994328,
-        AUTHORITY["EPSG","9122"]],
-    AUTHORITY["EPSG","4326"]]
+GEOGCRS["WGS 84 (CRS84)",
+    ENSEMBLE["World Geodetic System 1984 ensemble",
+        MEMBER["World Geodetic System 1984 (Transit)"],
+        MEMBER["World Geodetic System 1984 (G730)"],
+        MEMBER["World Geodetic System 1984 (G873)"],
+        MEMBER["World Geodetic System 1984 (G1150)"],
+        MEMBER["World Geodetic System 1984 (G1674)"],
+        MEMBER["World Geodetic System 1984 (G1762)"],
+        MEMBER["World Geodetic System 1984 (G2139)"],
+        ELLIPSOID["WGS 84",6378137,298.257223563],
+        ENSEMBLEACCURACY[2.0]],
+    CS[ellipsoidal,2],
+        AXIS["geodetic longitude (Lon)",east],
+        AXIS["geodetic latitude (Lat)",north],
+        UNIT["degree",0.0174532925199433],
+    USAGE[
+        SCOPE["Not known."],
+        AREA["World."],
+        BBOX[-90,-180,90,180]],
+    ID["OGC","CRS84"]]
 ```
+
+Due to the large number of CRSes available and the difficulty of implementing all of them, we strongly encourage the first implementing OGC:84, followed by EPSG:4326.
 
 Data that is better served in particular projections can choose to use an alternate coordinate reference system.
 
@@ -77,6 +94,10 @@ Data that is better served in particular projections can choose to use an altern
 This is the binary format that the geometry is encoded in. The string 'WKB' to represent 
 [Well Known Binary](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary) is the only current option, but future versions
 of the spec may support alternative encodings. This should be the ["standard"](https://libgeos.org/specifications/wkb/#standard-wkb) WKB representation.
+
+#### Coordinated order
+
+The axis order in WKB stored in a geoparquet follows the de facto standard for axis order in WKB and is therefore always (x,y{,z}{,m}) where x is easting or longitude, y is northing or latitude, z is optional elevation, and m is optional measure. This ordering explicitly overrides the axis order as specified in the CRS.
 
 ### Additional information
 
