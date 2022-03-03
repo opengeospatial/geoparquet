@@ -85,7 +85,7 @@ GEOGCRS["WGS 84 (CRS84)",
     ID["OGC","CRS84"]]
 ```
 
-Due to the large number of CRSes available and the difficulty of implementing all of them, we strongly encourage the first implementing OGC:84, followed by EPSG:4326.
+Due to the large number of CRSes available and the difficulty of implementing all of them, we strongly encourage the first implementing [OGC:84](http://www.opengis.net/def/crs/OGC/1.3/CRS84), followed by [EPSG:4326](https://spatialreference.org/ref/epsg/wgs-84).
 
 Data that is better served in particular projections can choose to use an alternate coordinate reference system.
 
