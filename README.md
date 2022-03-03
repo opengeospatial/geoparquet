@@ -47,7 +47,7 @@ A quick overview of what geoparquet supports (or at least plans to support).
  the network.
 * **Work with both planar and spherical coordinates** - Most cloud data warehouses support spherical coordinates, and so GeoParquet aims to help persist those 
  and be clear about what is supported.
-* **Great at Read-heavy analytic workflows** - Columnar formats enable cheap reading of a subset of columns, and Parquet in particular enables efficient filtering 
+* **Great at read-heavy analytic workflows** - Columnar formats enable cheap reading of a subset of columns, and Parquet in particular enables efficient filtering 
  of chunks based on column statistics, so the format will perform well in a variety of modern analytic workflows.
 * **Support for data partitioning** - Parquet has a nice ability to partition data into different files for efficiency, and we aim to enable geospatial partitions.
 * **Enable spatial indices** - To enable top performance a spatial index is essential. This will be the focus of the 
