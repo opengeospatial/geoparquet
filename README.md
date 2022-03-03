@@ -2,10 +2,11 @@
 
 ## About
 
-This repository defines how to store geospatial [vector data](https://gisgeography.com/spatial-data-types-vector-raster/) (point, lines, polygons) in 
-[Parquet](https://parquet.apache.org/), a popular columnar storage format for tabular data. Our goal is to standardize how geospatial data is represented
-in Parquet to further geospatial interoperability among tools using Parquet today, and hopefully help push forward what's possible with 
-'cloud-native geospatial' workflows. 
+This repository defines how to store geospatial [vector data](https://gisgeography.com/spatial-data-types-vector-raster/) (point, 
+lines, polygons) in [Parquet](https://parquet.apache.org/), a popular columnar storage format for tabular data - see 
+[what is parquet?](https://databricks.com/glossary/what-is-parquet ) for more background. Our goal is to standardize how 
+geospatial data is represented in Parquet to further geospatial interoperability among tools using Parquet today, and hopefully 
+help push forward what's possible with 'cloud-native geospatial' workflows. 
 
 **Warning:** This is a completely unreleased specification, with several outstanding updates to make. If you are excited about the potential 
 please sound in on the issues and contribute PR's! But please do not start converting all your data to this format, as it will change 
