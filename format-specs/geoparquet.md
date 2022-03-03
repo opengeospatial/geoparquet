@@ -60,10 +60,10 @@ The Coordinate Reference System (CRS) is a mandatory parameter for all the geome
 The CRS needs to be provided in [WKT](https://en.wikipedia.org/wiki/Well-known_text_representation_of_coordinate_reference_systems) version 2, also known as **WKT2**. WKT2 has several revisions, this specification supports the revisions from [2015](http://docs.opengeospatial.org/is/12-063r5/12-063r5.html) and [2019](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html): WKT2_2015, WKT2_2015_SIMPLIFIED, WKT2_2019, WKT_2019_SIMPLIFIED. 
 
 
-As the most common CRS for datasets is latitude/longitude, for the widest interoperability we recommend [OGC:84](http://www.opengis.net/def/crs/OGC/1.3/CRS84) (WGS84 longitude, latitude) for all data, so in most cases the value of the crs should be:
+As the most common CRS for datasets is latitude/longitude, for the widest interoperability we recommend [EPSG:4326](https://spatialreference.org/ref/epsg/wgs-84) for all data, so in most cases the value of the crs should be:
 
 ```
-GEOGCRS["WGS 84 (CRS84)",
+GEOGCRS["WGS 84",
     ENSEMBLE["World Geodetic System 1984 ensemble",
         MEMBER["World Geodetic System 1984 (Transit)"],
         MEMBER["World Geodetic System 1984 (G730)"],
@@ -75,17 +75,17 @@ GEOGCRS["WGS 84 (CRS84)",
         ELLIPSOID["WGS 84",6378137,298.257223563],
         ENSEMBLEACCURACY[2.0]],
     CS[ellipsoidal,2],
-        AXIS["geodetic longitude (Lon)",east],
         AXIS["geodetic latitude (Lat)",north],
+        AXIS["geodetic longitude (Lon)",east],
         UNIT["degree",0.0174532925199433],
     USAGE[
-        SCOPE["Not known."],
+        SCOPE["Horizontal component of 3D system."],
         AREA["World."],
         BBOX[-90,-180,90,180]],
-    ID["OGC","CRS84"]]
+    ID["EPSG",4326]]
 ```
 
-Due to the large number of CRSes available and the difficulty of implementing all of them, we strongly encourage the first implementing [OGC:84](http://www.opengis.net/def/crs/OGC/1.3/CRS84), followed by [EPSG:4326](https://spatialreference.org/ref/epsg/wgs-84).
+Due to the large number of CRSes available and the difficulty of implementing all of them, we strongly encourage the first implementing [EPSG:4326](https://spatialreference.org/ref/epsg/wgs-84).
 
 Data that is better served in particular projections can choose to use an alternate coordinate reference system.
 
