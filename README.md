@@ -44,7 +44,7 @@ A quick overview of what geoparquet supports (or at least plans to support).
  worry about projections.
 * **Multiple geometry columns** - There is a default geometry column, but additional geometry columns can be included.
 * **Great compression / small files** - Parquet is designed to compress very well, so data benefits by taking up less disk space & being more efficient over
- the network. cheap reading of a subset of columns (the columnar nature), the type system (eg nested types), filtering chunks based on column statistics, ..)
+ the network.
 * **Work with both planar and spherical coordinates** - Most cloud data warehouses support spherical coordinates, and so GeoParquet aims to help persist those 
  and be clear about what is supported.
 * **Great at Read-heavy analytic workflows** - Columnar formats enable cheap reading of a subset of columns, and Parquet in particular enables efficient filtering 
