@@ -95,7 +95,7 @@ This is the binary format that the geometry is encoded in. The string 'WKB' to r
 [Well Known Binary](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary) is the only current option, but future versions
 of the spec may support alternative encodings. This should be the ["standard"](https://libgeos.org/specifications/wkb/#standard-wkb) WKB representation.
 
-#### Coordinated order
+#### Coordinate Order
 
 The axis order in WKB stored in a geoparquet follows the de facto standard for axis order in WKB and is therefore always (x,y{,z}{,m}) where x is easting or longitude, y is northing or latitude, z is optional elevation, and m is optional measure. This ordering explicitly overrides the axis order as specified in the CRS.
 
