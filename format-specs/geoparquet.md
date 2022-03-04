@@ -98,7 +98,7 @@ this to come in a future version.
 
 #### Coordinate axis order
 
-The axis order in WKB stored in a geoparquet follows the de facto standard for axis order in WKB and is therefore always (x,y{,z}{,m}) where x is easting or longitude, y is northing or latitude, z is optional elevation, and m is optional measure. This ordering explicitly overrides the axis order as specified in the CRS.
+The axis order of the coordinates in WKB stored in a geoparquet follows the de facto standard for axis order in WKB and is therefore always (x, y) where x is easting or longitude and y is northing or latitude. This ordering explicitly overrides the axis order as specified in the CRS.
 
 ### Additional information
 
