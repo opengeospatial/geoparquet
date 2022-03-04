@@ -7,10 +7,7 @@ You can print the metadata with:
 
    >>> import json, pprint, pyarrow.parquet as pq
    >>> pprint.pprint(json.loads(pq.read_schema("example.parquet").metadata[b"geo"]))
-   {'columns': {'geometry': {'bbox': [-180.0,
-                                      -90.0,
-                                      180.00000000000006,
-                                      83.64513000000001],
+   {'columns': {'geometry': {'bbox': [-180.0, -90.0, 180.0, 83.6451],
                              'crs': 'GEOGCRS["WGS 84",ENSEMBLE["World Geodetic '
                                     'System 1984 ensemble",MEMBER["World Geodetic '
                                     'System 1984 (Transit)"],MEMBER["World '
@@ -27,6 +24,7 @@ You can print the metadata with:
                                     '(Lon)",east],UNIT["degree",0.0174532925199433],USAGE[SCOPE["Horizontal '
                                     'component of 3D '
                                     'system."],AREA["World."],BBOX[-90,-180,90,180]],ID["EPSG",4326]]',
+                             'edges': 'planar',
                              'encoding': 'WKB'}},
     'primary_column': 'geometry',
     'version': '0.1.0'}
@@ -52,7 +50,8 @@ metadata = {
         "geometry": {
             "crs": df.crs.to_wkt(pyproj.enums.WktVersion.WKT2_2019_SIMPLIFIED),
             "encoding": "WKB",
-            "bbox": df.geometry.unary_union.bounds,
+            "edges": "planar",
+            "bbox": [round(x, 4) for x in df.geometry.unary_union.bounds],
         },
     },
 }
