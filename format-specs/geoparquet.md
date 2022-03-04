@@ -50,7 +50,7 @@ Each geometry column in the dataset must be included in the columns field above 
 
 | Field Name |                               Type                                      |                                                                   Description                                                                     |
 | ---------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| crs       | string   | **REQUIRED**  string representing the Coordinate Reference System (CRS) of the geometry.  |
+| crs       | string   | **REQUIRED** [WKT2](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html) string representing the Coordinate Reference System (CRS) of the geometry.  |
 | encoding | string | **REQUIRED** Name of the geometry encoding format. Currently only 'WKB' is supported. |
 
 #### crs
