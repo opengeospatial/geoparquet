@@ -52,6 +52,7 @@ Each geometry column in the dataset must be included in the columns field above 
 | ---------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | crs       | string   | **REQUIRED** [WKT2](http://docs.opengeospatial.org/is/12-063r5/12-063r5.html) string representing the Coordinate Reference System (CRS) of the geometry.  |
 | encoding | string | **REQUIRED** Name of the geometry encoding format. Currently only 'WKB' is supported. |
+| edges | string | **OPTIONAL** Name of the coordinate system for the edges. Could be 'planar', 'spherical', or 'spheroid'. The default value is 'planar'.  |
 | bbox   | \[number] | **OPTIONAL** Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5) |
 
 #### crs
@@ -78,6 +79,15 @@ Data that is better served in particular projections can choose to use an altern
 This is the binary format that the geometry is encoded in. The string 'WKB' to represent 
 [Well Known Binary](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary) is the only current option, but future versions
 of the spec may support alternative encodings. This should be the ["standard"](https://libgeos.org/specifications/wkb/#standard-wkb) WKB representation.
+
+#### edges
+
+This attribute indicates the coordinate system to be applied when interpreting the edges. Available values are:
+- planar: use flat cartesian coordinate system.
+- spherical: use spherical coordinate system and radius derived from the spheroid defined by the SRID.
+- spheroid: use an spheroid or ellipsoid defined by the SRID.
+
+If no value is set, the default value to assume is 'planar'.
 
 #### bbox
 
