@@ -90,7 +90,7 @@ Users are recommended to store their data in EPSG:4326 for it to work with the w
 
 #### encoding
 
-This is the binary format that the geometry is encoded in. The string 'WKB' to represent 
+This is the binary format that the geometry is encoded in.
 The string 'WKB', signifying [Well Known Binary](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary) is the only current option, but future versions
 of the spec may support alternative encodings. This should be the ["standard"](https://libgeos.org/specifications/wkb/#standard-wkb) WKB 
 representation. This means 3D coordinates are not supported in this version of GeoParquet, but we expect
