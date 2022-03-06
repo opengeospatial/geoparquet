@@ -1,5 +1,5 @@
 """
-Generates `example.parquet` using pyarrow.
+Generates `example.parquet` using pyarrow by running `python example.py`.
 
 You can print the metadata with:
 
