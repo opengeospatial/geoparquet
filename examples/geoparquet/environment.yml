@@ -5,3 +5,4 @@ dependencies:
   - python=3.9*
   - geopandas
   - pyarrow
+  - proj=3.3.0
