@@ -57,8 +57,7 @@ Each geometry column in the dataset must be included in the columns field above 
 
 The Coordinate Reference System (CRS) is a mandatory parameter for each geometry column defined in geoparquet format. 
 
-The CRS must be provided in [WKT](https://en.wikipedia.org/wiki/Well-known_text_representation_of_coordinate_reference_systems) version 2, also known as **WKT2**. WKT2 has several revisions, this specification supports the revisions from [2015](http://docs.opengeospatial.org/is/12-063r5/12-063r5.html) and [2019](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html): WKT2_2015, WKT2_2015_SIMPLIFIED, WKT2_2019, WKT_2019_SIMPLIFIED. 
-
+The CRS must be provided in [WKT](https://en.wikipedia.org/wiki/Well-known_text_representation_of_coordinate_reference_systems) version 2, also known as **WKT2**. WKT2 has several revisions, this specification only supports [WTK2_2019](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html).
 
 For the widest interoperability we recommend [EPSG:4326](https://epsg.org/crs_4326/WGS-84.html) for all data, as it is the most widely used coordinate reference system today, so unless data is stored in an alternate projection the CRS should be:
 
