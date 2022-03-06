@@ -115,6 +115,6 @@ This follows the GeoJSON specification ([RFC 7946, section 5](https://tools.ietf
 
 ### Additional information
 
-You can find an examples in the [examples](../examples/) folder.
+You can find an example in the [examples](../examples/) folder.
 
 [parquet]: https://parquet.apache.org/
