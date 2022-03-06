@@ -115,10 +115,6 @@ This follows the GeoJSON specification ([RFC 7946, section 5](https://tools.ietf
 
 ### Additional information
 
-## TODO
-
-1. Do we want to include the [bounding box](https://github.com/geopandas/geo-arrow-spec/blob/dac0d4fe28ad2871ea1042aa72ea8d6b236e2fa8/metadata.md#bounding-boxes) metadata? Should probably explain how it would be used as partitions for individual files.
-2. What all is required on the column metadata?
-
+You can find an example in the [examples](../examples/) folder.
 
 [parquet]: https://parquet.apache.org/
