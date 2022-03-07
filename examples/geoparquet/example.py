@@ -24,8 +24,8 @@ You can print the metadata with:
                                     '(Lon)",east],UNIT["degree",0.0174532925199433],USAGE[SCOPE["Horizontal '
                                     'component of 3D '
                                     'system."],AREA["World."],BBOX[-90,-180,90,180]],ID["EPSG",4326]]',
-                             'edges': 'planar',
-                             'encoding': 'WKB'}},
+                             'encoding': 'WKB',
+                             'edges': 'planar'}},
     'primary_column': 'geometry',
     'version': '0.1.0'}
 """
