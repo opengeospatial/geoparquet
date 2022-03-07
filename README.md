@@ -78,9 +78,9 @@ will be any more potential breaking changes. Though the full commitment to that 
 
 ## Current Implementations & Examples
 
-TODO: Add explanations and links to implementations.
-
-Examples of geoparquet files following the current spec can be found in the [examples/](examples/) folder.
+Examples of geoparquet files following the current spec can be found in the [examples/](examples/) folder. There is also a 
+larger sample dataset (nz-buildings-outlines.parquet)[https://storage.googleapis.com/open-geodata/linz-examples/nz-buildings-outlines.parquet]
+available on Google Cloud Storage.
 
 Currently known libraries that can read and write GeoParquet files:
 
