@@ -1,21 +1,23 @@
 """
-Generates `example.parquet` using pyarrow.
+Generates `example.parquet` using pyarrow by running `python example.py`.
 
 You can print the metadata with:
 
 .. code-block:: python
 
-   >>> import json, pprint, pyarrow.parquet
+   >>> import json, pprint, pyarrow.parquet as pq
    >>> pprint.pprint(json.loads(pq.read_schema("example.parquet").metadata[b"geo"]))
-   {'columns': {'geometry': {'crs': 'GEOGCRS["WGS 84",ENSEMBLE["World Geodetic '
+   {'columns': {'geometry': {'bbox': [-180.0, -90.0, 180.0, 83.6451],
+                             'crs': 'GEOGCRS["WGS 84",ENSEMBLE["World Geodetic '
                                     'System 1984 ensemble",MEMBER["World Geodetic '
                                     'System 1984 (Transit)"],MEMBER["World '
                                     'Geodetic System 1984 (G730)"],MEMBER["World '
                                     'Geodetic System 1984 (G873)"],MEMBER["World '
                                     'Geodetic System 1984 (G1150)"],MEMBER["World '
                                     'Geodetic System 1984 (G1674)"],MEMBER["World '
+                                    'Geodetic System 1984 (G1762)"],MEMBER["World '
                                     'Geodetic System 1984 '
-                                    '(G1762)"],ELLIPSOID["WGS '
+                                    '(G2139)"],ELLIPSOID["WGS '
                                     '84",6378137,298.257223563],ENSEMBLEACCURACY[2.0]],CS[ellipsoidal,2],AXIS["geodetic '
                                     'latitude (Lat)",north],AXIS["geodetic '
                                     'longitude '
@@ -48,7 +50,8 @@ metadata = {
         "geometry": {
             "crs": df.crs.to_wkt(pyproj.enums.WktVersion.WKT2_2019_SIMPLIFIED),
             "encoding": "WKB",
-            "edges": "planar"
+            "edges": "planar",
+            "bbox": [round(x, 4) for x in df.geometry.unary_union.bounds],
         },
     },
 }
