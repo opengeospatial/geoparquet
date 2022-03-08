@@ -8,9 +8,10 @@ lines, polygons) in [Parquet](https://parquet.apache.org/), a popular columnar s
 geospatial data is represented in Parquet to further geospatial interoperability among tools using Parquet today, and hopefully 
 help push forward what's possible with 'cloud-native geospatial' workflows. 
 
-**Warning:** This is a completely unreleased specification, with several outstanding updates to make. If you are excited about the potential 
-please sound in on the issues and contribute PR's! But please do not start converting all your data to this format, as it will change 
-(and possibly in a backwards incompatible way, see the [versioning](#versioning) section below.
+**Warning:** This is not (yet) a stable specification that can be relied upon. The initial 0.1 release was made to gather
+wider feedback, and we anticipate that some things may change. For now we reserve the right to make changes in backwards incompatible 
+ways (though will try not to), see the [versioning](#versioning) section below for more info. If you are excited about the potential 
+please collaborate with us by building implementations, sounding in on the issues and contributing PR's!
 
 Early contributors include developers from GeoPandas, GeoTrellis, OpenLayers, Vis.gl, Voltron Data, Microsoft, Carto, Azavea, Planet & Unfolded. 
 Anyone is welcome to join us, by building implementations, trying it out, giving feedback through issues and contributing to the spec via pull requests.
