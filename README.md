@@ -15,6 +15,8 @@ please collaborate with us by building implementations, sounding in on the issue
 
 Early contributors include developers from GeoPandas, GeoTrellis, OpenLayers, Vis.gl, Voltron Data, Microsoft, Carto, Azavea, Planet & Unfolded. 
 Anyone is welcome to join us, by building implementations, trying it out, giving feedback through issues and contributing to the spec via pull requests.
+Initial work started in the [geo-arrow-spec](https://github.com/geopandas/geo-arrow-spec/) GeoPandas repository, and that will continue on 
+Arrow work in a compatible way, with this specification focused solely on Parquet.
 
 Note that version 0.1 only supports 2d geometries, as we are not supporting [EWKB](https://libgeos.org/specifications/wkb/#extended-wkb) or 
 [ISO WKB](https://libgeos.org/specifications/wkb/#iso-wkb). We expect to expand WKB to support 3D in the future, if you have thoughts please 
