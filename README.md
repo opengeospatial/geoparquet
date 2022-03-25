@@ -1,5 +1,6 @@
 
-![GeoParquet_logo](https://user-images.githubusercontent.com/127803/159960730-f326241c-0643-4f8f-8809-eca8b4b05df1.png)
+![GeoParquet_logo](logo_400px.png)
+
 ## About
 
 This repository defines how to store geospatial [vector data](https://gisgeography.com/spatial-data-types-vector-raster/) (point, 
