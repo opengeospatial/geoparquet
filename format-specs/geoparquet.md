@@ -12,6 +12,7 @@ This is version 0.1.0 of the geoparquet specification.
 ## Geometry columns
 
 Geometry columns are stored using the `BYTE_ARRAY` parquet type. They are encoded as [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary).
+See the [encoding](#encoding) section below for more details.
 
 ## Metadata
 
@@ -94,9 +95,9 @@ Users are recommended to store their data in EPSG:4326 for it to work with the w
 
 This is the binary format that the geometry is encoded in.
 The string 'WKB', signifying [Well Known Binary](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary) is the only current option, but future versions
-of the spec may support alternative encodings. This should be the ["standard"](https://libgeos.org/specifications/wkb/#standard-wkb) WKB 
-representation. This means 3D coordinates are not supported in this version of GeoParquet, but we expect
-this to come in a future version.
+of the spec may support alternative encodings. This should be the ["ISO"](https://libgeos.org/specifications/wkb/#iso-wkb) WKB representation. For two-dimensional geometries, this is identical to ["standard"](https://libgeos.org/specifications/wkb/#standard-wkb) WKB, but ISO WKB allows the use of 3D geometries.
+
+Note that the current version of the spec only allows for a subset of ISO WKB: 2D or 3D geometries of the standard geometry types (the Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection geometry types). This means that M values or non-linear geometry types are not yet supported.
 
 #### Coordinate axis order
 
