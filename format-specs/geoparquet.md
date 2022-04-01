@@ -94,10 +94,10 @@ Users are recommended to store their data in EPSG:4326 for it to work with the w
 #### encoding
 
 This is the binary format that the geometry is encoded in.
-The string 'WKB', signifying [Well Known Binary](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary) is the only current option, but future versions
-of the spec may support alternative encodings. This should be the ["ISO"](https://libgeos.org/specifications/wkb/#iso-wkb) WKB representation. For two-dimensional geometries, this is identical to ["standard"](https://libgeos.org/specifications/wkb/#standard-wkb) WKB, but ISO WKB allows the use of 3D geometries.
+The string 'WKB', signifying Well Known Binary is the only current option, but future versions
+of the spec may support alternative encodings. This should be the ["OpenGIS® Implementation Specification for Geographic information - Simple feature access - Part 1: Common architecture"](https://portal.ogc.org/files/?artifact_id=18241) WKB representation (using codes for 3D geometry types in the \[1001,1007\] range)
 
-Note that the current version of the spec only allows for a subset of ISO WKB: 2D or 3D geometries of the standard geometry types (the Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection geometry types). This means that M values or non-linear geometry types are not yet supported.
+Note that the current version of the spec only allows for a subset of WKB: 2D or 3D geometries of the standard geometry types (the Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection geometry types). This means that M values or non-linear geometry types are not yet supported.
 
 #### Coordinate axis order
 
