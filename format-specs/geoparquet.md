@@ -105,6 +105,10 @@ The axis order of the coordinates in WKB stored in a geoparquet follows the de f
 (x, y) where x is easting or longitude and y is northing or latitude. This ordering explicitly overrides the axis order as specified in the CRS. 
 This follows the precedent of [GeoPackage](https://geopackage.org), see the [note in their spec](https://www.geopackage.org/spec130/#gpb_spec). 
 
+#### Polygon winding
+
+The winding order of polygons follows the [GeoJSON spec](https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6). Polygon rings MUST follow the right-hand rule for orientation (counterclockwise external rings, clockwise internal rings).
+
 #### edges
 
 This attribute indicates how to interpret the edges of the geometries: whether the line between two points is a straight cartesian line or the shortest line on the sphere (geodesic line). Available values are:
