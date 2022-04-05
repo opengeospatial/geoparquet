@@ -7,7 +7,7 @@ should be stored in parquet format, including the representation of geometries a
 
 ## Version
 
-This is version 0.1.0 of the geoparquet specification.
+This is version 0.1.1 of the geoparquet specification.
 
 ## Geometry columns
 
@@ -29,7 +29,7 @@ All file-level metadata should be included under the "geo" key in the parquet me
 
 |     Field Name     |  Type  |                             Description                              |
 | ------------------ | ------ | -------------------------------------------------------------------- |
-| version     		 | string | **REQUIRED** The version of the geoparquet metadata standard used when writing.   |
+| schema_version     | string | **REQUIRED** The version of the geoparquet metadata standard used when writing.   |
 | primary_column     | string | **REQUIRED** The name of the "primary" geometry column.                |
 | columns            | Map<key, [Colum Metadata](#column-metadata)> | **REQUIRED** Metadata about geometry columns, with each key is the name of a geometry column in the table. |
 
@@ -42,9 +42,9 @@ At this level, additional implementation-specific fields (e.g. library name) are
 This indicates the "primary" or "active" geometry for systems that can store multiple geometries,
 but have a default geometry used for geospatial operations.
 
-#### version
+#### schema_version
 
-Version of the geoparquet spec used, currently 0.1.0
+Version of the geoparquet spec used, currently 0.1.1
 
 ### Column metadata
 
@@ -59,7 +59,7 @@ Each geometry column in the dataset must be included in the columns field above 
 
 #### crs
 
-The Coordinate Reference System (CRS) is a mandatory parameter for each geometry column defined in geoparquet format. 
+The Coordinate Reference System (CRS) is a mandatory parameter for each geometry column defined in geoparquet format.
 
 The CRS must be provided in [WKT](https://en.wikipedia.org/wiki/Well-known_text_representation_of_coordinate_reference_systems) version 2, also known as **WKT2**. WKT2 has several revisions, this specification only supports [WKT2_2019](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html).
 
@@ -88,7 +88,7 @@ GEOGCRS["WGS 84",
     ID["EPSG",4326]]
 ```
 
-Due to the large number of CRSes available and the difficulty of implementing all of them, we expect that a number of implementations will at least start with only supporting a single CRS. To maximize interoperability we strongly recommend GeoParquet tool providers to always implement support for [EPSG:4326](https://epsg.org/crs_4326/WGS-84.html). 
+Due to the large number of CRSes available and the difficulty of implementing all of them, we expect that a number of implementations will at least start with only supporting a single CRS. To maximize interoperability we strongly recommend GeoParquet tool providers to always implement support for [EPSG:4326](https://epsg.org/crs_4326/WGS-84.html).
 Users are recommended to store their data in EPSG:4326 for it to work with the widest number of tools. But data that is better served in particular projections can choose to use an alternate coordinate reference system. We expect many tools will support alternate CRSes, but encourage users to check.
 
 #### encoding
@@ -101,9 +101,9 @@ Note that the current version of the spec only allows for a subset of ISO WKB: 2
 
 #### Coordinate axis order
 
-The axis order of the coordinates in WKB stored in a geoparquet follows the de facto standard for axis order in WKB and is therefore always 
-(x, y) where x is easting or longitude and y is northing or latitude. This ordering explicitly overrides the axis order as specified in the CRS. 
-This follows the precedent of [GeoPackage](https://geopackage.org), see the [note in their spec](https://www.geopackage.org/spec130/#gpb_spec). 
+The axis order of the coordinates in WKB stored in a geoparquet follows the de facto standard for axis order in WKB and is therefore always
+(x, y) where x is easting or longitude and y is northing or latitude. This ordering explicitly overrides the axis order as specified in the CRS.
+This follows the precedent of [GeoPackage](https://geopackage.org), see the [note in their spec](https://www.geopackage.org/spec130/#gpb_spec).
 
 #### edges
 
