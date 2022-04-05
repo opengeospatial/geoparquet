@@ -9,29 +9,29 @@ from jsonschema.validators import Draft7Validator
 
 
 def validate_geoparquet(input_file):
-    with open(os.path.join(sys.path[0], "schema.json"), "r") as f:
-        schema = json.loads(f.read())
-        metadata = json.loads(pq.read_schema(input_file).metadata[b"geo"])
-        errors = Draft7Validator(schema).iter_errors(metadata)
+    schema_file = open(os.path.join(sys.path[0], "schema.json"), "r")
+    schema = json.load(schema_file)
+    metadata = json.loads(pq.read_schema(input_file).metadata[b"geo"])
+    errors = Draft7Validator(schema).iter_errors(metadata)
 
-        valid = True
-        print("Validating file...")
+    valid = True
+    print("Validating file...")
 
-        for error in errors:
-            valid = False
-            print(f"- [ERROR] {error.json_path}: {error.message}")
-            if "description" in error.schema:
-                print(f"          INFO: {error.schema['description']}")
+    for error in errors:
+        valid = False
+        print(f"- [ERROR] {error.json_path}: {error.message}")
+        if "description" in error.schema:
+            print(f"          INFO: {error.schema['description']}")
 
-        # Extra errors
-        if (metadata["primary_column"] not in metadata["columns"]):
-            valid = False
-            print("- [ERROR] $.primary_column: must be in $.columns")
+    # Extra errors
+    if (metadata["primary_column"] not in metadata["columns"]):
+        valid = False
+        print("- [ERROR] $.primary_column: must be in $.columns")
 
-        if valid:
-            print("This is a valid GeoParquet file.")
-        else:
-            print("This is an invalid GeoParquet file.")
+    if valid:
+        print("This is a valid GeoParquet file.")
+    else:
+        print("This is an invalid GeoParquet file.")
 
 
 if __name__ == '__main__':
