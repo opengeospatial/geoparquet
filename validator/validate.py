@@ -1,17 +1,21 @@
 #!/usr/bin/python3
 
-import os
 import sys
 import json
 import pyarrow.parquet as pq
 
+from pathlib import Path
 from jsonschema.validators import Draft7Validator
 
 
 def validate_geoparquet(input_file):
-    schema_file = open(os.path.join(sys.path[0], "schema.json"), "r")
-    schema = json.load(schema_file)
+    here = Path(sys.path[0])
+    schema_path = here / "schema.json"
+    with open(schema_path) as f:
+        schema = json.load(f)
+
     metadata = json.loads(pq.read_schema(input_file).metadata[b"geo"])
+
     errors = Draft7Validator(schema).iter_errors(metadata)
 
     valid = True
