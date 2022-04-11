@@ -52,21 +52,21 @@ Each geometry column in the dataset must be included in the columns field above 
 
 | Field Name |                               Type                                      |                                                                   Description                                                                     |
 | ---------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| crs       | string   | **REQUIRED** [WKT2](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html) string representing the Coordinate Reference System (CRS) of the geometry.  |
 | encoding | string | **REQUIRED** Name of the geometry encoding format. Currently only 'WKB' is supported. |
+| crs       | string   | **Optional** [WKT2](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html) string representing the Coordinate Reference System (CRS) of the geometry. The default value is [OGC:84](http://www.opengis.net/def/crs/OGC/1.3/CRS84)(long/lat coordinates) |
 | edges | string | **OPTIONAL** Name of the coordinate system for the edges. Must be one of 'planar' or 'spherical'. The default value is 'planar'.  |
 | bbox   | \[number] | **OPTIONAL** Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5) |
 
 #### crs
 
-The Coordinate Reference System (CRS) is a mandatory parameter for each geometry column defined in geoparquet format. 
+The Coordinate Reference System (CRS) is an optional parameter for each geometry column defined in geoparquet format. 
 
 The CRS must be provided in [WKT](https://en.wikipedia.org/wiki/Well-known_text_representation_of_coordinate_reference_systems) version 2, also known as **WKT2**. WKT2 has several revisions, this specification only supports [WKT2_2019](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html).
 
-For the widest interoperability we recommend [EPSG:4326](https://epsg.org/crs_4326/WGS-84.html) for all data, as it is the most widely used coordinate reference system today, so unless data is stored in an alternate projection the CRS should be:
+If CRS is not provided, the default value is [OGC:84](http://www.opengis.net/def/crs/OGC/1.3/CRS84). It's equivalent to the wellknown [EPSG:4326](https://epsg.org/crs_4326/WGS-84.html) but changing the axis from Lat-Long to Long-Lat. WKT2:2019 string for OGC:84 is:
 
 ```
-GEOGCRS["WGS 84",
+GEOGCRS["WGS 84 (CRS84)",
     ENSEMBLE["World Geodetic System 1984 ensemble",
         MEMBER["World Geodetic System 1984 (Transit)"],
         MEMBER["World Geodetic System 1984 (G730)"],
@@ -75,21 +75,27 @@ GEOGCRS["WGS 84",
         MEMBER["World Geodetic System 1984 (G1674)"],
         MEMBER["World Geodetic System 1984 (G1762)"],
         MEMBER["World Geodetic System 1984 (G2139)"],
-        ELLIPSOID["WGS 84",6378137,298.257223563],
+        ELLIPSOID["WGS 84",6378137,298.257223563,
+            LENGTHUNIT["metre",1]],
         ENSEMBLEACCURACY[2.0]],
+    PRIMEM["Greenwich",0,
+        ANGLEUNIT["degree",0.0174532925199433]],
     CS[ellipsoidal,2],
-        AXIS["geodetic latitude (Lat)",north],
-        AXIS["geodetic longitude (Lon)",east],
-        UNIT["degree",0.0174532925199433],
+        AXIS["geodetic longitude (Lon)",east,
+            ORDER[1],
+            ANGLEUNIT["degree",0.0174532925199433]],
+        AXIS["geodetic latitude (Lat)",north,
+            ORDER[2],
+            ANGLEUNIT["degree",0.0174532925199433]],
     USAGE[
-        SCOPE["Horizontal component of 3D system."],
+        SCOPE["Not known."],
         AREA["World."],
         BBOX[-90,-180,90,180]],
-    ID["EPSG",4326]]
+    ID["OGC","CRS84"]]
 ```
 
-Due to the large number of CRSes available and the difficulty of implementing all of them, we expect that a number of implementations will at least start with only supporting a single CRS. To maximize interoperability we strongly recommend GeoParquet tool providers to always implement support for [EPSG:4326](https://epsg.org/crs_4326/WGS-84.html). 
-Users are recommended to store their data in EPSG:4326 for it to work with the widest number of tools. But data that is better served in particular projections can choose to use an alternate coordinate reference system. We expect many tools will support alternate CRSes, but encourage users to check.
+Due to the large number of CRSes available and the difficulty of implementing all of them, we expect that a number of implementations will at least start with only supporting a single CRS. To maximize interoperability we strongly recommend GeoParquet tool providers to always implement support for [OGC:84](http://www.opengis.net/def/crs/OGC/1.3/CRS84). 
+Users are recommended to store their data in OGC:84 (long/lat) for it to work with the widest number of tools. But data that is better served in particular projections can choose to use an alternate coordinate reference system. We expect many tools will support alternate CRSes, but encourage users to check.
 
 #### encoding
 
