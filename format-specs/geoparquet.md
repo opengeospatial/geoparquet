@@ -53,6 +53,7 @@ Each geometry column in the dataset must be included in the columns field above 
 | Field Name |                               Type                                      |                                                                   Description                                                                     |
 | ---------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | crs       | string   | **REQUIRED** [WKT2](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html) string representing the Coordinate Reference System (CRS) of the geometry.  |
+| epoch    | double | **OPTIONAL** Coordinate epoch in case of a dynamic CRS, expressed as a decimal year.  |
 | encoding | string | **REQUIRED** Name of the geometry encoding format. Currently only 'WKB' is supported. |
 | edges | string | **OPTIONAL** Name of the coordinate system for the edges. Must be one of 'planar' or 'spherical'. The default value is 'planar'.  |
 | bbox   | \[number] | **OPTIONAL** Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5) |
@@ -90,6 +91,17 @@ GEOGCRS["WGS 84",
 
 Due to the large number of CRSes available and the difficulty of implementing all of them, we expect that a number of implementations will at least start with only supporting a single CRS. To maximize interoperability we strongly recommend GeoParquet tool providers to always implement support for [EPSG:4326](https://epsg.org/crs_4326/WGS-84.html). 
 Users are recommended to store their data in EPSG:4326 for it to work with the widest number of tools. But data that is better served in particular projections can choose to use an alternate coordinate reference system. We expect many tools will support alternate CRSes, but encourage users to check.
+
+#### epoch
+
+In a dynamic CRS, coordinates of a point on the surface of the Earth may
+change with time. To be unambiguous, the coordinates must always be qualified
+with the epoch at which they are valid.
+
+The optional "epoch" field allows to specify this in case the "crs" field
+defines a a dynamic CRS. The coordinate epoch is expressed as a decimal year
+(e.g. 2021.47). Currently, this specification only supports an epoch per
+column (and not per geometry).
 
 #### encoding
 
