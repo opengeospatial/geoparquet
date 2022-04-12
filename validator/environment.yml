@@ -4,4 +4,5 @@ channels:
 dependencies:
   - python=3.9*
   - pyarrow
-  - jsonschema
+  - jsonschema>=4
+  - fsspec
