@@ -1,1 +1,68 @@
-../../schema.json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GeoParquet",
+  "type": "object",
+  "description": "Parquet metadata included in the geo field.",
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^0\\.1\\.[0-9]+$",
+      "description": "The version of the geoparquet metadata standard used when writing."
+    },
+    "primary_column": {
+      "type": "string",
+      "description": "The name of the 'primary' geometry column."
+    },
+    "columns": {
+      "type": "object",
+      "description": "Metadata about geometry columns, with each key is the name of a geometry column in the table.",
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "properties": {
+            "crs": {
+              "type": "string",
+              "description": "WKT2 representing the Coordinate Reference System (CRS) of the geometry."
+            },
+            "encoding": {
+              "type": "string",
+              "enum": ["WKB"],
+              "description": "Name of the geometry encoding format. Currently only 'WKB' is supported."
+            },
+            "edges": {
+              "type": "string",
+              "enum": ["planar", "spherical"],
+              "description": "Name of the coordinate system for the edges. Must be one of 'planar' or 'spherical'. The default value is 'planar'."
+            },
+            "bbox": {
+              "type": "array",
+              "description": "Bounding Box of the geometries in the file, formatted according to RFC 7946, section 5.",
+              "items": [
+                {
+                  "type": "number",
+                  "description": "The westmost constant longitude line that bounds the rectangle (xmin)."
+                },
+                {
+                  "type": "number",
+                  "description": "The minimum constant latitude line that bounds the rectangle (ymin)."
+                },
+                {
+                  "type": "number",
+                  "description": "The eastmost constant longitude line that bounds the rectangle (xmax)."
+                },
+                {
+                  "type": "number",
+                  "description": "The maximum constant latitude line that bounds the rectangle (ymax)."
+                }
+              ]
+            }
+          },
+          "additionalProperties": true,
+          "required": ["crs", "encoding"]
+        }
+      }
+    }
+  },
+  "additionalProperties": true,
+  "required": ["version", "primary_column", "columns"]
+}

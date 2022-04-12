@@ -2,14 +2,14 @@ import json
 import click
 import pyarrow.parquet as pq
 
+from pathlib import Path
 from pprint import pprint
 from urllib.parse import urlparse
-from pathlib import Path, PurePath
-from jsonschema.validators import Draft7Validator
 from fsspec import AbstractFileSystem
+from jsonschema.validators import Draft7Validator
+from pyarrow.fs import FSSpecHandler, PyFileSystem
 from fsspec.implementations.http import HTTPFileSystem
 from fsspec.implementations.local import LocalFileSystem
-from pyarrow.fs import FSSpecHandler, PyFileSystem
 
 
 def choose_fsspec_fs(url_or_path: str) -> AbstractFileSystem:
@@ -52,7 +52,7 @@ def log(text: str, status="info"):
 @click.command()
 @click.argument("input_file")
 def main(input_file):
-    here = Path(PurePath(__file__).parent)
+    here = Path(__file__).parent
     schema_path = here / "schema.json"
     with open(schema_path) as f:
         schema = json.load(f)
