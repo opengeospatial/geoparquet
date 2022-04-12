@@ -45,26 +45,18 @@
                             "items": [
                                 {
                                     "type": "number",
-                                    "minimum": -180,
-                                    "maximum": 180,
                                     "description": "The westmost constant longitude line that bounds the rectangle (xmin)."
                                 },
                                 {
                                     "type": "number",
-                                    "minimum": -90,
-                                    "maximum": 90,
                                     "description": "The minimum constant latitude line that bounds the rectangle (ymin)."
                                 },
                                 {
                                     "type": "number",
-                                    "minimum": -180,
-                                    "maximum": 180,
                                     "description": "The eastmost constant longitude line that bounds the rectangle (xmax)."
                                 },
                                 {
                                     "type": "number",
-                                    "minimum": -90,
-                                    "maximum": 90,
                                     "description": "The maximum constant latitude line that bounds the rectangle (ymax)."
                                 }
                             ]

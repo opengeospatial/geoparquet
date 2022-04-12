@@ -1,9 +1,7 @@
 # GeoParquet validator
 
-Based on [JSON Schema](https://json-schema.org/).
+Command-line tools to validate a GeoParquet file.
 
-## Python
+## Flavors
 
-```
-./validate.py ../examples/example.parquet
-```
+- [GeoParquet validator - Python](./python)
