@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 
 import pyarrow.parquet as pq
 from fsspec import AbstractFileSystem
+from fsspec.implementations.http import HTTPFileSystem
 from fsspec.implementations.local import LocalFileSystem
 from jsonschema.validators import Draft7Validator
 from pyarrow.fs import FSSpecHandler, PyFileSystem
@@ -22,8 +23,6 @@ def choose_fsspec_fs(url_or_path: str) -> AbstractFileSystem:
     parsed = urlparse(url_or_path)
 
     if parsed.scheme.startswith("http"):
-        from fsspec.implementations.http import HTTPFileSystem
-
         return HTTPFileSystem()
 
     if parsed.scheme == "s3":
