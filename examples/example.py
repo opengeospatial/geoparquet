@@ -27,7 +27,7 @@ You can print the metadata with:
                              'encoding': 'WKB',
                              'edges': 'planar'}},
     'primary_column': 'geometry',
-    'schema_version': '0.1.1'}
+    'schema_version': '0.2.0'}
 """
 import json
 import pathlib
@@ -44,7 +44,7 @@ table = pa.Table.from_pandas(df.head().to_wkb())
 
 
 metadata = {
-    "schema_version": "0.1.1",
+    "schema_version": "0.2.0",
     "primary_column": "geometry",
     "columns": {
         "geometry": {

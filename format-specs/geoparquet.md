@@ -7,7 +7,7 @@ should be stored in parquet format, including the representation of geometries a
 
 ## Version
 
-This is version 0.1.1 of the geoparquet specification.
+This is version 0.2.0 of the geoparquet specification.
 
 ## Geometry columns
 
@@ -44,7 +44,7 @@ but have a default geometry used for geospatial operations.
 
 #### schema_version
 
-Version of the geoparquet spec used, currently 0.1.1
+Version of the geoparquet spec used, currently 0.2.0.
 
 ### Column metadata
 
