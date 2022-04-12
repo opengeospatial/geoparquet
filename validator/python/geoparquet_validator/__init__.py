@@ -12,10 +12,6 @@ from fsspec.implementations.local import LocalFileSystem
 from pyarrow.fs import FSSpecHandler, PyFileSystem
 
 
-class MetadataError(ValueError):
-    pass
-
-
 def choose_fsspec_fs(url_or_path: str) -> AbstractFileSystem:
     """Choose fsspec filesystem by sniffing input url"""
     parsed = urlparse(url_or_path)
@@ -44,8 +40,13 @@ def load_parquet_schema(url_or_path: str) -> pq.ParquetSchema:
     return pq.read_schema(pyarrow_fs.open_input_file(url_or_path))
 
 
-def log(text: str, color="white"):
-    click.echo(click.style(text, fg=color))
+def log(text: str, status="info"):
+    status_color = {
+        "info": "white",
+        "warning": "yellow",
+        "error": "red",
+        "success": "green"}
+    click.echo(click.style(text, fg=status_color[status]))
 
 
 @click.command()
@@ -59,7 +60,8 @@ def main(input_file):
     parquet_schema = load_parquet_schema(input_file)
 
     if b"geo" not in parquet_schema.metadata:
-        raise MetadataError("Parquet file schema does not have 'geo' key")
+        log("Parquet file schema does not have 'geo' key", "error")
+        exit(1)
 
     metadata = json.loads(parquet_schema.metadata[b"geo"])
     log("Metadata loaded from file:")
@@ -72,19 +74,19 @@ def main(input_file):
 
     for error in errors:
         valid = False
-        log(f"  - {error.json_path}: {error.message}", "yellow")
+        log(f"  - {error.json_path}: {error.message}", "warning")
         if "description" in error.schema:
-            log(f"    \"{error.schema['description']}\"", "yellow")
+            log(f"    \"{error.schema['description']}\"", "warning")
 
     # Extra errors
     if (metadata["primary_column"] not in metadata["columns"]):
         valid = False
-        log("- $.primary_column: must be in $.columns", "yellow")
+        log("- $.primary_column: must be in $.columns", "warning")
 
     if valid:
-        log("This is a valid GeoParquet file.\n", "green")
+        log("This is a valid GeoParquet file.\n", "success")
     else:
-        log("This is an invalid GeoParquet file.\n", "red")
+        log("This is an invalid GeoParquet file.\n", "error")
         exit(1)
 
 
