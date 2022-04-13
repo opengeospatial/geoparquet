@@ -17,7 +17,7 @@ pip install --no-binary geoparquet_validator -U .
 **Development**
 
 ```
-pip install --no-binary geoparquet_validator -e .
+pip install -e .
 ```
 
 **Uninstall**

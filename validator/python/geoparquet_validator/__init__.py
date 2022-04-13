@@ -2,12 +2,12 @@ import json
 import click
 import pyarrow.parquet as pq
 
-from pathlib import Path
 from pprint import pprint
 from urllib.parse import urlparse
-from fsspec import AbstractFileSystem
+from importlib_resources import files
 from jsonschema.validators import Draft7Validator
 from pyarrow.fs import FSSpecHandler, PyFileSystem
+from fsspec import AbstractFileSystem
 from fsspec.implementations.http import HTTPFileSystem
 from fsspec.implementations.local import LocalFileSystem
 
@@ -52,10 +52,8 @@ def log(text: str, status="info"):
 @click.command()
 @click.argument("input_file")
 def main(input_file):
-    here = Path(__file__).parent
-    schema_path = here / "schema.json"
-    with open(schema_path) as f:
-        schema = json.load(f)
+    schema_source = files("geoparquet_validator").joinpath("schema.json")
+    schema = json.loads(schema_source.read_text())
 
     parquet_schema = load_parquet_schema(input_file)
 
