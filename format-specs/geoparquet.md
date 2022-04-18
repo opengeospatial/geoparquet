@@ -97,7 +97,7 @@ GEOGCRS["WGS 84 (CRS84)",
     ID["OGC","CRS84"]]
 ```
 
-Due to the large number of CRSes available and the difficulty of implementing all of them, we expect that a number of implementations will at least start with only supporting a single CRS. To maximize interoperability we strongly recommend GeoParquet tool providers to always implement support for [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84). 
+Due to the large number of CRSes available and the difficulty of implementing all of them, we expect that a number of implementations will start without support for the optional `crs` field. 
 Users are recommended to store their data in OGC:CRS84 (longitude-latitude) for it to work with the widest number of tools. But data that is better served in particular projections can choose to use an alternate coordinate reference system. We expect many tools will support alternate CRSes, but encourage users to check.
 
 #### epoch
