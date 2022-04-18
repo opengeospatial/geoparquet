@@ -65,7 +65,8 @@ The Coordinate Reference System (CRS) is an optional parameter for each geometry
 
 The CRS must be provided in [WKT](https://en.wikipedia.org/wiki/Well-known_text_representation_of_coordinate_reference_systems) version 2, also known as **WKT2**. WKT2 has several revisions, this specification only supports [WKT2_2019](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html).
 
-If CRS is not provided, the default value is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84). It's equivalent to the wellknown [EPSG:4326](https://epsg.org/crs_4326/WGS-84.html) but changing the axis from latitude-longitude to longitude-latitude. WKT2:2019 string for OGC:CRS84 is:
+If CRS is not provided, then all coordinates in the geometry must use longitude, latitude to store their data.
+If an implementation is CRS-aware and needs a CRS representation of the data it should assume a default value is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84). It's equivalent to the well-known [EPSG:4326](https://epsg.org/crs_4326/WGS-84.html) but changes the axis from latitude-longitude to longitude-latitude. The WKT2:2019 string for OGC:CRS84 is:
 
 ```
 GEOGCRS["WGS 84 (CRS84)",
