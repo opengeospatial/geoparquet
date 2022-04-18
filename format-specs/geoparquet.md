@@ -149,7 +149,7 @@ specify "Point", but it is expected to list "Point Z".
 
 #### Polygon winding
 
-The winding order of polygons follows the [GeoJSON spec](https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6). Polygon rings MUST follow the right-hand rule for orientation (counterclockwise external rings, clockwise internal rings).
+The winding order of polygons follows the [GeoJSON spec](https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6). Polygon rings MUST follow the right-hand rule for orientation (counterclockwise external rings, clockwise internal rings).  Traversing vertices of rings in order, the interior of the polygon is on the left.
 
 #### edges
 
