@@ -107,7 +107,7 @@ This follows the precedent of [GeoPackage](https://geopackage.org), see the [not
 
 #### geometry_type
 
-This optional field captures the geometry type(s) of the geometries in the
+This field captures the geometry type(s) of the geometries in the
 column, when known. Accepted geometry types are: "Point", "LineString",
 "Polygon", "MultiPoint", "MultiLineString", "MultiPolygon",
 "GeometryCollection".
