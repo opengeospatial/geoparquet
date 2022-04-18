@@ -3,8 +3,8 @@
 ## About
 
 This repository defines how to store geospatial [vector data](https://gisgeography.com/spatial-data-types-vector-raster/) (point, 
-lines, polygons) in [Parquet](https://parquet.apache.org/), a popular columnar storage format for tabular data - see 
-[what is parquet?](https://databricks.com/glossary/what-is-parquet ) for more background. Our goal is to standardize how 
+lines, polygons) in [Apache Parquet](https://parquet.apache.org/), a popular columnar storage format for tabular data - see 
+[this vendor explanation](https://databricks.com/glossary/what-is-parquet) for more on what that means. Our goal is to standardize how 
 geospatial data is represented in Parquet to further geospatial interoperability among tools using Parquet today, and hopefully 
 help push forward what's possible with 'cloud-native geospatial' workflows. 
 
@@ -17,10 +17,6 @@ Early contributors include developers from GeoPandas, GeoTrellis, OpenLayers, Vi
 Anyone is welcome to join us, by building implementations, trying it out, giving feedback through issues and contributing to the spec via pull requests.
 Initial work started in the [geo-arrow-spec](https://github.com/geopandas/geo-arrow-spec/) GeoPandas repository, and that will continue on 
 Arrow work in a compatible way, with this specification focused solely on Parquet.
-
-Note that version 0.1 only supports 2d geometries, as we are not supporting [EWKB](https://libgeos.org/specifications/wkb/#extended-wkb) or 
-[ISO WKB](https://libgeos.org/specifications/wkb/#iso-wkb). We expect to expand WKB to support 3D in the future, if you have thoughts please 
-sound in on #18 and/or follow along there.
 
 ## Goals
 
