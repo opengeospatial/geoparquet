@@ -120,7 +120,7 @@ In addition, the following rules are used:
 - Additionally the value "Unknown" is accepted to explicitly signal that the
   geometry type is not known.
 
-If specified, it is expected that this field is strictly correct. For
+It is expected that this field is strictly correct. For
 example, if having both polygons and multipolygons, it is not sufficient to
 specify "MultiPolygon", but it is expected to specify
 ["Polygon", "MultiPolygon"]. Or if having 3D points, it is not sufficient to
