@@ -53,6 +53,7 @@ Each geometry column in the dataset must be included in the columns field above 
 | Field Name |                               Type                                      |                                                                   Description                                                                     |
 | ---------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | encoding | string | **REQUIRED** Name of the geometry encoding format. Currently only 'WKB' is supported. |
+| geometry_type | string or \[string] | **REQUIRED** The geometry type(s) of all geometries, or "Unknown" if they are not known.  |
 | crs       | string   | **OPTIONAL** [WKT2](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html) string representing the Coordinate Reference System (CRS) of the geometry. If the crs field is not included then the data in this column must be stored in longitude, latitude. In the case where a crs is not provided, CRS-aware implementations should assume a default value of [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84) (longitude-latitude coordinates) |
 | edges | string | **OPTIONAL** Name of the coordinate system for the edges. Must be one of 'planar' or 'spherical'. The default value is 'planar'.  |
 | bbox   | \[number] | **OPTIONAL** Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5) |
@@ -124,6 +125,27 @@ Note that the current version of the spec only allows for a subset of WKB: 2D or
 The axis order of the coordinates in WKB stored in a geoparquet follows the de facto standard for axis order in WKB and is therefore always 
 (x, y) where x is easting or longitude and y is northing or latitude. This ordering explicitly overrides the axis order as specified in the CRS. 
 This follows the precedent of [GeoPackage](https://geopackage.org), see the [note in their spec](https://www.geopackage.org/spec130/#gpb_spec). 
+
+#### geometry_type
+
+This field captures the geometry type(s) of the geometries in the
+column, when known. Accepted geometry types are: "Point", "LineString",
+"Polygon", "MultiPoint", "MultiLineString", "MultiPolygon",
+"GeometryCollection".
+
+In addition, the following rules are used:
+
+- In case of 3D geometries, a " Z" suffix gets added (e.g. "Point Z").
+- The value can be a single string or an array of strings in case multiple
+  geometry types are present (e.g. ["Polygon", "MultiPolygon"]).
+- Additionally the value "Unknown" is accepted to explicitly signal that the
+  geometry type is not known.
+
+It is expected that this field is strictly correct. For
+example, if having both polygons and multipolygons, it is not sufficient to
+specify "MultiPolygon", but it is expected to specify
+["Polygon", "MultiPolygon"]. Or if having 3D points, it is not sufficient to
+specify "Point", but it is expected to list "Point Z".
 
 #### edges
 
