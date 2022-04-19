@@ -8,8 +8,7 @@ lines, polygons) in [Apache Parquet](https://parquet.apache.org/), a popular col
 geospatial data is represented in Parquet to further geospatial interoperability among tools using Parquet today, and hopefully 
 help push forward what's possible with 'cloud-native geospatial' workflows. 
 
-**Warning:** This is not (yet) a stable specification that can be relied upon. The initial 0.1 release was made to gather
-wider feedback, and we anticipate that some things may change. For now we reserve the right to make changes in backwards incompatible 
+**Warning:** This is not (yet) a stable specification that can be relied upon. All 0.X releases are made to gather wider feedback, and we anticipate that some things may change. For now we reserve the right to make changes in backwards incompatible 
 ways (though will try not to), see the [versioning](#versioning) section below for more info. If you are excited about the potential 
 please collaborate with us by building implementations, sounding in on the issues and contributing PR's!
 
@@ -61,7 +60,8 @@ will work much better if it is backing a system that is constantly updating the 
 Our aim is to get to a 1.0.0 within 'months', not years. The rough plan is:
 
 * 0.1 - Get the basics established, provide a target for implementations to start building against.
-* 0.2 - Feedback from implementations, add spatial index and potentially 3D coordinates.
+* 0.2 - Feedback from implementations, 3D coordinates support.
+* 0.3 - Feedback from implementations, add spatial index.
 * 0.x - Several iterations based on feedback from implementations.
 * 1.0.0-RC.1 - Aim for this when there are at least 6 implementations that all work interoperably and all feel good about the spec.
 * 1.0.0 - Once there are 12(?) implementations in diverse languages we will lock in for 1.0

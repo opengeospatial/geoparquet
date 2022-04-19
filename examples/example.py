@@ -1,5 +1,12 @@
 """
 Generates `example.parquet` using pyarrow by running `python example.py`.
+
+You can print the metadata with:
+
+.. code-block:: python
+
+   >>> import json, pprint, pyarrow.parquet as pq
+   >>> pprint.pprint(json.loads(pq.read_schema("example.parquet").metadata[b"geo"]))
 """
 import json
 import pathlib
@@ -17,7 +24,7 @@ table = pa.Table.from_pandas(df.head().to_wkb())
 
 
 metadata = {
-    "version": "0.1.0",
+    "version": "0.2.0",
     "primary_column": "geometry",
     "columns": {
         "geometry": {
