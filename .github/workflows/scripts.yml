@@ -1,0 +1,35 @@
+name: Scripts
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test-json-metadata:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Install scripts dependencies
+        run: |
+          cd scripts
+          poetry install
+
+      - name: Run scripts
+        run: |
+          cd scripts
+          poetry run python update_example_schemas.py
+          cd ../examples
+          # Assert no changes in the git repo, aka that the json version of the
+          # schemas are up to date
+          test -z "$(git status --porcelain)"
