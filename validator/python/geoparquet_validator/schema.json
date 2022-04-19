@@ -4,7 +4,7 @@
   "type": "object",
   "description": "Parquet metadata included in the geo field.",
   "properties": {
-    "schema_version": {
+    "version": {
       "type": "string",
       "pattern": "^0\\.1\\.[0-9]+$",
       "description": "The version of the geoparquet metadata standard used when writing."
@@ -20,14 +20,29 @@
         ".*": {
           "type": "object",
           "properties": {
-            "crs": {
-              "type": "string",
-              "description": "WKT2 representing the Coordinate Reference System (CRS) of the geometry."
-            },
             "encoding": {
               "type": "string",
               "enum": ["WKB"],
               "description": "Name of the geometry encoding format. Currently only 'WKB' is supported."
+            },
+            "geometry_type": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/geometry_type"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/geometry_type"
+                  },
+                  "uniqueItems": true
+                }
+              ],
+              "description": "The geometry type(s) of all geometries, or 'Unknown' if they are not known."
+            },
+            "crs": {
+              "type": "string",
+              "description": "WKT2 representing the Coordinate Reference System (CRS) of the geometry."
             },
             "edges": {
               "type": "string",
@@ -55,14 +70,24 @@
                   "description": "The maximum constant latitude line that bounds the rectangle (ymax)."
                 }
               ]
+            },
+            "epoch": {
+              "type": "number",
+              "description": "Coordinate epoch in case of a dynamic CRS, expressed as a decimal year."
             }
           },
           "additionalProperties": true,
-          "required": ["crs", "encoding"]
+          "required": ["encoding", "geometry_type"]
         }
       }
     }
   },
   "additionalProperties": true,
-  "required": ["schema_version", "primary_column", "columns"]
+  "required": ["version", "primary_column", "columns"],
+  "$defs": {
+    "geometry_type": {
+      "type": "string",
+      "enum": ["Point", "LineString", "Polygon", "MultiPoint", "MultiLineString", "MultiPolygon", "GeometryCollection", "Unknown"]
+    }
+  }
 }
