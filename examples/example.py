@@ -48,8 +48,9 @@ metadata = {
     "primary_column": "geometry",
     "columns": {
         "geometry": {
-            "crs": df.crs.to_wkt(pyproj.enums.WktVersion.WKT2_2019_SIMPLIFIED),
             "encoding": "WKB",
+            "geometry_type": ["Polygon", "MultiPolygon"],
+            "crs": df.crs.to_wkt(pyproj.enums.WktVersion.WKT2_2019_SIMPLIFIED),
             "edges": "planar",
             "bbox": [round(x, 4) for x in df.geometry.unary_union.bounds],
         },

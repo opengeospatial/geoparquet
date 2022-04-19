@@ -20,14 +20,31 @@
         ".*": {
           "type": "object",
           "properties": {
-            "crs": {
-              "type": "string",
-              "description": "WKT2 representing the Coordinate Reference System (CRS) of the geometry."
-            },
             "encoding": {
               "type": "string",
               "enum": ["WKB"],
               "description": "Name of the geometry encoding format. Currently only 'WKB' is supported."
+            },
+            "geometry_type": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "enum": ["Point", "LineString", "Polygon", "MultiPoint", "MultiLineString", "MultiPolygon", "GeometryCollection", "Unknown"]
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["Point", "LineString", "Polygon", "MultiPoint", "MultiLineString", "MultiPolygon", "GeometryCollection", "Unknown"]
+                  },
+                  "uniqueItems": true
+                }
+              ],
+              "description": "The geometry type(s) of all geometries, or 'Unknown' if they are not known."
+            },
+            "crs": {
+              "type": "string",
+              "description": "WKT2 representing the Coordinate Reference System (CRS) of the geometry."
             },
             "edges": {
               "type": "string",
@@ -58,7 +75,7 @@
             }
           },
           "additionalProperties": true,
-          "required": ["crs", "encoding"]
+          "required": ["encoding", "geometry_type"]
         }
       }
     }
