@@ -50,7 +50,7 @@ A quick overview of what geoparquet supports (or at least plans to support).
  of chunks based on column statistics, so the format will perform well in a variety of modern analytic workflows.
 * **Support for data partitioning** - Parquet has a nice ability to partition data into different files for efficiency, and we aim to enable geospatial partitions.
 * **Enable spatial indices** - To enable top performance a spatial index is essential. This will be the focus of the 
- [0.2](https://github.com/opengeospatial/geoparquet/milestone/2) release.
+ [0.3](https://github.com/opengeospatial/geoparquet/milestone/4) release.
  
 It should be noted what GeoParquet is less good for. The biggest one is that it is not a good choice for write-heavy interactions. A row-based format
 will work much better if it is backing a system that is constantly updating the data and adding new data. 
@@ -60,7 +60,7 @@ will work much better if it is backing a system that is constantly updating the 
 Our aim is to get to a 1.0.0 within 'months', not years. The rough plan is:
 
 * 0.1 - Get the basics established, provide a target for implementations to start building against.
-* 0.2 - Feedback from implementations, 3D coordinates support.
+* 0.2 - Feedback from implementations, 3D coordinates support, geometry types, crs optional.
 * 0.3 - Feedback from implementations, add spatial index.
 * 0.x - Several iterations based on feedback from implementations.
 * 1.0.0-RC.1 - Aim for this when there are at least 6 implementations that all work interoperably and all feel good about the spec.
@@ -72,7 +72,7 @@ Our detailed roadmap is in the [Milestones](https://github.com/opengeospatial/ge
 ## Versioning
 
 After we reach version 1.0 we will follow [SemVer](https://semver.org/), so at that point any breaking change will require the spec to go to 2.0.0.
-Currently implementors should expect breaking changes, though at some point, hopefully relatively soon (0.3?), we will declare that we don't *think* there
+Currently implementors should expect breaking changes, though at some point, hopefully relatively soon (0.4?), we will declare that we don't *think* there
 will be any more potential breaking changes. Though the full commitment to that won't be made until 1.0.0. 
 
 ## Current Implementations & Examples
