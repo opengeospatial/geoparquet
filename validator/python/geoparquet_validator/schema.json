@@ -74,7 +74,8 @@
               ]
             },
             "epoch": {
-              "type": "number"
+              "type": "number",
+              "description": "Coordinate epoch in case of a dynamic CRS, expressed as a decimal year."
             }
           },
           "additionalProperties": true,
