@@ -72,6 +72,9 @@
                   "description": "The maximum constant latitude line that bounds the rectangle (ymax)."
                 }
               ]
+            },
+            "epoch": {
+              "type": "number"
             }
           },
           "additionalProperties": true,
