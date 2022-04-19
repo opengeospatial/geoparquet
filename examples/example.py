@@ -39,7 +39,7 @@ import pyproj
 HERE = pathlib.Path(__file__).parent
 
 df = geopandas.read_file(geopandas.datasets.get_path("naturalearth_lowres"))
-df = df.to_crs('crs84')
+df = df.to_crs("crs84")
 table = pa.Table.from_pandas(df.head().to_wkb())
 
 
