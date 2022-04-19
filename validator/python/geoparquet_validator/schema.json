@@ -28,14 +28,12 @@
             "geometry_type": {
               "oneOf": [
                 {
-                  "type": "string",
-                  "enum": ["Point", "LineString", "Polygon", "MultiPoint", "MultiLineString", "MultiPolygon", "GeometryCollection", "Unknown"]
+                  "$ref": "#/$defs/geometry_type"
                 },
                 {
                   "type": "array",
                   "items": {
-                    "type": "string",
-                    "enum": ["Point", "LineString", "Polygon", "MultiPoint", "MultiLineString", "MultiPolygon", "GeometryCollection", "Unknown"]
+                    "$ref": "#/$defs/geometry_type"
                   },
                   "uniqueItems": true
                 }
@@ -85,5 +83,11 @@
     }
   },
   "additionalProperties": true,
-  "required": ["version", "primary_column", "columns"]
+  "required": ["version", "primary_column", "columns"],
+  "$defs": {
+    "geometry_type": {
+      "type": "string",
+      "enum": ["Point", "LineString", "Polygon", "MultiPoint", "MultiLineString", "MultiPolygon", "GeometryCollection", "Unknown"]
+    }
+  }
 }
