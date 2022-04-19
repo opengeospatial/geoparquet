@@ -53,7 +53,7 @@ Each geometry column in the dataset must be included in the columns field above 
 | Field Name |                               Type                                      |                                                                   Description                                                                     |
 | ---------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | encoding | string | **REQUIRED** Name of the geometry encoding format. Currently only 'WKB' is supported. |
-| geometry_type | string or \[string] | **REQUIRED** The geometry type(s) of all geometries, or "Unknown" if they are not known.  |
+| geometry_type | string or \[string] | **REQUIRED** The geometry type(s) of all geometries, or 'Unknown' if they are not known.  |
 | crs       | string   | **OPTIONAL** [WKT2](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html) string representing the Coordinate Reference System (CRS) of the geometry. If the crs field is not included then the data in this column must be stored in longitude, latitude. In the case where a crs is not provided, CRS-aware implementations should assume a default value of [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84) (longitude-latitude coordinates) |
 | edges | string | **OPTIONAL** Name of the coordinate system for the edges. Must be one of 'planar' or 'spherical'. The default value is 'planar'.  |
 | bbox   | \[number] | **OPTIONAL** Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5) |
@@ -62,7 +62,7 @@ Each geometry column in the dataset must be included in the columns field above 
 
 #### crs
 
-The Coordinate Reference System (CRS) is an optional parameter for each geometry column defined in geoparquet format. 
+The Coordinate Reference System (CRS) is an optional parameter for each geometry column defined in geoparquet format.
 
 The CRS must be provided in [WKT](https://en.wikipedia.org/wiki/Well-known_text_representation_of_coordinate_reference_systems) version 2, also known as **WKT2**. WKT2 has several revisions, this specification only supports [WKT2_2019](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html).
 
@@ -98,7 +98,7 @@ GEOGCRS["WGS 84 (CRS84)",
     ID["OGC","CRS84"]]
 ```
 
-Due to the large number of CRSes available and the difficulty of implementing all of them, we expect that a number of implementations will start without support for the optional `crs` field. 
+Due to the large number of CRSes available and the difficulty of implementing all of them, we expect that a number of implementations will start without support for the optional `crs` field.
 Users are recommended to store their data in longitude, latitude (OGC:CRS84 or not including the `crs` field) for it to work with the widest number of tools. But data that is better served in particular projections can choose to use an alternate coordinate reference system. We expect many tools will support alternate CRSes, but encourage users to check to ensure their chosen tool supports their chosen crs.
 
 #### epoch
@@ -122,9 +122,9 @@ Note that the current version of the spec only allows for a subset of WKB: 2D or
 
 #### Coordinate axis order
 
-The axis order of the coordinates in WKB stored in a geoparquet follows the de facto standard for axis order in WKB and is therefore always 
-(x, y) where x is easting or longitude and y is northing or latitude. This ordering explicitly overrides the axis order as specified in the CRS. 
-This follows the precedent of [GeoPackage](https://geopackage.org), see the [note in their spec](https://www.geopackage.org/spec130/#gpb_spec). 
+The axis order of the coordinates in WKB stored in a geoparquet follows the de facto standard for axis order in WKB and is therefore always
+(x, y) where x is easting or longitude and y is northing or latitude. This ordering explicitly overrides the axis order as specified in the CRS.
+This follows the precedent of [GeoPackage](https://geopackage.org), see the [note in their spec](https://www.geopackage.org/spec130/#gpb_spec).
 
 #### geometry_type
 
