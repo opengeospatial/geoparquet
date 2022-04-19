@@ -8,7 +8,7 @@ lines, polygons) in [Apache Parquet](https://parquet.apache.org/), a popular col
 geospatial data is represented in Parquet to further geospatial interoperability among tools using Parquet today, and hopefully 
 help push forward what's possible with 'cloud-native geospatial' workflows. 
 
-**Warning:** This is not (yet) a stable specification that can be relied upon. All 0.X releases were made to gatherwider feedback, and we anticipate that some things may change. For now we reserve the right to make changes in backwards incompatible 
+**Warning:** This is not (yet) a stable specification that can be relied upon. All 0.X releases were made to gather wider feedback, and we anticipate that some things may change. For now we reserve the right to make changes in backwards incompatible 
 ways (though will try not to), see the [versioning](#versioning) section below for more info. If you are excited about the potential 
 please collaborate with us by building implementations, sounding in on the issues and contributing PR's!
 
