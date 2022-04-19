@@ -147,6 +147,10 @@ specify "MultiPolygon", but it is expected to specify
 ["Polygon", "MultiPolygon"]. Or if having 3D points, it is not sufficient to
 specify "Point", but it is expected to list "Point Z".
 
+#### Polygon winding
+
+The winding order of polygons follows the [GeoJSON spec](https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6). Polygon rings MUST follow the right-hand rule for orientation (counterclockwise external rings, clockwise internal rings).  Traversing vertices of rings in order, the interior of the polygon is on the left.
+
 #### edges
 
 This attribute indicates how to interpret the edges of the geometries: whether the line between two points is a straight cartesian line or the shortest line on the sphere (geodesic line). Available values are:
