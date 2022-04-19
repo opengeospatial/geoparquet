@@ -4,7 +4,7 @@
   "type": "object",
   "description": "Parquet metadata included in the geo field.",
   "properties": {
-    "schema_version": {
+    "version": {
       "type": "string",
       "pattern": "^0\\.1\\.[0-9]+$",
       "description": "The version of the geoparquet metadata standard used when writing."
@@ -64,5 +64,5 @@
     }
   },
   "additionalProperties": true,
-  "required": ["schema_version", "primary_column", "columns"]
+  "required": ["version", "primary_column", "columns"]
 }
