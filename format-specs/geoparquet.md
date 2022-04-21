@@ -54,9 +54,10 @@ Each geometry column in the dataset must be included in the columns field above 
 | ---------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | encoding | string | **REQUIRED** Name of the geometry encoding format. Currently only 'WKB' is supported. |
 | geometry_type | string or \[string] | **REQUIRED** The geometry type(s) of all geometries, or 'Unknown' if they are not known.  |
-| crs       | string   | **OPTIONAL** [WKT2](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html) string representing the Coordinate Reference System (CRS) of the geometry. If the crs field is not included then the data in this column must be stored in longitude, latitude. In the case where a crs is not provided, CRS-aware implementations should assume a default value of [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84) (longitude-latitude coordinates) |
+| orientation | string | ***REQUIRED** if edges='spherical', otherwise **OPTIONAL** Winding order of outer ring of polygons; interior rings are wound in opposite order. If present must be "counterclockwise". If absent, no assertions are made regarding the winding order.
+| crs       | string   | **OPTIONAL** [WKT2](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html) string representing the Coordinate Reference System (CRS) of the geometry. If the crs field is not included then the data in this column must be stored in longitude, latitude. In the case where a crs is not provided, CRS-aware implementations should assume a default value of [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84) (longitude-latitude coordinates). |
 | edges | string | **OPTIONAL** Name of the coordinate system for the edges. Must be one of 'planar' or 'spherical'. The default value is 'planar'.  |
-| bbox   | \[number] | **OPTIONAL** Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5) |
+| bbox   | \[number] | **OPTIONAL** Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
 | epoch    | double | **OPTIONAL** Coordinate epoch in case of a dynamic CRS, expressed as a decimal year.  |
 
 
@@ -147,9 +148,15 @@ specify "MultiPolygon", but it is expected to specify
 ["Polygon", "MultiPolygon"]. Or if having 3D points, it is not sufficient to
 specify "Point", but it is expected to list "Point Z".
 
-#### Polygon winding
+#### orientation
 
-The winding order of polygons follows the [GeoJSON spec](https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6). Polygon rings MUST follow the right-hand rule for orientation (counterclockwise external rings, clockwise internal rings).  Traversing vertices of rings in order, the interior of the polygon is on the left.
+This attribute indicates the winding order of polygon. Available values are:
+
+- counterclockwise: the winding order of polygons follows the [GeoJSON spec](https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6). Polygon rings MUST follow the right-hand rule for orientation (counterclockwise external rings, clockwise internal rings).  Traversing vertices of rings in order, the interior of the polygon is on the left.
+
+If no value is set, no assertions are made about winding order, except that external rings have oppposite winding order to internal rings.
+
+Writers should add the orientation attribute when it is applicable to the data.
 
 #### edges
 
