@@ -154,7 +154,7 @@ This attribute indicates the winding order of polygon. Available values are:
 
 - counterclockwise: the winding order of polygons follows the [GeoJSON spec](https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6). Polygon rings MUST follow the right-hand rule for orientation (counterclockwise external rings, clockwise internal rings).  Traversing vertices of rings in order, the interior of the polygon is on the left.
 
-If no value is set, no assertions are made about winding order, except that external rings have oppposite winding order to internal rings.
+If no value is set, no assertions are made about winding order.
 
 Writers should add the orientation attribute when it is applicable to the data.
 
