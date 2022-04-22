@@ -150,13 +150,15 @@ specify "Point", but it is expected to list "Point Z".
 
 #### orientation
 
-This attribute indicates the winding order of polygons. Available values are:
+This attribute indicates the winding order of polygons. The only available value is:
 
-- "counterclockwise": the winding order of polygons follows the [GeoJSON spec](https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6). All vertices of exterior polygon rings MUST be ordered in the counterclockwise direction and all interior rings MUST be ordered in the clockwise direction.
+- "counterclockwise": All vertices of exterior polygon rings MUST be ordered in the counterclockwise direction and all interior rings MUST be ordered in the clockwise direction.
 
 If no value is set, no assertions are made about winding order or consistency of such between exterior and interior rings or between individual geometries within a dataset.  Readers are responsible for verifying and if necessary re-ordering vertices as required for their analytical representation.
 
 Writers are encouraged but not required to set orientation="counterclockwise" for portability of the data within the broader ecosystem.
+
+It is recommended to always set the orientation (to counterclockwise) if `edges` is 'spherical'.
 
 #### edges
 
@@ -165,6 +167,10 @@ This attribute indicates how to interpret the edges of the geometries: whether t
 - spherical: use a spherical coordinate system and radius derived from the spheroid defined by the coordinate reference system.
 
 If no value is set, the default value to assume is 'planar'.
+
+Note if edges is spherical then it is recommended that `orientation` is always set to 'counterclockwise'. If it is not set 
+then implementations should choose the smaller polygon for interpretation (but note this can only work with polygons 
+smaller than hemisphere, which is why it is recommended to always set it).
 
 #### bbox
 
