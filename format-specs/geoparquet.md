@@ -168,7 +168,7 @@ This attribute indicates how to interpret the edges of the geometries: whether t
 
 If no value is set, the default value to assume is 'planar'.
 
-Note if edges is spherical then it is recommended that `orientation` is always set to 'counterclockwise'. If it is not set 
+Note if `edges` is 'spherical' then it is recommended that `orientation` is always set to 'counterclockwise'. If it is not set, it is not clear how polygons should be interpreted within spherical coordinate systems, which can lead to major analytical errors if interpreted incorrectly. 
 then implementations should choose the smaller polygon for interpretation (but note this can only work with polygons 
 smaller than hemisphere, which is why it is recommended to always set it).
 
