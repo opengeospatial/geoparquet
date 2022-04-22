@@ -54,8 +54,8 @@ Each geometry column in the dataset must be included in the columns field above 
 | ---------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | encoding | string | **REQUIRED** Name of the geometry encoding format. Currently only 'WKB' is supported. |
 | geometry_type | string or \[string] | **REQUIRED** The geometry type(s) of all geometries, or 'Unknown' if they are not known.  |
-| orientation | string | **OPTIONAL** Winding order of exterior ring of polygons; interior rings are wound in opposite order. If present must be "counterclockwise". If absent, no assertions are made regarding the winding order.
 | crs       | string   | **OPTIONAL** [WKT2](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html) string representing the Coordinate Reference System (CRS) of the geometry. If the crs field is not included then the data in this column must be stored in longitude, latitude. In the case where a crs is not provided, CRS-aware implementations should assume a default value of [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84) (longitude-latitude coordinates). |
+| orientation | string | **OPTIONAL** Winding order of exterior ring of polygons; interior rings are wound in opposite order. If present must be "counterclockwise". If absent, no assertions are made regarding the winding order.
 | edges | string | **OPTIONAL** Name of the coordinate system for the edges. Must be one of 'planar' or 'spherical'. The default value is 'planar'.  |
 | bbox   | \[number] | **OPTIONAL** Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
 | epoch    | double | **OPTIONAL** Coordinate epoch in case of a dynamic CRS, expressed as a decimal year.  |
