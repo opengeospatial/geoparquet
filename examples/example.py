@@ -24,7 +24,7 @@ table = pa.Table.from_pandas(df.head().to_wkb())
 
 
 metadata = {
-    "version": "0.2.0",
+    "version": "0.3.0",
     "primary_column": "geometry",
     "columns": {
         "geometry": {
