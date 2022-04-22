@@ -150,7 +150,7 @@ specify "Point", but it is expected to list "Point Z".
 
 #### orientation
 
-This attribute indicates the winding order of polygon. Available values are:
+This attribute indicates the winding order of polygons. Available values are:
 
 - counterclockwise: the winding order of polygons follows the [GeoJSON spec](https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6). All vertices of exterior polygon rings MUST be ordered in the counterclockwise direction and all interior rings MUST be ordered in the clockwise direction.
 
