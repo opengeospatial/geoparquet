@@ -54,9 +54,10 @@ Each geometry column in the dataset must be included in the columns field above 
 | ---------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | encoding | string | **REQUIRED** Name of the geometry encoding format. Currently only 'WKB' is supported. |
 | geometry_type | string or \[string] | **REQUIRED** The geometry type(s) of all geometries, or 'Unknown' if they are not known.  |
-| crs       | string   | **OPTIONAL** [WKT2](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html) string representing the Coordinate Reference System (CRS) of the geometry. If the crs field is not included then the data in this column must be stored in longitude, latitude. In the case where a crs is not provided, CRS-aware implementations should assume a default value of [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84) (longitude-latitude coordinates) |
+| crs       | string   | **OPTIONAL** [WKT2](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html) string representing the Coordinate Reference System (CRS) of the geometry. If the crs field is not included then the data in this column must be stored in longitude, latitude. In the case where a crs is not provided, CRS-aware implementations should assume a default value of [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84) (longitude-latitude coordinates). |
+| orientation | string | **OPTIONAL** Winding order of exterior ring of polygons; interior rings are wound in opposite order. If present must be "counterclockwise". If absent, no assertions are made regarding the winding order.
 | edges | string | **OPTIONAL** Name of the coordinate system for the edges. Must be one of 'planar' or 'spherical'. The default value is 'planar'.  |
-| bbox   | \[number] | **OPTIONAL** Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5) |
+| bbox   | \[number] | **OPTIONAL** Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
 | epoch    | double | **OPTIONAL** Coordinate epoch in case of a dynamic CRS, expressed as a decimal year.  |
 
 
@@ -147,9 +148,17 @@ specify "MultiPolygon", but it is expected to specify
 ["Polygon", "MultiPolygon"]. Or if having 3D points, it is not sufficient to
 specify "Point", but it is expected to list "Point Z".
 
-#### Polygon winding
+#### orientation
 
-The winding order of polygons follows the [GeoJSON spec](https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6). Polygon rings MUST follow the right-hand rule for orientation (counterclockwise external rings, clockwise internal rings).  Traversing vertices of rings in order, the interior of the polygon is on the left.
+This attribute indicates the winding order of polygons. The only available value is:
+
+- "counterclockwise": All vertices of exterior polygon rings MUST be ordered in the counterclockwise direction and all interior rings MUST be ordered in the clockwise direction.
+
+If no value is set, no assertions are made about winding order or consistency of such between exterior and interior rings or between individual geometries within a dataset.  Readers are responsible for verifying and if necessary re-ordering vertices as required for their analytical representation.
+
+Writers are encouraged but not required to set orientation="counterclockwise" for portability of the data within the broader ecosystem.
+
+It is recommended to always set the orientation (to counterclockwise) if `edges` is 'spherical' (see below).
 
 #### edges
 
@@ -158,6 +167,10 @@ This attribute indicates how to interpret the edges of the geometries: whether t
 - spherical: use a spherical coordinate system and radius derived from the spheroid defined by the coordinate reference system.
 
 If no value is set, the default value to assume is 'planar'.
+
+Note if `edges` is 'spherical' then it is recommended that `orientation` is always set to 'counterclockwise'. If it is not set, it is not clear how polygons should be interpreted within spherical coordinate systems, which can lead to major analytical errors if interpreted incorrectly. 
+then implementations should choose the smaller polygon for interpretation (but note this can only work with polygons 
+smaller than hemisphere, which is why it is recommended to always set it).
 
 #### bbox
 
