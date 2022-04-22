@@ -156,7 +156,7 @@ This attribute indicates the winding order of polygon. Available values are:
 
 If no value is set, no assertions are made about winding order or consistency of such between exterior and interior rings or between individual geometries within a dataset.  Readers are responsible for verifying and if necessary re-ordering vertices as required for their analytical representation.
 
-Writers should add the orientation attribute when it is applicable to the data.
+Writers are encouraged but not required to set orientation="counterclockwise" for portability of the data within the broader ecosystem.
 
 #### edges
 
