@@ -14,10 +14,11 @@
         "geometry_type": [
           "Polygon",
           "MultiPolygon"
-        ]
+        ],
+        "orientation": "counterclockwise"
       }
     },
     "primary_column": "geometry",
-    "version": "0.2.0"
+    "version": "0.3.0"
   }
 }
