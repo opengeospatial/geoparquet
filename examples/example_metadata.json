@@ -14,8 +14,7 @@
         "geometry_type": [
           "Polygon",
           "MultiPolygon"
-        ],
-        "orientation": "counterclockwise"
+        ]
       }
     },
     "primary_column": "geometry",
