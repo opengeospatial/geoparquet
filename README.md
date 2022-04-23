@@ -51,7 +51,7 @@ A quick overview of what geoparquet supports (or at least plans to support).
 * **Support for data partitioning** - Parquet has a nice ability to partition data into different files for efficiency, and we aim to enable geospatial partitions.
 * **Enable spatial indices** - To enable top performance a spatial index is essential. This will be the focus of the
  [0.4](https://github.com/opengeospatial/geoparquet/milestone/5) release.
- 
+
 It should be noted what GeoParquet is less good for. The biggest one is that it is not a good choice for write-heavy interactions. A row-based format
 will work much better if it is backing a system that is constantly updating the data and adding new data.
 
