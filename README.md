@@ -2,19 +2,19 @@
 
 ## About
 
-This repository defines how to store geospatial [vector data](https://gisgeography.com/spatial-data-types-vector-raster/) (point, 
-lines, polygons) in [Apache Parquet](https://parquet.apache.org/), a popular columnar storage format for tabular data - see 
-[this vendor explanation](https://databricks.com/glossary/what-is-parquet) for more on what that means. Our goal is to standardize how 
-geospatial data is represented in Parquet to further geospatial interoperability among tools using Parquet today, and hopefully 
-help push forward what's possible with 'cloud-native geospatial' workflows. 
+This repository defines how to store geospatial [vector data](https://gisgeography.com/spatial-data-types-vector-raster/) (point,
+lines, polygons) in [Apache Parquet](https://parquet.apache.org/), a popular columnar storage format for tabular data - see
+[this vendor explanation](https://databricks.com/glossary/what-is-parquet) for more on what that means. Our goal is to standardize how
+geospatial data is represented in Parquet to further geospatial interoperability among tools using Parquet today, and hopefully
+help push forward what's possible with 'cloud-native geospatial' workflows.
 
-**Warning:** This is not (yet) a stable specification that can be relied upon. All 0.X releases are made to gather wider feedback, and we anticipate that some things may change. For now we reserve the right to make changes in backwards incompatible 
-ways (though will try not to), see the [versioning](#versioning) section below for more info. If you are excited about the potential 
+**Warning:** This is not (yet) a stable specification that can be relied upon. All 0.X releases are made to gather wider feedback, and we anticipate that some things may change. For now we reserve the right to make changes in backwards incompatible
+ways (though will try not to), see the [versioning](#versioning) section below for more info. If you are excited about the potential
 please collaborate with us by building implementations, sounding in on the issues and contributing PR's!
 
-Early contributors include developers from GeoPandas, GeoTrellis, OpenLayers, Vis.gl, Voltron Data, Microsoft, Carto, Azavea, Planet & Unfolded. 
+Early contributors include developers from GeoPandas, GeoTrellis, OpenLayers, Vis.gl, Voltron Data, Microsoft, Carto, Azavea, Planet & Unfolded.
 Anyone is welcome to join us, by building implementations, trying it out, giving feedback through issues and contributing to the spec via pull requests.
-Initial work started in the [geo-arrow-spec](https://github.com/geopandas/geo-arrow-spec/) GeoPandas repository, and that will continue on 
+Initial work started in the [geo-arrow-spec](https://github.com/geopandas/geo-arrow-spec/) GeoPandas repository, and that will continue on
 Arrow work in a compatible way, with this specification focused solely on Parquet.
 
 ## Goals
@@ -26,12 +26,12 @@ There are a few core goals driving the initial development.
  of the most popular formats, and hopefully establish a good pattern for how to do so.
 * **Introduce columnar data formats to the geospatial world** - And most of the geospatial world is not yet benefitting from all the breakthroughs in data analysis
  in the broader IT world, so we are excited to enable interesting geospatial analysis with a wider range of tools.
-* **Enable interoperability among cloud data warehouses** - BigQuery, Snowflake, Redshift and others all support spatial operations but importing and exporting data 
+* **Enable interoperability among cloud data warehouses** - BigQuery, Snowflake, Redshift and others all support spatial operations but importing and exporting data
  with existing formats can be problematic. All support and often recommend Parquet, so defining a solid GeoParquet can help enable interoperability.
-* **Persist geospatial data from Apache Arrow** - GeoParquet is developed in parallel with a [GeoArrow spec](https://github.com/geopandas/geo-arrow-spec), to 
+* **Persist geospatial data from Apache Arrow** - GeoParquet is developed in parallel with a [GeoArrow spec](https://github.com/geopandas/geo-arrow-spec), to
  enable cross-language in-memory analytics of geospatial information with Arrow. Parquet is already well-supported by Arrow as the key on disk persistance format.
 
-And our broader goal is to innovate with 'cloud-native vector' providing a stable base to try out new ideas for cloud-native & streaming workflows. 
+And our broader goal is to innovate with 'cloud-native vector' providing a stable base to try out new ideas for cloud-native & streaming workflows.
 
 
 ## Features
@@ -44,16 +44,16 @@ A quick overview of what geoparquet supports (or at least plans to support).
 * **Multiple geometry columns** - There is a default geometry column, but additional geometry columns can be included.
 * **Great compression / small files** - Parquet is designed to compress very well, so data benefits by taking up less disk space & being more efficient over
  the network.
-* **Work with both planar and spherical coordinates** - Most cloud data warehouses support spherical coordinates, and so GeoParquet aims to help persist those 
+* **Work with both planar and spherical coordinates** - Most cloud data warehouses support spherical coordinates, and so GeoParquet aims to help persist those
  and be clear about what is supported.
-* **Great at read-heavy analytic workflows** - Columnar formats enable cheap reading of a subset of columns, and Parquet in particular enables efficient filtering 
+* **Great at read-heavy analytic workflows** - Columnar formats enable cheap reading of a subset of columns, and Parquet in particular enables efficient filtering
  of chunks based on column statistics, so the format will perform well in a variety of modern analytic workflows.
 * **Support for data partitioning** - Parquet has a nice ability to partition data into different files for efficiency, and we aim to enable geospatial partitions.
-* **Enable spatial indices** - To enable top performance a spatial index is essential. This will be the focus of the 
+* **Enable spatial indices** - To enable top performance a spatial index is essential. This will be the focus of the
  [0.4](https://github.com/opengeospatial/geoparquet/milestone/5) release.
- 
+
 It should be noted what GeoParquet is less good for. The biggest one is that it is not a good choice for write-heavy interactions. A row-based format
-will work much better if it is backing a system that is constantly updating the data and adding new data. 
+will work much better if it is backing a system that is constantly updating the data and adding new data.
 
 ## Roadmap
 
@@ -73,11 +73,11 @@ Our detailed roadmap is in the [Milestones](https://github.com/opengeospatial/ge
 
 After we reach version 1.0 we will follow [SemVer](https://semver.org/), so at that point any breaking change will require the spec to go to 2.0.0.
 Currently implementors should expect breaking changes, though at some point, hopefully relatively soon (0.4?), we will declare that we don't *think* there
-will be any more potential breaking changes. Though the full commitment to that won't be made until 1.0.0. 
+will be any more potential breaking changes. Though the full commitment to that won't be made until 1.0.0.
 
 ## Current Implementations & Examples
 
-Examples of geoparquet files following the current spec can be found in the [examples/](examples/) folder. There is also a 
+Examples of geoparquet files following the current spec can be found in the [examples/](examples/) folder. There is also a
 larger sample dataset [nz-buildings-outlines.parquet](https://storage.googleapis.com/open-geodata/linz-examples/nz-buildings-outlines.parquet)
 available on Google Cloud Storage.
 

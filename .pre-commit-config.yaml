@@ -1,0 +1,20 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+# Default to Python 3
+default_language_version:
+  python: python3
+
+# Optionally both commit and push
+default_stages: [commit]
+
+# Regex for files to exclude
+# Don't lint the generated JSON metadata files
+exclude: "examples/.*json"
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
