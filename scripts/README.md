@@ -6,7 +6,7 @@ The scripts in this directory use [Poetry](https://github.com/python-poetry/poet
 
 To install Poetry, follow the Poetry [installation guide](https://python-poetry.org/docs/#installation).
 
-To install from the lockfile, run `poetry update`.
+To install from the lockfile, run `poetry install`. To update the lockfile (such as when you add a new dependency) run `poetry update`.
 
 To run a script, prefix it with `poetry run`. For example:
 
