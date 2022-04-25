@@ -169,6 +169,7 @@ This attribute indicates how to interpret the edges of the geometries: whether t
 If no value is set, the default value to assume is 'planar'.
 
 Note if `edges` is 'spherical' then it is recommended that `orientation` is always ensured to be 'counterclockwise'. If it is not set, it is not clear how polygons should be interpreted within spherical coordinate systems, which can lead to major analytical errors if interpreted incorrectly.
+In this case, software will typically interpret the rings of a polygon such that it encloses at most half of the sphere (i.e. the smallest polygon of both ways it could be interpreted). But the specification itself does not make any guarantee about this.
 
 #### bbox
 
