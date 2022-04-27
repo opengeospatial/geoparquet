@@ -11,7 +11,6 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pygeos
-import pyogrio
 from numpy.typing import NDArray
 
 GEOPARQUET_VERSION = "0.3.0"
@@ -191,7 +190,7 @@ def geopandas_to_arrow(df: gpd.GeoDataFrame) -> pa.Table:
 )
 def main(input: Path, layer_name: str, output: Path, compression: str):
     print("Starting to read geopackage", file=sys.stderr)
-    df = pyogrio.read_dataframe(input, layer=layer_name)
+    df = gpd.read_file(input, layer=layer_name)
     print("Finished reading geopackage", file=sys.stderr)
     df = cast_dtypes(df)
 

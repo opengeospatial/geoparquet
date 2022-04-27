@@ -547,30 +547,6 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
-name = "pyogrio"
-version = "0.3.0+39.g43d31c3"
-description = "Vectorized spatial vector file format I/O using GDAL/OGR"
-category = "main"
-optional = false
-python-versions = ">=3.8"
-develop = false
-
-[package.dependencies]
-numpy = "*"
-
-[package.extras]
-benchmark = ["pytest-benchmark"]
-dev = ["cython"]
-geopandas = ["pygeos", "geopandas"]
-test = ["pytest", "pytest-cov"]
-
-[package.source]
-type = "git"
-url = "https://github.com/geopandas/pyogrio"
-reference = "43d31c3eb11edfeb535e1ac58facb87874deb271"
-resolved_reference = "43d31c3eb11edfeb535e1ac58facb87874deb271"
-
-[[package]]
 name = "pyparsing"
 version = "3.0.8"
 description = "pyparsing module - Classes and methods to define and execute parsing grammars"
@@ -714,7 +690,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "a210fbb0241fc3c901e944174f25a74401baf40208a3184479ac378d86d00778"
+content-hash = "f689d4401867dfd7dfff14ee8b613834a66c8329f19793d6724571046409cb09"
 
 [metadata.files]
 appnope = [
@@ -1114,7 +1090,6 @@ pygments = [
     {file = "Pygments-2.12.0-py3-none-any.whl", hash = "sha256:dc9c10fb40944260f6ed4c688ece0cd2048414940f1cea51b8b226318411c519"},
     {file = "Pygments-2.12.0.tar.gz", hash = "sha256:5eb116118f9612ff1ee89ac96437bb6b49e8f04d8a13b514ba26f620208e26eb"},
 ]
-pyogrio = []
 pyparsing = [
     {file = "pyparsing-3.0.8-py3-none-any.whl", hash = "sha256:ef7b523f6356f763771559412c0d7134753f037822dad1b16945b7b846f7ad06"},
     {file = "pyparsing-3.0.8.tar.gz", hash = "sha256:7bf433498c016c4314268d95df76c81b842a4cb2b276fa3312cfb1e1d85f6954"},
