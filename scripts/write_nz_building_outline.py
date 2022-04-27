@@ -1,4 +1,5 @@
 import json
+import sys
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List
@@ -10,6 +11,7 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pygeos
+import pyogrio
 from numpy.typing import NDArray
 
 GEOPARQUET_VERSION = "0.3.0"
@@ -182,14 +184,24 @@ def geopandas_to_arrow(df: gpd.GeoDataFrame) -> pa.Table:
 )
 @click.option(
     "--compression",
-    click.Choice(AVAILABLE_COMPRESSIONS, case_sensitive=False),
+    type=click.Choice(AVAILABLE_COMPRESSIONS, case_sensitive=False),
     default="SNAPPY",
     help="Compression codec to use when writing to Parquet.",
     show_default=True,
 )
 def main(input: Path, layer_name: str, output: Path, compression: str):
-    df = gpd.read_file(input, layer=layer_name)
+    print("Starting to read geopackage", file=sys.stderr)
+    df = pyogrio.read_dataframe(input, layer=layer_name)
+    print("Finished reading geopackage", file=sys.stderr)
     df = cast_dtypes(df)
 
+    print("Starting conversion to Arrow", file=sys.stderr)
     arrow_table = geopandas_to_arrow(df)
+    print("Finished conversion to Arrow", file=sys.stderr)
+    print("Starting write to Parquet", file=sys.stderr)
     pq.write_table(arrow_table, output, compression=compression)
+    print("Finished write to Parquet", file=sys.stderr)
+
+
+if __name__ == "__main__":
+    main()

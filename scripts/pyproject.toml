@@ -8,8 +8,17 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.8"
 pyarrow = "^7.0.0"
+geopandas = "^0.10.2"
+pygeos = "^0.12.0"
+pandas = "^1.4.2"
+click = "^8.1.2"
+# Main branch as of 2022-04-27
+pyogrio = { git = "https://github.com/geopandas/pyogrio", rev = "43d31c3eb11edfeb535e1ac58facb87874deb271" }
 
 [tool.poetry.dev-dependencies]
+ipykernel = "^6.13.0"
+isort = "^5.10.1"
+black = "^22.3.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
