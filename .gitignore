@@ -1,0 +1,2 @@
+# Ignore GeoPackage file used in conversion to GeoParquet
+*.gpkg*

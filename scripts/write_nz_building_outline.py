@@ -1,5 +1,6 @@
 import json
 import sys
+import warnings
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List
@@ -148,8 +149,10 @@ def geopandas_to_arrow(df: gpd.GeoDataFrame) -> pa.Table:
     geometry_columns = parse_to_pygeos(df)
     geo_metadata = _create_metadata(df, geometry_columns)
 
-    for col, geometry_array in geometry_columns.items():
-        df[col] = pygeos.to_wkb(geometry_array)
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message=".*does not contain geometry.*")
+        for col, geometry_array in geometry_columns.items():
+            df[col] = pygeos.to_wkb(geometry_array)
 
     table = pa.Table.from_pandas(df, preserve_index=False)
 
