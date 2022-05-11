@@ -73,111 +73,44 @@ are represented using OGC:CRS84 versus any other geographic CRS.
 
 Note: EPSG:4326 and OGC:CRS84 are equivalent with respect to this specification because this specification specifically overrides the coordinate axis order in the `crs` to be longitude-latitude.
 
-The current PROJJSON JSON object for OGC:CRS84 is:
+The PROJJSON JSON object for OGC:CRS84 is:
 
 ```json
 {
-  "$schema": "https://proj.org/schemas/v0.4/projjson.schema.json",
-  "type": "GeographicCRS",
-  "name": "WGS 84 (CRS84)",
-  "datum_ensemble": {
-    "name": "World Geodetic System 1984 ensemble",
-    "members": [
-      {
-        "name": "World Geodetic System 1984 (Transit)",
-        "id": {
-          "authority": "EPSG",
-          "code": 1166
+    "type": "GeographicCRS",
+    "name": "WGS 84 longitude-latitude",
+    "datum": {
+        "type": "GeodeticReferenceFrame",
+        "name": "World Geodetic System 1984",
+        "ellipsoid": {
+            "name": "WGS 84",
+            "semi_major_axis": 6378137,
+            "inverse_flattening": 298.257223563
         }
-      },
-      {
-        "name": "World Geodetic System 1984 (G730)",
-        "id": {
-          "authority": "EPSG",
-          "code": 1152
-        }
-      },
-      {
-        "name": "World Geodetic System 1984 (G873)",
-        "id": {
-          "authority": "EPSG",
-          "code": 1153
-        }
-      },
-      {
-        "name": "World Geodetic System 1984 (G1150)",
-        "id": {
-          "authority": "EPSG",
-          "code": 1154
-        }
-      },
-      {
-        "name": "World Geodetic System 1984 (G1674)",
-        "id": {
-          "authority": "EPSG",
-          "code": 1155
-        }
-      },
-      {
-        "name": "World Geodetic System 1984 (G1762)",
-        "id": {
-          "authority": "EPSG",
-          "code": 1156
-        }
-      },
-      {
-        "name": "World Geodetic System 1984 (G2139)",
-        "id": {
-          "authority": "EPSG",
-          "code": 1309
-        }
-      }
-    ],
-    "ellipsoid": {
-      "name": "WGS 84",
-      "semi_major_axis": 6378137,
-      "inverse_flattening": 298.257223563
     },
-    "accuracy": "2.0",
+    "coordinate_system": {
+        "subtype": "ellipsoidal",
+        "axis": [
+        {
+            "name": "Geodetic longitude",
+            "abbreviation": "Lon",
+            "direction": "east",
+            "unit": "degree"
+        },
+        {
+            "name": "Geodetic latitude",
+            "abbreviation": "Lat",
+            "direction": "north",
+            "unit": "degree"
+        }
+        ]
+    },
     "id": {
-      "authority": "EPSG",
-      "code": 6326
+        "authority": "OGC",
+        "code": "CRS84"
     }
-  },
-  "coordinate_system": {
-    "subtype": "ellipsoidal",
-    "axis": [
-      {
-        "name": "Geodetic longitude",
-        "abbreviation": "Lon",
-        "direction": "east",
-        "unit": "degree"
-      },
-      {
-        "name": "Geodetic latitude",
-        "abbreviation": "Lat",
-        "direction": "north",
-        "unit": "degree"
-      }
-    ]
-  },
-  "scope": "Not known.",
-  "area": "World.",
-  "bbox": {
-    "south_latitude": -90,
-    "west_longitude": -180,
-    "north_latitude": 90,
-    "east_longitude": 180
-  },
-  "id": {
-    "authority": "OGC",
-    "code": "CRS84"
-  }
 }
 ```
-
-Note: earlier versions of OGC:CRS84 used a single datum instead of a datum ensemble.  The number of elements in the datum ensemble may vary over time when new realizations of WGS 84 are added to the ensemble
-
 
 Due to the large number of CRSes available and the difficulty of implementing all of them, we expect that a number of implementations will start without support for the optional `crs` field.
 Users are recommended to store their data in longitude, latitude (OGC:CRS84 or not including the `crs` field) for it to work with the widest number of tools. Data that are more appropriately represented in particular projections may use an alternate coordinate reference system. We expect many tools will support alternate CRSes, but encourage users to check to ensure their chosen tool supports their chosen CRS.
