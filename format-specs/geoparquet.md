@@ -202,7 +202,8 @@ The CRS is likely equivalent to OGR:CRS84 if all of the following are true:
 
 and at least one of the following are true:
 * `datum.id.authority` = `"EPSG"` and `datum.id.code` = `6326`
-* `datum_enemble.ellipsoid.semi_major_axis` = `6378137` and `datum_ensemble.ellipsoid.inverse_flattening` = `298.257223563`
+* `datum_ensemble.id.authority` = `"EPSG"` and `datum_ensemble.id.code` = `6326`
+* `datum_ensemble.ellipsoid.semi_major_axis` = `6378137` and `datum_ensemble.ellipsoid.inverse_flattening` = `298.257223563`
 * `datum.ellipsoid.semi_major_axis` = `6378137` and `datum.ellipsoid.inverse_flattening` = `298.257223563`
 
 #### epoch
