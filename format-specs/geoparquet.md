@@ -64,7 +64,13 @@ Each geometry column in the dataset must be included in the columns field above 
 
 The Coordinate Reference System (CRS) is an optional parameter for each geometry column defined in geoparquet format.
 
-The CRS must be provided in [PROJJSON](https://proj.org/specifications/projjson.html) format, which is a JSON encoding of [WKT2:2019 / ISO-19162:2019](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html), which itself implements the model of [OGC Topic 2: Referencing by coordinates abstract specification / ISO-19111:2019](http://docs.opengeospatial.org/as/18-005r4/18-005r4.html).  Apart from the difference of encodings, the semantics is intended to be exactly the same as WKT2:2019, and PROJJSON can be morphed losslessly from/into WKT2:2019.
+The CRS must be provided in
+[PROJJSON](https://proj.org/specifications/projjson.html) format, which is a JSON encoding of
+[WKT2:2019 / ISO-19162:2019](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html),
+which itself implements the model of
+[OGC Topic 2: Referencing by coordinates abstract specification / ISO-19111:2019](http://docs.opengeospatial.org/as/18-005r4/18-005r4.html).
+Apart from the difference of encodings, the semantics are intended to match
+WKT2:2019, and a CRS in one encoding can generally be represented in the other.
 
 If CRS is not provided, then all coordinates in the geometry must use longitude, latitude to store their data.
 
