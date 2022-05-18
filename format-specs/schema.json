@@ -41,8 +41,8 @@
               "description": "The geometry type(s) of all geometries, or 'Unknown' if they are not known."
             },
             "crs": {
-              "type": "string",
-              "description": "WKT2 representing the Coordinate Reference System (CRS) of the geometry."
+              "type": ["string", "null"],
+              "description": "WKT2 representing the Coordinate Reference System (CRS) of the geometry. Can be null if the CRS is unknown."
             },
             "edges": {
               "type": "string",
