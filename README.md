@@ -78,10 +78,11 @@ will be any more potential breaking changes. Though the full commitment to that 
 ## Current Implementations & Examples
 
 Examples of geoparquet files following the current spec can be found in the [examples/](examples/) folder. There is also a
-larger sample dataset [nz-buildings-outlines.parquet](https://storage.googleapis.com/open-geodata/linz-examples/nz-buildings-outlines.parquet)
+larger sample dataset [nz-building-outlines.parquet](https://storage.googleapis.com/open-geodata/linz-examples/nz-building-outlines.parquet)
 available on Google Cloud Storage.
 
 Currently known libraries that can read and write GeoParquet files:
 
 * [GeoPandas](https://geopandas.org/en/stable/docs/user_guide/io.html#apache-parquet-and-feather-file-formats) (Python)
 * [sfarrow](https://wcjochem.github.io/sfarrow/index.html) (R)
+* [GDAL/OGR](https://gdal.org/drivers/vector/parquet.html) (C++, bindings in several languages)

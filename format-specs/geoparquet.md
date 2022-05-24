@@ -82,6 +82,9 @@ Users are recommended to store their data in longitude, latitude (OGC:CRS84 or n
 
 See below for additional details about representing or identifying OGC:CRS84.
 
+The value of this key may be explicitly set to `null` to indicate that there is no CRS assigned
+to this column (CRS is undefined or unknown).
+
 #### epoch
 
 In a dynamic CRS, coordinates of a point on the surface of the Earth may
