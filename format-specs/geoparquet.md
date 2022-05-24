@@ -31,7 +31,7 @@ All file-level metadata should be included under the "geo" key in the parquet me
 | ------------------ | ------ | -------------------------------------------------------------------- |
 | version     		 | string | **REQUIRED** The version of the geoparquet metadata standard used when writing.   |
 | primary_column     | string | **REQUIRED** The name of the "primary" geometry column.                |
-| columns            | Map<key, [Colum Metadata](#column-metadata)> | **REQUIRED** Metadata about geometry columns, with each key is the name of a geometry column in the table. |
+| columns            | Map<key, [Column Metadata](#column-metadata)> | **REQUIRED** Metadata about geometry columns, with each key is the name of a geometry column in the table. |
 
 At this level, additional implementation-specific fields (e.g. library name) are allowed, and thus readers should be robust in ignoring those.
 
@@ -101,6 +101,9 @@ GEOGCRS["WGS 84 (CRS84)",
 
 Due to the large number of CRSes available and the difficulty of implementing all of them, we expect that a number of implementations will start without support for the optional `crs` field.
 Users are recommended to store their data in longitude, latitude (OGC:CRS84 or not including the `crs` field) for it to work with the widest number of tools. But data that is better served in particular projections can choose to use an alternate coordinate reference system. We expect many tools will support alternate CRSes, but encourage users to check to ensure their chosen tool supports their chosen crs.
+
+The value of this key may be explicitly set to `null` to indicate that there is no CRS assigned
+to this column (CRS is undefined or unknown).
 
 #### epoch
 
