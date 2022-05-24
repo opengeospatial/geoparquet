@@ -119,7 +119,9 @@ def encode_metadata(metadata: Dict) -> bytes:
     -------
     UTF-8 encoded JSON string
     """
-    return json.dumps(metadata).encode("utf-8")
+    # Remove unnecessary whitespace in JSON metadata
+    # https://stackoverflow.com/a/33233406
+    return json.dumps(metadata, separators=(',', ':')).encode("utf-8")
 
 
 def cast_dtypes(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
