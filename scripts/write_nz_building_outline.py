@@ -1,6 +1,5 @@
 import json
 import sys
-import warnings
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List
@@ -14,7 +13,7 @@ import pyarrow.parquet as pq
 import pygeos
 from numpy.typing import NDArray
 
-GEOPARQUET_VERSION = "0.3.0"
+GEOPARQUET_VERSION = "0.4.0"
 AVAILABLE_COMPRESSIONS = ["NONE", "SNAPPY", "GZIP", "BROTLI", "LZ4", "ZSTD"]
 
 PygeosGeometryArray = NDArray[pygeos.Geometry]
@@ -51,8 +50,7 @@ def parse_to_pygeos(df: gpd.GeoDataFrame) -> Dict[str, PygeosGeometryArray]:
     """
     geometry_columns: Dict[str, PygeosGeometryArray] = {}
     for col in df.columns[df.dtypes == "geometry"]:
-        pygeos_geoms = pygeos.from_shapely(df[col])
-        geometry_columns[col] = pygeos_geoms
+        geometry_columns[col] = df[col].array.data
 
     return geometry_columns
 
@@ -81,7 +79,7 @@ def _create_metadata(
         column_metadata[col] = {
             "encoding": "WKB",
             "geometry_type": geometry_type,
-            "crs": series.crs.to_wkt(version="WKT2_2019") if series.crs else None,
+            "crs": series.crs.to_json_dict() if series.crs else None,
             # We don't specify orientation for now
             # "orientation"
             "edges": "planar",
@@ -149,10 +147,9 @@ def geopandas_to_arrow(df: gpd.GeoDataFrame) -> pa.Table:
     geometry_columns = parse_to_pygeos(df)
     geo_metadata = _create_metadata(df, geometry_columns)
 
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", message=".*does not contain geometry.*")
-        for col, geometry_array in geometry_columns.items():
-            df[col] = pygeos.to_wkb(geometry_array)
+    df = pd.DataFrame(df)
+    for col, geometry_array in geometry_columns.items():
+        df[col] = pygeos.to_wkb(geometry_array)
 
     table = pa.Table.from_pandas(df, preserve_index=False)
 
