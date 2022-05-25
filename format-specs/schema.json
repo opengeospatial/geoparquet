@@ -6,7 +6,7 @@
   "properties": {
     "version": {
       "type": "string",
-      "pattern": "^0\\.3\\.[0-9]+$",
+      "const": "0.4.0",
       "description": "The version of the geoparquet metadata standard used when writing."
     },
     "primary_column": {
