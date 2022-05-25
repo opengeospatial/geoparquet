@@ -8,7 +8,104 @@
           180.0,
           83.6451
         ],
-        "crs": "GEOGCRS[\"WGS 84 (CRS84)\",ENSEMBLE[\"World Geodetic System 1984 ensemble\",MEMBER[\"World Geodetic System 1984 (Transit)\"],MEMBER[\"World Geodetic System 1984 (G730)\"],MEMBER[\"World Geodetic System 1984 (G873)\"],MEMBER[\"World Geodetic System 1984 (G1150)\"],MEMBER[\"World Geodetic System 1984 (G1674)\"],MEMBER[\"World Geodetic System 1984 (G1762)\"],MEMBER[\"World Geodetic System 1984 (G2139)\"],ELLIPSOID[\"WGS 84\",6378137,298.257223563],ENSEMBLEACCURACY[2.0]],CS[ellipsoidal,2],AXIS[\"geodetic longitude (Lon)\",east],AXIS[\"geodetic latitude (Lat)\",north],UNIT[\"degree\",0.0174532925199433],USAGE[SCOPE[\"Not known.\"],AREA[\"World.\"],BBOX[-90,-180,90,180]],ID[\"OGC\",\"CRS84\"]]",
+        "crs": {
+          "$schema": "https://proj.org/schemas/v0.4/projjson.schema.json",
+          "area": "World.",
+          "bbox": {
+            "east_longitude": 180,
+            "north_latitude": 90,
+            "south_latitude": -90,
+            "west_longitude": -180
+          },
+          "coordinate_system": {
+            "axis": [
+              {
+                "abbreviation": "Lon",
+                "direction": "east",
+                "name": "Geodetic longitude",
+                "unit": "degree"
+              },
+              {
+                "abbreviation": "Lat",
+                "direction": "north",
+                "name": "Geodetic latitude",
+                "unit": "degree"
+              }
+            ],
+            "subtype": "ellipsoidal"
+          },
+          "datum_ensemble": {
+            "accuracy": "2.0",
+            "ellipsoid": {
+              "inverse_flattening": 298.257223563,
+              "name": "WGS 84",
+              "semi_major_axis": 6378137
+            },
+            "id": {
+              "authority": "EPSG",
+              "code": 6326
+            },
+            "members": [
+              {
+                "id": {
+                  "authority": "EPSG",
+                  "code": 1166
+                },
+                "name": "World Geodetic System 1984 (Transit)"
+              },
+              {
+                "id": {
+                  "authority": "EPSG",
+                  "code": 1152
+                },
+                "name": "World Geodetic System 1984 (G730)"
+              },
+              {
+                "id": {
+                  "authority": "EPSG",
+                  "code": 1153
+                },
+                "name": "World Geodetic System 1984 (G873)"
+              },
+              {
+                "id": {
+                  "authority": "EPSG",
+                  "code": 1154
+                },
+                "name": "World Geodetic System 1984 (G1150)"
+              },
+              {
+                "id": {
+                  "authority": "EPSG",
+                  "code": 1155
+                },
+                "name": "World Geodetic System 1984 (G1674)"
+              },
+              {
+                "id": {
+                  "authority": "EPSG",
+                  "code": 1156
+                },
+                "name": "World Geodetic System 1984 (G1762)"
+              },
+              {
+                "id": {
+                  "authority": "EPSG",
+                  "code": 1309
+                },
+                "name": "World Geodetic System 1984 (G2139)"
+              }
+            ],
+            "name": "World Geodetic System 1984 ensemble"
+          },
+          "id": {
+            "authority": "OGC",
+            "code": "CRS84"
+          },
+          "name": "WGS 84 (CRS84)",
+          "scope": "Not known.",
+          "type": "GeographicCRS"
+        },
         "edges": "planar",
         "encoding": "WKB",
         "geometry_type": [

@@ -50,57 +50,37 @@ Version of the geoparquet spec used, currently 0.3.0
 
 Each geometry column in the dataset must be included in the columns field above with the following content, keyed by the column name:
 
-| Field Name |                               Type                                      |                                                                   Description                                                                     |
-| ---------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Field Name | Type | Description |
+| --- | --- | --- |
 | encoding | string | **REQUIRED** Name of the geometry encoding format. Currently only 'WKB' is supported. |
-| geometry_type | string or \[string] | **REQUIRED** The geometry type(s) of all geometries, or 'Unknown' if they are not known.  |
-| crs       | string   | **OPTIONAL** [WKT2](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html) string representing the Coordinate Reference System (CRS) of the geometry. If the crs field is not included then the data in this column must be stored in longitude, latitude. In the case where a crs is not provided, CRS-aware implementations should assume a default value of [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84) (longitude-latitude coordinates). |
-| orientation | string | **OPTIONAL** Winding order of exterior ring of polygons. If present must be 'counterclockwise'; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order.
-| edges | string | **OPTIONAL** Name of the coordinate system for the edges. Must be one of 'planar' or 'spherical'. The default value is 'planar'.  |
-| bbox   | \[number] | **OPTIONAL** Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
-| epoch    | double | **OPTIONAL** Coordinate epoch in case of a dynamic CRS, expressed as a decimal year.  |
-
+| geometry_type | string or \[string] | **REQUIRED** The geometry type(s) of all geometries, or 'Unknown' if they are not known. |
+| crs | JSON object | **OPTIONAL** [PROJJSON](https://proj.org/specifications/projjson.html) JSON object representing the Coordinate Reference System (CRS) of the geometry. If the crs field is not included then the data in this column must be stored in longitude, latitude based on the WGS84 datum, and CRS-aware implementations should assume a default value of [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84). |
+| orientation | string | **OPTIONAL** Winding order of exterior ring of polygons. If present must be 'counterclockwise'; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order. |
+| edges | string | **OPTIONAL** Name of the coordinate system for the edges. Must be one of 'planar' or 'spherical'. The default value is 'planar'. |
+| bbox | \[number] | **OPTIONAL** Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
+| epoch | double | **OPTIONAL** Coordinate epoch in case of a dynamic CRS, expressed as a decimal year. |
 
 #### crs
 
 The Coordinate Reference System (CRS) is an optional parameter for each geometry column defined in geoparquet format.
 
-The CRS must be provided in [WKT](https://en.wikipedia.org/wiki/Well-known_text_representation_of_coordinate_reference_systems) version 2, also known as **WKT2**. WKT2 has several revisions, this specification only supports [WKT2_2019](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html).
+The CRS must be provided in
+[PROJJSON](https://proj.org/specifications/projjson.html) format, which is a JSON encoding of
+[WKT2:2019 / ISO-19162:2019](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html),
+which itself implements the model of
+[OGC Topic 2: Referencing by coordinates abstract specification / ISO-19111:2019](http://docs.opengeospatial.org/as/18-005r4/18-005r4.html).
+Apart from the difference of encodings, the semantics are intended to match
+WKT2:2019, and a CRS in one encoding can generally be represented in the other.
 
-If CRS is not provided, then all coordinates in the geometry must use longitude, latitude to store their data.
-If an implementation is CRS-aware and needs a CRS representation of the data it should assume a default value is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84). It's equivalent to the well-known [EPSG:4326](https://epsg.org/crs_4326/WGS-84.html) but changes the axis from latitude-longitude to longitude-latitude. The WKT2:2019 string for OGC:CRS84 is:
+If CRS is not provided, all coordinates in the geometry must use longitude, latitude
+based on the WGS84 datum to store their data.
 
-```
-GEOGCRS["WGS 84 (CRS84)",
-    ENSEMBLE["World Geodetic System 1984 ensemble",
-        MEMBER["World Geodetic System 1984 (Transit)"],
-        MEMBER["World Geodetic System 1984 (G730)"],
-        MEMBER["World Geodetic System 1984 (G873)"],
-        MEMBER["World Geodetic System 1984 (G1150)"],
-        MEMBER["World Geodetic System 1984 (G1674)"],
-        MEMBER["World Geodetic System 1984 (G1762)"],
-        MEMBER["World Geodetic System 1984 (G2139)"],
-        ELLIPSOID["WGS 84",6378137,298.257223563,
-            LENGTHUNIT["metre",1]],
-        ENSEMBLEACCURACY[2.0]],
-    PRIMEM["Greenwich",0,
-        ANGLEUNIT["degree",0.0174532925199433]],
-    CS[ellipsoidal,2],
-        AXIS["geodetic longitude (Lon)",east,
-            ORDER[1],
-            ANGLEUNIT["degree",0.0174532925199433]],
-        AXIS["geodetic latitude (Lat)",north,
-            ORDER[2],
-            ANGLEUNIT["degree",0.0174532925199433]],
-    USAGE[
-        SCOPE["Not known."],
-        AREA["World."],
-        BBOX[-90,-180,90,180]],
-    ID["OGC","CRS84"]]
-```
+If an implementation is CRS-aware and needs a CRS representation of the data it should assume a default value is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84), which is equivalent to the well-known [EPSG:4326](https://epsg.org/crs_4326/WGS-84.html) but changes the axis from latitude-longitude to longitude-latitude.
 
 Due to the large number of CRSes available and the difficulty of implementing all of them, we expect that a number of implementations will start without support for the optional `crs` field.
-Users are recommended to store their data in longitude, latitude (OGC:CRS84 or not including the `crs` field) for it to work with the widest number of tools. But data that is better served in particular projections can choose to use an alternate coordinate reference system. We expect many tools will support alternate CRSes, but encourage users to check to ensure their chosen tool supports their chosen crs.
+Users are recommended to store their data in longitude, latitude (OGC:CRS84 or not including the `crs` field) for it to work with the widest number of tools. Data that are more appropriately represented in particular projections may use an alternate coordinate reference system. We expect many tools will support alternate CRSes, but encourage users to check to ensure their chosen tool supports their chosen CRS.
+
+See below for additional details about representing or identifying OGC:CRS84.
 
 The value of this key may be explicitly set to `null` to indicate that there is no CRS assigned
 to this column (CRS is undefined or unknown).
@@ -189,3 +169,63 @@ This follows the GeoJSON specification ([RFC 7946, section 5](https://tools.ietf
 You can find an example in the [examples](../examples/) folder.
 
 [parquet]: https://parquet.apache.org/
+
+
+### OGC:CRS84 details
+
+The PROJJSON JSON object for OGC:CRS84 is:
+
+```json
+{
+    "$schema": "https://proj.org/schemas/v0.4/projjson.schema.json",
+    "type": "GeographicCRS",
+    "name": "WGS 84 longitude-latitude",
+    "datum": {
+        "type": "GeodeticReferenceFrame",
+        "name": "World Geodetic System 1984",
+        "ellipsoid": {
+            "name": "WGS 84",
+            "semi_major_axis": 6378137,
+            "inverse_flattening": 298.257223563
+        }
+    },
+    "coordinate_system": {
+        "subtype": "ellipsoidal",
+        "axis": [
+        {
+            "name": "Geodetic longitude",
+            "abbreviation": "Lon",
+            "direction": "east",
+            "unit": "degree"
+        },
+        {
+            "name": "Geodetic latitude",
+            "abbreviation": "Lat",
+            "direction": "north",
+            "unit": "degree"
+        }
+        ]
+    },
+    "id": {
+        "authority": "OGC",
+        "code": "CRS84"
+    }
+}
+```
+
+For implementations that operate entirely with longitude, latitude coordinates
+and are not CRS-aware or do not have easy access to CRS-aware libraries that can
+fully parse PROJJSON, it may be possible to infer that coordinates conform to
+the OGC:CRS84 CRS based on elements of the `crs` field.  For simplicity, Javascript
+object dot notation is used to refer to nested elements.
+
+The CRS is likely equivalent to OGC:CRS84 for a GeoParquet file if the `id` element is present:
+
+* `id.authority` = `"OGC"` and `id.code` = `"CRS84"`
+* `id.authority` = `"EPSG"` and `id.code` = `4326` (due to longitude, latitude ordering in this specification)
+
+It is reasonable for implementations to require that one of the above `id`
+elements are present and skip further tests to determine if the CRS is
+functionally equivalent with OGC:CRS84.
+
+Note: EPSG:4326 and OGC:CRS84 are equivalent with respect to this specification because this specification specifically overrides the coordinate axis order in the `crs` to be longitude-latitude.

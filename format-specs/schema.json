@@ -41,8 +41,15 @@
               "description": "The geometry type(s) of all geometries, or 'Unknown' if they are not known."
             },
             "crs": {
-              "type": ["string", "null"],
-              "description": "WKT2 representing the Coordinate Reference System (CRS) of the geometry. Can be null if the CRS is unknown."
+              "oneOf": [
+                {
+                  "$ref": "https://proj.org/schemas/v0.4/projjson.schema.json"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "JSON object representing the Coordinate Reference System (CRS) of the geometry. If the crs field is not included then the data in this column must be stored in longitude, latitude based on the WGS84 datum, and CRS-aware implementations should assume a default value of OGC:CRS84."
             },
             "edges": {
               "type": "string",

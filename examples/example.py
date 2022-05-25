@@ -30,7 +30,7 @@ metadata = {
         "geometry": {
             "encoding": "WKB",
             "geometry_type": ["Polygon", "MultiPolygon"],
-            "crs": df.crs.to_wkt(pyproj.enums.WktVersion.WKT2_2019_SIMPLIFIED),
+            "crs": json.loads(df.crs.to_json()),
             "edges": "planar",
             "bbox": [round(x, 4) for x in df.total_bounds],
         },
