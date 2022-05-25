@@ -5,6 +5,7 @@
   "description": "Parquet metadata included in the geo field.",
   "properties": {
     "version": {
+      "type": "string",
       "const": "0.4.0",
       "description": "The version of the geoparquet metadata standard used when writing."
     },
