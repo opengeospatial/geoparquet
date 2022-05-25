@@ -14,7 +14,6 @@ import pathlib
 import geopandas
 import pyarrow as pa
 import pyarrow.parquet as pq
-import pyproj
 
 HERE = pathlib.Path(__file__).parent
 
@@ -24,13 +23,13 @@ table = pa.Table.from_pandas(df.head().to_wkb())
 
 
 metadata = {
-    "version": "0.3.0",
+    "version": "0.4.0",
     "primary_column": "geometry",
     "columns": {
         "geometry": {
             "encoding": "WKB",
             "geometry_type": ["Polygon", "MultiPolygon"],
-            "crs": df.crs.to_wkt(pyproj.enums.WktVersion.WKT2_2019_SIMPLIFIED),
+            "crs": json.loads(df.crs.to_json()),
             "edges": "planar",
             "bbox": [round(x, 4) for x in df.total_bounds],
         },
