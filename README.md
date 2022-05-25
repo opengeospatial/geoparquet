@@ -49,8 +49,7 @@ A quick overview of what geoparquet supports (or at least plans to support).
 * **Great at read-heavy analytic workflows** - Columnar formats enable cheap reading of a subset of columns, and Parquet in particular enables efficient filtering
  of chunks based on column statistics, so the format will perform well in a variety of modern analytic workflows.
 * **Support for data partitioning** - Parquet has a nice ability to partition data into different files for efficiency, and we aim to enable geospatial partitions.
-* **Enable spatial indices** - To enable top performance a spatial index is essential. This will be the focus of the
- [0.4](https://github.com/opengeospatial/geoparquet/milestone/5) release.
+* **Enable spatial indices** - To enable top performance a spatial index is essential. This will be the focus of a future release.
 
 It should be noted what GeoParquet is less good for. The biggest one is that it is not a good choice for write-heavy interactions. A row-based format
 will work much better if it is backing a system that is constantly updating the data and adding new data.
@@ -61,8 +60,7 @@ Our aim is to get to a 1.0.0 within 'months', not years. The rough plan is:
 
 * 0.1 - Get the basics established, provide a target for implementations to start building against.
 * 0.2 / 0.3 - Feedback from implementations, 3D coordinates support, geometry types, crs optional.
-* 0.4 - Feedback from implementations, add spatial index.
-* 0.x - Several iterations based on feedback from implementations.
+* 0.x - Several iterations based on feedback from implementations, spatial index best practices.
 * 1.0.0-RC.1 - Aim for this when there are at least 6 implementations that all work interoperably and all feel good about the spec.
 * 1.0.0 - Once there are 12(?) implementations in diverse languages we will lock in for 1.0
 
