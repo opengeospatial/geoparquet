@@ -82,5 +82,6 @@ available on Google Cloud Storage.
 Currently known libraries that can read and write GeoParquet files:
 
 * [GeoPandas](https://geopandas.org/en/stable/docs/user_guide/io.html#apache-parquet-and-feather-file-formats) (Python)
+* [geoarrow](https://github.com/paleolimbot/geoarrow) (R)
 * [sfarrow](https://wcjochem.github.io/sfarrow/index.html) (R)
 * [GDAL/OGR](https://gdal.org/drivers/vector/parquet.html) (C++, bindings in several languages)
