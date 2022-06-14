@@ -53,7 +53,6 @@ Convert a SQL query to parquet:
 poetry run python bigquery_to_parquet.py \
     --input-query "SELECT * FROM carto-do-public-data.carto.geography_usa_blockgroup_2019" \
     --primary-column geom \
-    --partition-size 100 \
     --output geography_usa_blockgroup_2019 
 ```
 
@@ -72,7 +71,6 @@ Convert a SQL query to single parquet file:
 poetry run python bigquery_to_parquet.py \
     --input-query "SELECT * FROM carto-do-public-data.carto.geography_usa_blockgroup_2019" \
     --primary-column geom \
-    --partition-size 100 \
     --mode file \
     --output geography_usa_blockgroup_2019.parquet
 ```
