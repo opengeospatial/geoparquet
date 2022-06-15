@@ -68,7 +68,7 @@ def main(input_query: str, primary_column: str, output: Path, mode: str, compres
             read_gdf(input_query, primary_column)
                 .assign(__partition__= lambda x: x.index // partition_size)
         )
-    else: 
+    else:
         gdf = read_gdf(input_query, primary_column)
 
     print("Finished reading", file=sys.stderr)

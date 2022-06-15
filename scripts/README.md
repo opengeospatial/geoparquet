@@ -45,7 +45,7 @@ virtualenv:
 poetry run pip install -U --force-reinstall pygeos --no-binary pygeos
 ```
 
-### BigQuery 
+### BigQuery
 
 Convert a SQL query to parquet:
 
@@ -53,7 +53,7 @@ Convert a SQL query to parquet:
 poetry run python bigquery_to_parquet.py \
     --input-query "SELECT * FROM carto-do-public-data.carto.geography_usa_blockgroup_2019" \
     --primary-column geom \
-    --output geography_usa_blockgroup_2019 
+    --output geography_usa_blockgroup_2019
 ```
 
 Upload a parquet file or folder to BigQuery:
@@ -63,7 +63,7 @@ poetry run python parquet_to_bigquery.py \
     --output "cartodb-gcp-backend-data-team.alasarr.geography_usa_blockgroup_2019"
 ```
 
-Instead of using folders, you can also work with a single file, but it might hit [bigquery limits](https://cloud.google.com/bigquery/docs/loading-data-cloud-storage-parquet) when you upload it to BigQuery. For large parquet files you might get `UDF out of memory` errors. 
+Instead of using folders, you can also work with a single file, but it might hit [bigquery limits](https://cloud.google.com/bigquery/docs/loading-data-cloud-storage-parquet) when you upload it to BigQuery. For large parquet files you might get `UDF out of memory` errors.
 
 Convert a SQL query to single parquet file:
 

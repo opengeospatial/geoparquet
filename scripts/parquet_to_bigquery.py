@@ -19,18 +19,18 @@ def upload_parquet_file(client:  bigquery.Client, file: Path, write_disposition:
         print(f"Uploading file {file}")
         job = client.load_table_from_file(source_file, dst, job_config=job_config)
 
-    job.result()  # Waits for the job to complete.    
+    job.result()  # Waits for the job to complete.
 
 def validate_metadata(metadata):
     """Validate metadata"""
     if metadata is None or b"geo" not in metadata:
-      raise ValueError("Missing geo metadata")
+        raise ValueError("Missing geo metadata")
 
     geo = json.loads(metadata[b"geo"])
 
     if (geo["primary_column"] not in geo["columns"]):
         raise ValueError("Primary column not found")
-    
+
     for column_name, column_meta in geo["columns"].items():
         encoding = column_meta["encoding"]
         edges = column_meta["edges"]
@@ -70,7 +70,7 @@ def main(input: Path, output: str):
                 # First file determines the schema and truncates the table
                 metadata = pq.read_schema(file).metadata
                 validate_metadata(metadata)
-                write_disposition = bigquery.WriteDisposition.WRITE_TRUNCATE 
+                write_disposition = bigquery.WriteDisposition.WRITE_TRUNCATE
                 first_file = False
             else:
                # other files will append
@@ -81,7 +81,7 @@ def main(input: Path, output: str):
         # Single file mode
         metadata = pq.read_schema(input).metadata
         validate_metadata(metadata)
-        write_disposition = bigquery.WriteDisposition.WRITE_TRUNCATE 
+        write_disposition = bigquery.WriteDisposition.WRITE_TRUNCATE
         upload_parquet_file(client, input, write_disposition, tmp_output)
 
     metadata_geo = json.loads(metadata[b"geo"])
@@ -93,7 +93,7 @@ def main(input: Path, output: str):
     sql = f"""
         DROP TABLE IF EXISTS {output};
         CREATE TABLE {output} CLUSTER BY {primary_column}
-        AS SELECT * EXCEPT({", ".join(geo_columns)}), 
+        AS SELECT * EXCEPT({", ".join(geo_columns)}),
             {", ".join(wkb_columns_expression)}
         FROM {tmp_output};
         DROP TABLE IF EXISTS {tmp_output};
@@ -102,7 +102,7 @@ def main(input: Path, output: str):
     query_job = client.query(sql)
     query_job.result()  # Waits for job to complete.
 
-    table = client.get_table(output)  
+    table = client.get_table(output)
     print(f"Loaded {table.num_rows} rows and {len(table.schema)} columns to {output}")
 
 if __name__ == "__main__":

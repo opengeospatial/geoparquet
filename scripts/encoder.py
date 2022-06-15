@@ -138,7 +138,3 @@ def geopandas_to_arrow(df: gpd.GeoDataFrame, edges:Edges = Edges.PLANAR) -> pa.T
     metadata = table.schema.metadata
     metadata.update({b"geo": _encode_metadata(geo_metadata)})
     return table.replace_schema_metadata(metadata)
-
-
-
-
