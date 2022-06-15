@@ -1,5 +1,3 @@
-
-
 import click
 import sys
 import pyarrow.parquet as pq
