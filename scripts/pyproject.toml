@@ -6,12 +6,14 @@ authors = []
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.8,<3.11"
 pyarrow = "^7.0.0"
 geopandas = "^0.10.2"
 pygeos = "^0.12.0"
 pandas = "^1.4.2"
 click = "^8.1.2"
+google-cloud-bigquery = "^3.2.0"
+db-dtypes = "^1.0.2"
 
 [tool.poetry.dev-dependencies]
 ipykernel = "^6.13.0"
