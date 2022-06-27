@@ -1,4 +1,5 @@
-# GeoParquet
+
+![GeoParquet_logo](logo_400px.png)
 
 ## About
 
