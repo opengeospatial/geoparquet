@@ -86,7 +86,7 @@
                   ],
                   "minItems": 4,
                   "maxItems": 4,
-                  "items": false
+                  "additionalItems": false
                 },
                 {
                   "prefixItems": [
@@ -117,7 +117,7 @@
                   ],
                   "minItems": 6,
                   "maxItems": 6,
-                  "items": false
+                  "additionalItems": false
                 }
               ]
             },
