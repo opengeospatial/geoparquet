@@ -31,7 +31,7 @@ All file-level metadata should be included under the "geo" key in the parquet me
 | ------------------ | ------ | -------------------------------------------------------------------- |
 | version     		 | string | **REQUIRED** The version of the geoparquet metadata standard used when writing.   |
 | primary_column     | string | **REQUIRED** The name of the "primary" geometry column.                |
-| columns            | Map<key, [Column Metadata](#column-metadata)> | **REQUIRED** Metadata about geometry columns, with each key is the name of a geometry column in the table. |
+| columns            | Map\<str, [Column Metadata](#column-metadata)> | **REQUIRED** Metadata about geometry columns. Each key is the name of a geometry column in the table. |
 
 At this level, additional implementation-specific fields (e.g. library name) are allowed, and thus readers should be robust in ignoring those.
 
@@ -52,13 +52,13 @@ Each geometry column in the dataset must be included in the columns field above 
 
 | Field Name | Type | Description |
 | --- | --- | --- |
-| encoding | string | **REQUIRED** Name of the geometry encoding format. Currently only 'WKB' is supported. |
-| geometry_type | string or \[string] | **REQUIRED** The geometry type(s) of all geometries, or 'Unknown' if they are not known. |
-| crs | JSON object | **OPTIONAL** [PROJJSON](https://proj.org/specifications/projjson.html) JSON object representing the Coordinate Reference System (CRS) of the geometry. If the crs field is not included then the data in this column must be stored in longitude, latitude based on the WGS84 datum, and CRS-aware implementations should assume a default value of [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84). |
-| orientation | string | **OPTIONAL** Winding order of exterior ring of polygons. If present must be 'counterclockwise'; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order. |
-| edges | string | **OPTIONAL** Name of the coordinate system for the edges. Must be one of 'planar' or 'spherical'. The default value is 'planar'. |
+| encoding | string | **REQUIRED** Name of the geometry encoding format. Currently only `WKB` is supported. |
+| geometry_type | string or \[string] | **REQUIRED** The geometry type(s) of all geometries, or `Unknown` if they are not known. |
+| crs | object | **OPTIONAL** [PROJJSON](https://proj.org/specifications/projjson.html) JSON object representing the Coordinate Reference System (CRS) of the geometry. If the crs field is not included then the data in this column must be stored in longitude, latitude based on the WGS84 datum, and CRS-aware implementations should assume a default value of [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84). |
+| orientation | string | **OPTIONAL** Winding order of exterior ring of polygons. If present must be `counterclockwise`; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order. |
+| edges | string | **OPTIONAL** Name of the coordinate system for the edges. Must be one of `planar` or `spherical`. The default value is 'planar'. |
 | bbox | \[number] | **OPTIONAL** Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
-| epoch | double | **OPTIONAL** Coordinate epoch in case of a dynamic CRS, expressed as a decimal year. |
+| epoch | number | **OPTIONAL** Coordinate epoch in case of a dynamic CRS, expressed as a decimal year. |
 
 #### crs
 
