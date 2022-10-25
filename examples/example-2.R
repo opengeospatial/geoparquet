@@ -6,5 +6,5 @@ nc_pq<-read_geoparquet("nc.parquet")
 
 nc_pq %>%
   geoarrow_collect_sf()%>%
-  ggplot() + 
+  ggplot() +
   geom_sf()
