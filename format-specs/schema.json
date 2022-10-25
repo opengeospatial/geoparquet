@@ -64,22 +64,60 @@
             "bbox": {
               "type": "array",
               "description": "Bounding Box of the geometries in the file, formatted according to RFC 7946, section 5.",
-              "items": [
+              "oneOf": [
                 {
-                  "type": "number",
-                  "description": "The westmost constant longitude line that bounds the rectangle (xmin)."
+                  "prefixItems": [
+                    {
+                      "type": "number",
+                      "description": "The westmost constant longitude line that bounds the rectangle (xmin)."
+                    },
+                    {
+                      "type": "number",
+                      "description": "The minimum constant latitude line that bounds the rectangle (ymin)."
+                    },
+                    {
+                      "type": "number",
+                      "description": "The eastmost constant longitude line that bounds the rectangle (xmax)."
+                    },
+                    {
+                      "type": "number",
+                      "description": "The maximum constant latitude line that bounds the rectangle (ymax)."
+                    }
+                  ],
+                  "minItems": 4,
+                  "maxItems": 4,
+                  "items": false
                 },
                 {
-                  "type": "number",
-                  "description": "The minimum constant latitude line that bounds the rectangle (ymin)."
-                },
-                {
-                  "type": "number",
-                  "description": "The eastmost constant longitude line that bounds the rectangle (xmax)."
-                },
-                {
-                  "type": "number",
-                  "description": "The maximum constant latitude line that bounds the rectangle (ymax)."
+                  "prefixItems": [
+                    {
+                      "type": "number",
+                      "description": "The westmost constant longitude line that bounds the parallelepiped (xmin)."
+                    },
+                    {
+                      "type": "number",
+                      "description": "The minimum constant latitude line that bounds the parallelepiped (ymin)."
+                    },
+                    {
+                      "type": "number",
+                      "description": "The minimum constant elevation line that bounds the parallelepiped (zmin)."
+                    },
+                    {
+                      "type": "number",
+                      "description": "The eastmost constant longitude line that bounds the parallelepiped (xmax)."
+                    },
+                    {
+                      "type": "number",
+                      "description": "The maximum constant latitude line that bounds the parallelepiped (ymax)."
+                    },
+                    {
+                      "type": "number",
+                      "description": "The maximum constant elevation line that bounds the parallelepiped (zmax)."
+                    }
+                  ],
+                  "minItems": 6,
+                  "maxItems": 6,
+                  "items": false
                 }
               ]
             },
