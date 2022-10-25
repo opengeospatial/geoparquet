@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GeoParquet",
+  "type": "object",
+  "description": "Parquet metadata included in the geo field.",
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "0.4.0",
+      "description": "The version of the geoparquet metadata standard used when writing."
+    },
+    "primary_column": {
+      "type": "string",
+      "description": "The name of the 'primary' geometry column."
+    },
+    "columns": {
+      "type": "object",
+      "description": "Metadata about geometry columns, with each key is the name of a geometry column in the table.",
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "properties": {
+            "encoding": {
+              "type": "string",
+              "enum": ["WKB"],
+              "description": "Name of the geometry encoding format. Currently only 'WKB' is supported."
+            },
+            "geometry_type": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/geometry_type"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/geometry_type"
+                  },
+                  "uniqueItems": true
+                }
+              ],
+              "description": "The geometry type(s) of all geometries, or 'Unknown' if they are not known."
+            },
+            "crs": {
+              "oneOf": [
+                {
+                  "$ref": "https://proj.org/schemas/v0.4/projjson.schema.json"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "JSON object representing the Coordinate Reference System (CRS) of the geometry. If the crs field is not included then the data in this column must be stored in longitude, latitude based on the WGS84 datum, and CRS-aware implementations should assume a default value of OGC:CRS84."
+            },
+            "edges": {
+              "type": "string",
+              "enum": ["planar", "spherical"],
+              "description": "Name of the coordinate system for the edges. Must be one of 'planar' or 'spherical'. The default value is 'planar'."
+            },
+            "orientation": {
+              "type": "string",
+              "enum": ["counterclockwise"],
+              "description": "Winding order of exterior ring of polygons; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order."
+            },
+            "bbox": {
+              "type": "array",
+              "description": "Bounding Box of the geometries in the file, formatted according to RFC 7946, section 5.",
+              "items": [
+                {
+                  "type": "number",
+                  "description": "The westmost constant longitude line that bounds the rectangle (xmin)."
+                },
+                {
+                  "type": "number",
+                  "description": "The minimum constant latitude line that bounds the rectangle (ymin)."
+                },
+                {
+                  "type": "number",
+                  "description": "The eastmost constant longitude line that bounds the rectangle (xmax)."
+                },
+                {
+                  "type": "number",
+                  "description": "The maximum constant latitude line that bounds the rectangle (ymax)."
+                }
+              ]
+            },
+            "epoch": {
+              "type": "number",
+              "description": "Coordinate epoch in case of a dynamic CRS, expressed as a decimal year."
+            }
+          },
+          "additionalProperties": true,
+          "required": ["encoding", "geometry_type"]
+        }
+      }
+    }
+  },
+  "additionalProperties": true,
+  "required": ["version", "primary_column", "columns"],
+  "$defs": {
+    "geometry_type": {
+      "type": "string",
+      "enum": ["Point", "LineString", "Polygon", "MultiPoint", "MultiLineString", "MultiPolygon", "GeometryCollection", "Unknown"]
+    }
+  }
+}
