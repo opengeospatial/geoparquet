@@ -29,6 +29,11 @@ jobs:
             geoparquet_validator $example || exit 1;
           done
 
+      - name: Test json schema
+        run: |
+          cd tests
+          python validate_schemas.py
+
   test-json-metadata:
     runs-on: ubuntu-latest
     steps:

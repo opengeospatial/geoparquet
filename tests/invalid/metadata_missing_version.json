@@ -1,0 +1,11 @@
+{
+  "geo": {
+    "columns": {
+      "geometry": {
+        "encoding": "WKB",
+        "geometry_type": "Unknown"
+      }
+    },
+    "primary_column": "geometry"
+  }
+}
