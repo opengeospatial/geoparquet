@@ -166,6 +166,12 @@ This follows the GeoJSON specification ([RFC 7946, section 5](https://tools.ietf
 
 ### Additional information
 
+#### Feature identifiers
+
+If you are using GeoParquet to serialize geospatial data with feature identifiers, it is recommended that you create your own [file key/value metadata](https://github.com/apache/parquet-format#metadata) to indicate the column that represents this identifier.  As an example, GDAL writes additional metadata using the `gdal:schema` key including information about feature identifiers and other information outside the scope of the GeoParquet specification.
+
+#### Example data
+
 You can find an example in the [examples](../examples/) folder.
 
 [parquet]: https://parquet.apache.org/
