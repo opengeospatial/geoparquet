@@ -14,6 +14,14 @@ This is version 0.4.0 of the GeoParquet specification.
 Geometry columns are stored using the `BYTE_ARRAY` parquet type. They are encoded as [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary).
 See the [encoding](#encoding) section below for more details.
 
+### Nesting
+
+Geometry columns must be at the root of the schema.  A geometry cannot be a group field or nested in a group.  In practice, this means that when writing to GeoParquet from another format, geometries cannot be contained in complex or nested types such as structs, lists, arrays, or map types.
+
+### Repetition
+
+The repetition for all geometry columns must be "required" (exactly one) or "optional" (zero or one).  A geometry column must not be repeated.  A GeoParquet file may have multiple geometry columns with different names, but those geometry columns cannot be repeated.
+
 ## Metadata
 
 GeoParquet files include additional metadata at two levels:
