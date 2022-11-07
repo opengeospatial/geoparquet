@@ -6,7 +6,7 @@
   "properties": {
     "version": {
       "type": "string",
-      "const": "0.4.0",
+      "const": "0.5.0-dev",
       "description": "The version of the GeoParquet metadata standard used when writing."
     },
     "primary_column": {
@@ -25,20 +25,14 @@
               "enum": ["WKB"],
               "description": "Name of the geometry encoding format. Currently only 'WKB' is supported."
             },
-            "geometry_type": {
-              "oneOf": [
-                {
-                  "$ref": "#/$defs/geometry_type"
-                },
-                {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/$defs/geometry_type"
-                  },
-                  "uniqueItems": true
-                }
-              ],
-              "description": "The geometry type(s) of all geometries, or 'Unknown' if they are not known."
+            "geometry_types": {
+              "description": "The geometry types of all geometries, or an empty array if they are not known.",
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^(GeometryCollection|(Multi)?(Point|LineString|Polygon))( Z)?$"
+              }
             },
             "crs": {
               "oneOf": [
@@ -89,17 +83,11 @@
             }
           },
           "additionalProperties": true,
-          "required": ["encoding", "geometry_type"]
+          "required": ["encoding", "geometry_types"]
         }
       }
     }
   },
   "additionalProperties": true,
-  "required": ["version", "primary_column", "columns"],
-  "$defs": {
-    "geometry_type": {
-      "type": "string",
-      "enum": ["Point", "LineString", "Polygon", "MultiPoint", "MultiLineString", "MultiPolygon", "GeometryCollection", "Unknown"]
-    }
-  }
+  "required": ["version", "primary_column", "columns"]
 }
