@@ -16,7 +16,7 @@ def test_valid_schema(path):
         metadata = json.load(f)["geo"]
 
     print(f"Validating {path}")
-    
+
     errors = Draft7Validator(SCHEMA).iter_errors(metadata)
 
     valid = True
@@ -39,7 +39,7 @@ def test_invalid_schema(path):
         metadata = json.load(f)["geo"]
 
     print(f"Validating {path}")
-    
+
     errors = Draft7Validator(SCHEMA).iter_errors(metadata)
 
     if len(list(errors)):
