@@ -7,7 +7,7 @@ should be stored in parquet format, including the representation of geometries a
 
 ## Version
 
-This is version 0.4.0 of the geoparquet specification.
+This is version 0.4.0 of the GeoParquet specification.
 
 ## Geometry columns
 
@@ -16,7 +16,7 @@ See the [encoding](#encoding) section below for more details.
 
 ## Metadata
 
-geoparquet files include additional metadata at two levels:
+GeoParquet files include additional metadata at two levels:
 
 1. File metadata indicating things like the version of this specification used
 2. Column metadata with additional metadata for each geometry column
@@ -29,7 +29,7 @@ All file-level metadata should be included under the "geo" key in the parquet me
 
 |     Field Name     |  Type  |                             Description                              |
 | ------------------ | ------ | -------------------------------------------------------------------- |
-| version     		 | string | **REQUIRED** The version of the geoparquet metadata standard used when writing.   |
+| version     		 | string | **REQUIRED** The version of the GeoParquet metadata standard used when writing.   |
 | primary_column     | string | **REQUIRED** The name of the "primary" geometry column.                |
 | columns            | Map<key, [Column Metadata](#column-metadata)> | **REQUIRED** Metadata about geometry columns, with each key is the name of a geometry column in the table. |
 
@@ -44,7 +44,7 @@ but have a default geometry used for geospatial operations.
 
 #### version
 
-Version of the geoparquet spec used, currently 0.4.0
+Version of the GeoParquet spec used, currently 0.4.0
 
 ### Column metadata
 
@@ -62,7 +62,7 @@ Each geometry column in the dataset must be included in the columns field above 
 
 #### crs
 
-The Coordinate Reference System (CRS) is an optional parameter for each geometry column defined in geoparquet format.
+The Coordinate Reference System (CRS) is an optional parameter for each geometry column defined in GeoParquet format.
 
 The CRS must be provided in
 [PROJJSON](https://proj.org/specifications/projjson.html) format, which is a JSON encoding of
@@ -106,7 +106,7 @@ Note that the current version of the spec only allows for a subset of WKB: 2D or
 
 #### Coordinate axis order
 
-The axis order of the coordinates in WKB stored in a geoparquet follows the de facto standard for axis order in WKB and is therefore always
+The axis order of the coordinates in WKB stored in a GeoParquet follows the de facto standard for axis order in WKB and is therefore always
 (x, y) where x is easting or longitude and y is northing or latitude. This ordering explicitly overrides the axis order as specified in the CRS.
 This follows the precedent of [GeoPackage](https://geopackage.org), see the [note in their spec](https://www.geopackage.org/spec130/#gpb_spec).
 
