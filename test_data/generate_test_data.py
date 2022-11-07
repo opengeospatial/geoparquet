@@ -69,6 +69,7 @@ table = pa.table(
     {"col": [1, 2, 3], "geom": to_wkb(["POINT (1 1)", "POINT (2 2)", "POINT (3 3)"])}
 )
 metadata = copy.deepcopy(metadata_template)
+metadata["primary_column"] = "geom"
 metadata["columns"]["geom"] = metadata["columns"].pop("geometry")
 table = table.replace_schema_metadata({"geo": json.dumps(metadata)})
 pq.write_table(table, HERE / "data_geometry_column_name.parquet")

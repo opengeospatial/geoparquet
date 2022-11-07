@@ -28,6 +28,10 @@ jobs:
             echo $example;
             geoparquet_validator $example || exit 1;
           done
+          for example in $(ls test_data/*.parquet); do
+            echo $example;
+            geoparquet_validator $example || exit 1;
+          done
 
   test-json-metadata:
     runs-on: ubuntu-latest
