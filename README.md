@@ -86,3 +86,4 @@ Currently known libraries that can read and write GeoParquet files:
 * [sfarrow](https://wcjochem.github.io/sfarrow/index.html) (R)
 * [GDAL/OGR](https://gdal.org/drivers/vector/parquet.html) (C++, bindings in several languages)
 * [GeoParquet.jl](https://github.com/JuliaGeo/GeoParquet.jl) (Julia)
+* [gpq](https://github.com/tschaub/gpq) (Go, CLI and WASM build for reading/writing GeoParquet)
