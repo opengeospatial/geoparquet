@@ -71,14 +71,12 @@
                 {
                   "description": "2D bbox consisting of (xmin, ymin, xmax, ymax)",
                   "minItems": 4,
-                  "maxItems": 4,
-                  "additionalItems": false
+                  "maxItems": 4
                 },
                 {
                   "description": "3D bbox consisting of (xmin, ymin, zmin, xmax, ymax, zmax)",
                   "minItems": 6,
-                  "maxItems": 6,
-                  "additionalItems": false
+                  "maxItems": 6
                 }
               ]
             },
