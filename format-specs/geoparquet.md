@@ -161,7 +161,8 @@ Implementations of this schema may choose to use those bounding boxes to filter
 partitions (files) of a partitioned dataset.
 
 The bbox, if specified, must be encoded with an array containing the minimum
-and maximum values of each dimension: `[<xmin>, <ymin>, <xmax>, <ymax>]`.
+and maximum values of each dimension: `[<xmin>, <ymin>, <xmax>, <ymax>]` for 2D
+or `[<xmin>, <ymin>, <zmin>, <xmax>, <ymax>, <zmax>]` for 3D geometries.
 This follows the GeoJSON specification ([RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5)).
 
 ### Additional information
