@@ -164,7 +164,7 @@ The bbox, if specified, must be encoded with an array containing the minimum
 and maximum values of each dimension: `[<xmin>, <ymin>, <xmax>, <ymax>]` for 2D
 or `[<xmin>, <ymin>, <zmin>, <xmax>, <ymax>, <zmax>]` for 3D geometries.
 This follows the GeoJSON specification ([RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5)),
-but is expressed in the same CRS as the geometries.
+but is expressed in the same CRS as the geometry.
 
 ### Additional information
 
