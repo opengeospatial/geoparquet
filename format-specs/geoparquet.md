@@ -168,11 +168,18 @@ Bounding boxes are used to help define the spatial extent of each geometry colum
 Implementations of this schema may choose to use those bounding boxes to filter
 partitions (files) of a partitioned dataset.
 
-The bbox, if specified, must be encoded with an array containing the minimum
-and maximum values of each dimension: `[<xmin>, <ymin>, <xmax>, <ymax>]` for 2D
-or `[<xmin>, <ymin>, <zmin>, <xmax>, <ymax>, <zmax>]` for 3D geometries.
-This follows the GeoJSON specification ([RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5)),
-but is expressed in the same CRS as the geometry.
+The bbox, if specified, must be encoded with an array representing the range of values for each dimension in the
+geometry coordinates.  For geometries in a geographic coordinate reference system, longitude and latitude values are
+listed for the most southwesterly coordinate followed by values for the most northeasterly coordinate.  This follows the
+GeoJSON specification ([RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5)), which also describes how
+to represent the bbox for a set of geometries that cross the antimeridian.
+
+For non-geographic coordinate reference systems, the items in the bbox are minimum values for each dimension followed by
+maximum values for each dimension.  For example, given geometries that have coordinates with two dimensions, the bbox
+would have the form `[<xmin>, <ymin>, <xmax>, <ymax>]`.  For three dimensions, the bbox would have the form
+`[<xmin>, <ymin>, <zmin>, <xmax>, <ymax>, <zmax>]`.
+
+The bbox values are in the same coordinate reference system as the geometry.
 
 ### Additional information
 
