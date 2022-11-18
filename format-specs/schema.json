@@ -65,20 +65,9 @@
               "type": "array",
               "description": "Bounding Box of the geometries in the file, formatted according to RFC 7946, section 5.",
               "items": {
-                "type": "number"
-              },
-              "oneOf": [
-                {
-                  "description": "2D bbox consisting of (xmin, ymin, xmax, ymax)",
-                  "minItems": 4,
-                  "maxItems": 4
-                },
-                {
-                  "description": "3D bbox consisting of (xmin, ymin, zmin, xmax, ymax, zmax)",
-                  "minItems": 6,
-                  "maxItems": 6
-                }
-              ]
+                "type": "number",
+                "minItems": 4
+              }
             },
             "epoch": {
               "type": "number",
