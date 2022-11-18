@@ -61,7 +61,7 @@ Each geometry column in the dataset must be included in the columns field above 
 | Field Name | Type | Description |
 | --- | --- | --- |
 | encoding | string | **REQUIRED** Name of the geometry encoding format. Currently only 'WKB' is supported. |
-| geometry_type | string or \[string] | **REQUIRED** The geometry type(s) of all geometries, or 'Unknown' if they are not known. |
+| geometry_types | \[string] | **REQUIRED** The geometry types of all geometries, or an empty array if they are not known. |
 | crs | JSON object | **OPTIONAL** [PROJJSON](https://proj.org/specifications/projjson.html) JSON object representing the Coordinate Reference System (CRS) of the geometry. If the crs field is not included then the data in this column must be stored in longitude, latitude based on the WGS84 datum, and CRS-aware implementations should assume a default value of [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84). |
 | orientation | string | **OPTIONAL** Winding order of exterior ring of polygons. If present must be 'counterclockwise'; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order. |
 | edges | string | **OPTIONAL** Name of the coordinate system for the edges. Must be one of 'planar' or 'spherical'. The default value is 'planar'. |
@@ -118,26 +118,25 @@ The axis order of the coordinates in WKB stored in a GeoParquet follows the de f
 (x, y) where x is easting or longitude and y is northing or latitude. This ordering explicitly overrides the axis order as specified in the CRS.
 This follows the precedent of [GeoPackage](https://geopackage.org), see the [note in their spec](https://www.geopackage.org/spec130/#gpb_spec).
 
-#### geometry_type
+#### geometry_types
 
-This field captures the geometry type(s) of the geometries in the
+This field captures the geometry types of the geometries in the
 column, when known. Accepted geometry types are: "Point", "LineString",
 "Polygon", "MultiPoint", "MultiLineString", "MultiPolygon",
 "GeometryCollection".
 
 In addition, the following rules are used:
 
-- In case of 3D geometries, a " Z" suffix gets added (e.g. "Point Z").
-- The value can be a single string or an array of strings in case multiple
-  geometry types are present (e.g. ["Polygon", "MultiPolygon"]).
-- Additionally the value "Unknown" is accepted to explicitly signal that the
-  geometry type is not known.
+- In case of 3D geometries, a " Z" suffix gets added (e.g. ["Point Z"]).
+- A list of multiple values indicates that multiple geometry types are present (e.g. ["Polygon", "MultiPolygon"]).
+- An empty array explicitly signals that the geometry types are not known.
+- The geometry types in the list must be unique (e.g. ["Point", "Point"] is not valid).
 
 It is expected that this field is strictly correct. For
 example, if having both polygons and multipolygons, it is not sufficient to
-specify "MultiPolygon", but it is expected to specify
+specify ["MultiPolygon"], but it is expected to specify
 ["Polygon", "MultiPolygon"]. Or if having 3D points, it is not sufficient to
-specify "Point", but it is expected to list "Point Z".
+specify ["Point"], but it is expected to list ["Point Z"].
 
 #### orientation
 
