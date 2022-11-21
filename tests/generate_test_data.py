@@ -11,12 +11,12 @@ HERE = pathlib.Path(__file__).parent
 
 
 metadata_template = {
-    "version": "0.4.0",
+    "version": "0.5.0-dev",
     "primary_column": "geometry",
     "columns": {
         "geometry": {
             "encoding": "WKB",
-            "geometry_type": "Unknown",
+            "geometry_types": [],
         },
     },
 }
@@ -53,7 +53,7 @@ metadata["columns"]["geometry"].pop("encoding")
 write_metadata_json(metadata, "missing_geometry_encoding", case="invalid")
 
 metadata = copy.deepcopy(metadata_template)
-metadata["columns"]["geometry"].pop("geometry_type")
+metadata["columns"]["geometry"].pop("geometry_types")
 write_metadata_json(metadata, "missing_geometry_type", case="invalid")
 
 
@@ -81,16 +81,19 @@ metadata["columns"]["geometry"]["geometry_type"] = ["Point"]
 write_metadata_json(metadata, "geometry_type_list")
 
 
-# Geometry type - single string or list
+# Geometry type - non-empty list
 
 metadata = copy.deepcopy(metadata_template)
-metadata["columns"]["geometry"]["geometry_type"] = "Point"
-write_metadata_json(metadata, "geometry_type_string")
-
-metadata = copy.deepcopy(metadata_template)
-metadata["columns"]["geometry"]["geometry_type"] = ["Point"]
+metadata["columns"]["geometry"]["geometry_types"] = ["Point"]
 write_metadata_json(metadata, "geometry_type_list")
 
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["geometry_types"] = "Point"
+write_metadata_json(metadata, "geometry_type_string", case="invalid")
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["geometry_types"] = ["Curve"]
+write_metadata_json(metadata, "geometry_type_nonexistent", case="invalid")
 
 
 # CRS - explicit null

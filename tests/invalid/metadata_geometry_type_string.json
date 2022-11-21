@@ -3,8 +3,7 @@
     "columns": {
       "geometry": {
         "encoding": "WKB",
-        "geometry_types": [],
-        "orientation": "counterclockwise"
+        "geometry_types": "Point"
       }
     },
     "primary_column": "geometry",

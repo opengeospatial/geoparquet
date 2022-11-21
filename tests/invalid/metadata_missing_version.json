@@ -3,7 +3,7 @@
     "columns": {
       "geometry": {
         "encoding": "WKB",
-        "geometry_type": "Unknown"
+        "geometry_types": []
       }
     },
     "primary_column": "geometry"

@@ -2,10 +2,10 @@
   "geo": {
     "columns": {
       "geometry": {
-        "geometry_type": "Unknown"
+        "geometry_types": []
       }
     },
     "primary_column": "geometry",
-    "version": "0.4.0"
+    "version": "0.5.0-dev"
   }
 }
