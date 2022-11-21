@@ -7,16 +7,24 @@ should be stored in parquet format, including the representation of geometries a
 
 ## Version
 
-This is version 0.4.0 of the geoparquet specification.
+This is version 0.4.0 of the GeoParquet specification.
 
 ## Geometry columns
 
 Geometry columns are stored using the `BYTE_ARRAY` parquet type. They are encoded as [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary).
 See the [encoding](#encoding) section below for more details.
 
+### Nesting
+
+Geometry columns must be at the root of the schema.  A geometry cannot be a group field or nested in a group.  In practice, this means that when writing to GeoParquet from another format, geometries cannot be contained in complex or nested types such as structs, lists, arrays, or map types.
+
+### Repetition
+
+The repetition for all geometry columns must be "required" (exactly one) or "optional" (zero or one).  A geometry column must not be repeated.  A GeoParquet file may have multiple geometry columns with different names, but those geometry columns cannot be repeated.
+
 ## Metadata
 
-geoparquet files include additional metadata at two levels:
+GeoParquet files include additional metadata at two levels:
 
 1. File metadata indicating things like the version of this specification used
 2. Column metadata with additional metadata for each geometry column
@@ -29,7 +37,7 @@ All file-level metadata should be included under the "geo" key in the parquet me
 
 |     Field Name     |  Type  |                             Description                              |
 | ------------------ | ------ | -------------------------------------------------------------------- |
-| version     		 | string | **REQUIRED** The version of the geoparquet metadata standard used when writing.   |
+| version     		 | string | **REQUIRED** The version of the GeoParquet metadata standard used when writing.   |
 | primary_column     | string | **REQUIRED** The name of the "primary" geometry column.                |
 | columns            | Map<key, [Column Metadata](#column-metadata)> | **REQUIRED** Metadata about geometry columns, with each key is the name of a geometry column in the table. |
 
@@ -44,7 +52,7 @@ but have a default geometry used for geospatial operations.
 
 #### version
 
-Version of the geoparquet spec used, currently 0.4.0
+Version of the GeoParquet spec used, currently 0.4.0
 
 ### Column metadata
 
@@ -53,7 +61,7 @@ Each geometry column in the dataset must be included in the columns field above 
 | Field Name | Type | Description |
 | --- | --- | --- |
 | encoding | string | **REQUIRED** Name of the geometry encoding format. Currently only 'WKB' is supported. |
-| geometry_type | string or \[string] | **REQUIRED** The geometry type(s) of all geometries, or 'Unknown' if they are not known. |
+| geometry_types | \[string] | **REQUIRED** The geometry types of all geometries, or an empty array if they are not known. |
 | crs | JSON object | **OPTIONAL** [PROJJSON](https://proj.org/specifications/projjson.html) JSON object representing the Coordinate Reference System (CRS) of the geometry. If the crs field is not included then the data in this column must be stored in longitude, latitude based on the WGS84 datum, and CRS-aware implementations should assume a default value of [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84). |
 | orientation | string | **OPTIONAL** Winding order of exterior ring of polygons. If present must be 'counterclockwise'; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order. |
 | edges | string | **OPTIONAL** Name of the coordinate system for the edges. Must be one of 'planar' or 'spherical'. The default value is 'planar'. |
@@ -62,7 +70,7 @@ Each geometry column in the dataset must be included in the columns field above 
 
 #### crs
 
-The Coordinate Reference System (CRS) is an optional parameter for each geometry column defined in geoparquet format.
+The Coordinate Reference System (CRS) is an optional parameter for each geometry column defined in GeoParquet format.
 
 The CRS must be provided in
 [PROJJSON](https://proj.org/specifications/projjson.html) format, which is a JSON encoding of
@@ -106,30 +114,29 @@ Note that the current version of the spec only allows for a subset of WKB: 2D or
 
 #### Coordinate axis order
 
-The axis order of the coordinates in WKB stored in a geoparquet follows the de facto standard for axis order in WKB and is therefore always
+The axis order of the coordinates in WKB stored in a GeoParquet follows the de facto standard for axis order in WKB and is therefore always
 (x, y) where x is easting or longitude and y is northing or latitude. This ordering explicitly overrides the axis order as specified in the CRS.
 This follows the precedent of [GeoPackage](https://geopackage.org), see the [note in their spec](https://www.geopackage.org/spec130/#gpb_spec).
 
-#### geometry_type
+#### geometry_types
 
-This field captures the geometry type(s) of the geometries in the
+This field captures the geometry types of the geometries in the
 column, when known. Accepted geometry types are: "Point", "LineString",
 "Polygon", "MultiPoint", "MultiLineString", "MultiPolygon",
 "GeometryCollection".
 
 In addition, the following rules are used:
 
-- In case of 3D geometries, a " Z" suffix gets added (e.g. "Point Z").
-- The value can be a single string or an array of strings in case multiple
-  geometry types are present (e.g. ["Polygon", "MultiPolygon"]).
-- Additionally the value "Unknown" is accepted to explicitly signal that the
-  geometry type is not known.
+- In case of 3D geometries, a " Z" suffix gets added (e.g. ["Point Z"]).
+- A list of multiple values indicates that multiple geometry types are present (e.g. ["Polygon", "MultiPolygon"]).
+- An empty array explicitly signals that the geometry types are not known.
+- The geometry types in the list must be unique (e.g. ["Point", "Point"] is not valid).
 
 It is expected that this field is strictly correct. For
 example, if having both polygons and multipolygons, it is not sufficient to
-specify "MultiPolygon", but it is expected to specify
+specify ["MultiPolygon"], but it is expected to specify
 ["Polygon", "MultiPolygon"]. Or if having 3D points, it is not sufficient to
-specify "Point", but it is expected to list "Point Z".
+specify ["Point"], but it is expected to list ["Point Z"].
 
 #### orientation
 
@@ -160,9 +167,18 @@ Bounding boxes are used to help define the spatial extent of each geometry colum
 Implementations of this schema may choose to use those bounding boxes to filter
 partitions (files) of a partitioned dataset.
 
-The bbox, if specified, must be encoded with an array containing the minimum
-and maximum values of each dimension: `[<xmin>, <ymin>, <xmax>, <ymax>]`.
-This follows the GeoJSON specification ([RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5)).
+The bbox, if specified, must be encoded with an array representing the range of values for each dimension in the
+geometry coordinates.  For geometries in a geographic coordinate reference system, longitude and latitude values are
+listed for the most southwesterly coordinate followed by values for the most northeasterly coordinate.  This follows the
+GeoJSON specification ([RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5)), which also describes how
+to represent the bbox for a set of geometries that cross the antimeridian.
+
+For non-geographic coordinate reference systems, the items in the bbox are minimum values for each dimension followed by
+maximum values for each dimension.  For example, given geometries that have coordinates with two dimensions, the bbox
+would have the form `[<xmin>, <ymin>, <xmax>, <ymax>]`.  For three dimensions, the bbox would have the form
+`[<xmin>, <ymin>, <zmin>, <xmax>, <ymax>, <zmax>]`.
+
+The bbox values are in the same coordinate reference system as the geometry.
 
 ### Additional information
 

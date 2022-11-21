@@ -6,8 +6,8 @@
   "properties": {
     "version": {
       "type": "string",
-      "const": "0.4.0",
-      "description": "The version of the geoparquet metadata standard used when writing."
+      "const": "0.5.0-dev",
+      "description": "The version of the GeoParquet metadata standard used when writing."
     },
     "primary_column": {
       "type": "string",
@@ -25,20 +25,14 @@
               "enum": ["WKB"],
               "description": "Name of the geometry encoding format. Currently only 'WKB' is supported."
             },
-            "geometry_type": {
-              "oneOf": [
-                {
-                  "$ref": "#/$defs/geometry_type"
-                },
-                {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/$defs/geometry_type"
-                  },
-                  "uniqueItems": true
-                }
-              ],
-              "description": "The geometry type(s) of all geometries, or 'Unknown' if they are not known."
+            "geometry_types": {
+              "description": "The geometry types of all geometries, or an empty array if they are not known.",
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^(GeometryCollection|(Multi)?(Point|LineString|Polygon))( Z)?$"
+              }
             },
             "crs": {
               "oneOf": [
@@ -64,22 +58,19 @@
             "bbox": {
               "type": "array",
               "description": "Bounding Box of the geometries in the file, formatted according to RFC 7946, section 5.",
-              "items": [
+              "items": {
+                "type": "number"
+              },
+              "oneOf": [
                 {
-                  "type": "number",
-                  "description": "The westmost constant longitude line that bounds the rectangle (xmin)."
+                  "description": "2D bbox consisting of (xmin, ymin, xmax, ymax)",
+                  "minItems": 4,
+                  "maxItems": 4
                 },
                 {
-                  "type": "number",
-                  "description": "The minimum constant latitude line that bounds the rectangle (ymin)."
-                },
-                {
-                  "type": "number",
-                  "description": "The eastmost constant longitude line that bounds the rectangle (xmax)."
-                },
-                {
-                  "type": "number",
-                  "description": "The maximum constant latitude line that bounds the rectangle (ymax)."
+                  "description": "3D bbox consisting of (xmin, ymin, zmin, xmax, ymax, zmax)",
+                  "minItems": 6,
+                  "maxItems": 6
                 }
               ]
             },
@@ -89,17 +80,11 @@
             }
           },
           "additionalProperties": true,
-          "required": ["encoding", "geometry_type"]
+          "required": ["encoding", "geometry_types"]
         }
       }
     }
   },
   "additionalProperties": true,
-  "required": ["version", "primary_column", "columns"],
-  "$defs": {
-    "geometry_type": {
-      "type": "string",
-      "enum": ["Point", "LineString", "Polygon", "MultiPoint", "MultiLineString", "MultiPolygon", "GeometryCollection", "Unknown"]
-    }
-  }
+  "required": ["version", "primary_column", "columns"]
 }

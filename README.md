@@ -36,7 +36,7 @@ And our broader goal is to innovate with 'cloud-native vector' providing a stabl
 
 ## Features
 
-A quick overview of what geoparquet supports (or at least plans to support).
+A quick overview of what GeoParquet supports (or at least plans to support).
 
 * **Multiple spatial reference systems** - Many tools will use GeoParquet for high-performance analysis, so it's important to be able to use data in its
  native projection. But we do provide a clear default recommendation to better enable interoperability, giving a clear target for implementations that don't want to
@@ -75,7 +75,7 @@ will be any more potential breaking changes. Though the full commitment to that 
 
 ## Current Implementations & Examples
 
-Examples of geoparquet files following the current spec can be found in the [examples/](examples/) folder. There is also a
+Examples of GeoParquet files following the current spec can be found in the [examples/](examples/) folder. There is also a
 larger sample dataset [nz-building-outlines.parquet](https://storage.googleapis.com/open-geodata/linz-examples/nz-building-outlines.parquet)
 available on Google Cloud Storage.
 
@@ -86,3 +86,4 @@ Currently known libraries that can read and write GeoParquet files:
 * [sfarrow](https://wcjochem.github.io/sfarrow/index.html) (R)
 * [GDAL/OGR](https://gdal.org/drivers/vector/parquet.html) (C++, bindings in several languages)
 * [GeoParquet.jl](https://github.com/JuliaGeo/GeoParquet.jl) (Julia)
+* [gpq](https://github.com/tschaub/gpq) (Go, CLI and WASM build for reading/writing GeoParquet)

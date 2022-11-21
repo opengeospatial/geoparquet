@@ -9,7 +9,7 @@
           83.6451
         ],
         "crs": {
-          "$schema": "https://proj.org/schemas/v0.4/projjson.schema.json",
+          "$schema": "https://proj.org/schemas/v0.5/projjson.schema.json",
           "area": "World.",
           "bbox": {
             "east_longitude": 180,
@@ -108,13 +108,13 @@
         },
         "edges": "planar",
         "encoding": "WKB",
-        "geometry_type": [
+        "geometry_types": [
           "Polygon",
           "MultiPolygon"
         ]
       }
     },
     "primary_column": "geometry",
-    "version": "0.4.0"
+    "version": "0.5.0-dev"
   }
 }
