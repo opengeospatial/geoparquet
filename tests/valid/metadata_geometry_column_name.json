@@ -1,12 +1,12 @@
 {
   "geo": {
     "columns": {
-      "geometry": {
+      "geom": {
         "encoding": "WKB",
         "geometry_types": []
       }
     },
-    "primary_column": "",
+    "primary_column": "geom",
     "version": "0.5.0-dev"
   }
 }

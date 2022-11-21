@@ -31,8 +31,9 @@ jobs:
 
       - name: Test json schema
         run: |
+          python -m pip install pytest
           cd tests
-          python validate_schemas.py
+          pytest test_json_schema.py -v
 
   test-json-metadata:
     runs-on: ubuntu-latest

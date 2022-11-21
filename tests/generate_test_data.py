@@ -66,7 +66,7 @@ write_metadata_json(metadata, "geometry_column_name")
 
 metadata = copy.deepcopy(metadata_template)
 metadata["primary_column"] = ""
-write_metadata_json(metadata, "geometry_column_name")
+write_metadata_json(metadata, "geometry_column_name_empty", case="invalid")
 
 
 # Encoding
