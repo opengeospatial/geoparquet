@@ -1,90 +1,76 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "GeoParquet",
-  "type": "object",
   "description": "Parquet metadata included in the geo field.",
+  "type": "object",
+  "required": ["version", "primary_column", "columns"],
   "properties": {
     "version": {
       "type": "string",
-      "const": "0.5.0-dev",
-      "description": "The version of the GeoParquet metadata standard used when writing."
+      "const": "0.5.0-dev"
     },
     "primary_column": {
-      "type": "string",
-      "description": "The name of the 'primary' geometry column."
+      "type": "string"
     },
     "columns": {
       "type": "object",
-      "description": "Metadata about geometry columns, with each key is the name of a geometry column in the table.",
-      "patternProperties": {
-        ".*": {
-          "type": "object",
-          "properties": {
-            "encoding": {
+      "additionalProperties": {
+        "type": "object",
+        "required": ["encoding", "geometry_types"],
+        "properties": {
+          "encoding": {
+            "type": "string",
+            "const": "WKB"
+          },
+          "geometry_types": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
               "type": "string",
-              "enum": ["WKB"],
-              "description": "Name of the geometry encoding format. Currently only 'WKB' is supported."
-            },
-            "geometry_types": {
-              "description": "The geometry types of all geometries, or an empty array if they are not known.",
-              "type": "array",
-              "uniqueItems": true,
-              "items": {
-                "type": "string",
-                "pattern": "^(GeometryCollection|(Multi)?(Point|LineString|Polygon))( Z)?$"
-              }
-            },
-            "crs": {
-              "oneOf": [
-                {
-                  "$ref": "https://proj.org/schemas/v0.4/projjson.schema.json"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "JSON object representing the Coordinate Reference System (CRS) of the geometry. If the crs field is not included then the data in this column must be stored in longitude, latitude based on the WGS84 datum, and CRS-aware implementations should assume a default value of OGC:CRS84."
-            },
-            "edges": {
-              "type": "string",
-              "enum": ["planar", "spherical"],
-              "description": "Name of the coordinate system for the edges. Must be one of 'planar' or 'spherical'. The default value is 'planar'."
-            },
-            "orientation": {
-              "type": "string",
-              "enum": ["counterclockwise"],
-              "description": "Winding order of exterior ring of polygons; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order."
-            },
-            "bbox": {
-              "type": "array",
-              "description": "Bounding Box of the geometries in the file, formatted according to RFC 7946, section 5.",
-              "items": {
-                "type": "number"
-              },
-              "oneOf": [
-                {
-                  "description": "2D bbox consisting of (xmin, ymin, xmax, ymax)",
-                  "minItems": 4,
-                  "maxItems": 4
-                },
-                {
-                  "description": "3D bbox consisting of (xmin, ymin, zmin, xmax, ymax, zmax)",
-                  "minItems": 6,
-                  "maxItems": 6
-                }
-              ]
-            },
-            "epoch": {
-              "type": "number",
-              "description": "Coordinate epoch in case of a dynamic CRS, expressed as a decimal year."
+              "pattern": "^(GeometryCollection|(Multi)?(Point|LineString|Polygon))( Z)?$"
             }
           },
-          "additionalProperties": true,
-          "required": ["encoding", "geometry_types"]
+          "crs": {
+            "oneOf": [
+              {
+                "$ref": "https://proj.org/schemas/v0.4/projjson.schema.json"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "edges": {
+            "type": "string",
+            "enum": ["planar", "spherical"]
+          },
+          "orientation": {
+            "type": "string",
+            "const": "counterclockwise"
+          },
+          "bbox": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "oneOf": [
+              {
+                "description": "2D bbox consisting of (xmin, ymin, xmax, ymax)",
+                "minItems": 4,
+                "maxItems": 4
+              },
+              {
+                "description": "3D bbox consisting of (xmin, ymin, zmin, xmax, ymax, zmax)",
+                "minItems": 6,
+                "maxItems": 6
+              }
+            ]
+          },
+          "epoch": {
+            "type": "number"
+          }
         }
       }
     }
-  },
-  "additionalProperties": true,
-  "required": ["version", "primary_column", "columns"]
+  }
 }
