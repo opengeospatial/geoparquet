@@ -10,7 +10,8 @@
       "const": "0.5.0-dev"
     },
     "primary_column": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1
     },
     "columns": {
       "type": "object",
@@ -33,7 +34,7 @@
           "crs": {
             "oneOf": [
               {
-                "$ref": "https://proj.org/schemas/v0.4/projjson.schema.json"
+                "$ref": "https://proj.org/schemas/v0.5/projjson.schema.json"
               },
               {
                 "type": "null"
