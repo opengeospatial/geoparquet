@@ -8,7 +8,8 @@ import copy
 
 
 HERE = pathlib.Path(__file__).parent
-
+(HERE / "valid").mkdir(exist_ok=True)
+(HERE / "invalid").mkdir(exist_ok=True)
 
 metadata_template = {
     "version": "0.5.0-dev",

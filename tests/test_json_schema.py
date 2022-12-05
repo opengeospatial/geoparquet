@@ -38,7 +38,7 @@ def test_valid_schema(path):
     "path", list((HERE / "invalid").iterdir()), ids=lambda path: path.name
 )
 def test_invalid_schema(request, path):
-    if "missing_columns_entry" in path.name or "geometry_column_name_empty" in path.name:
+    if "missing_columns_entry" in path.name:
         request.node.add_marker(
                 pytest.mark.xfail(reason="Not yet working", strict=True)
             )
