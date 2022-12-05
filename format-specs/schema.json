@@ -11,6 +11,7 @@
     },
     "primary_column": {
       "type": "string",
+      "minLength": 1,
       "description": "The name of the 'primary' geometry column."
     },
     "columns": {
