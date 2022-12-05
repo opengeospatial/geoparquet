@@ -11,6 +11,7 @@
     },
     "primary_column": {
       "type": "string",
+      "minLength": 1,
       "description": "The name of the 'primary' geometry column."
     },
     "columns": {
@@ -37,7 +38,7 @@
             "crs": {
               "oneOf": [
                 {
-                  "$ref": "https://proj.org/schemas/v0.4/projjson.schema.json"
+                  "$ref": "https://proj.org/schemas/v0.5/projjson.schema.json"
                 },
                 {
                   "type": "null"
