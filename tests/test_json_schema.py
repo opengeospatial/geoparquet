@@ -1,4 +1,12 @@
+"""
+Test cases (valid and invalid ones) to test the JSON schema.
 
+Run tests with `pytest test_json_schema.py`
+
+Test cases are generated on the fly, but if you want to have them written
+as .json files to inspect, run `python test_json_schema.py`
+
+"""
 import copy
 import json
 import pathlib
@@ -59,6 +67,14 @@ invalid_cases["missing_geometry_encoding"] = metadata
 metadata = copy.deepcopy(metadata_template)
 metadata["columns"]["geometry"].pop("geometry_types")
 invalid_cases["missing_geometry_type"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["custom_key"] = "value"
+valid_cases["custom_key"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["custom_key"] = "value"
+valid_cases["custom_key_column"] = metadata
 
 
 # Geometry column name
