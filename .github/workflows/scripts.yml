@@ -33,6 +33,7 @@ jobs:
         run: |
           python -m pip install pytest
           cd tests
+          python generate_test_data.py
           pytest test_json_schema.py -v
 
   test-json-metadata:
