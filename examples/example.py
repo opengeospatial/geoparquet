@@ -23,12 +23,12 @@ table = pa.Table.from_pandas(df.head().to_wkb())
 
 
 metadata = {
-    "version": "0.4.0",
+    "version": "0.5.0-dev",
     "primary_column": "geometry",
     "columns": {
         "geometry": {
             "encoding": "WKB",
-            "geometry_type": ["Polygon", "MultiPolygon"],
+            "geometry_types": ["Polygon", "MultiPolygon"],
             "crs": json.loads(df.crs.to_json()),
             "edges": "planar",
             "bbox": [round(x, 4) for x in df.total_bounds],
