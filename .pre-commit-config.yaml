@@ -10,7 +10,7 @@ default_stages: [commit]
 
 # Regex for files to exclude
 # Don't lint the generated JSON metadata files
-exclude: "examples/.*json|tests/.*json"
+exclude: "examples/.*json"
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
