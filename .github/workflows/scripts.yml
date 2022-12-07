@@ -56,8 +56,8 @@ jobs:
       - name: Run scripts
         run: |
           cd scripts
-          poetry run python update_example_schemas.py
           poetry run python generate_example.py
+          poetry run python update_example_schemas.py
           cd ../examples
           # Assert that the version number and file metadata are up to date
           git diff
