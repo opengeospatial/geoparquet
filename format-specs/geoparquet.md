@@ -80,7 +80,7 @@ which itself implements the model of
 Apart from the difference of encodings, the semantics are intended to match
 WKT2:2019, and a CRS in one encoding can generally be represented in the other.
 
-If CRS is not provided, all coordinates in the geometries must use longitude, latitude based on the WGS84 datum
+If CRS is not provided, all coordinates in the geometries must use longitude, latitude based on the WGS84 datum,
 and the default value is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84) for CRS-aware implementations.
 
 [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84) is equivalent to the well-known [EPSG:4326](https://epsg.org/crs_4326/WGS-84.html) but changes the axis from latitude-longitude to longitude-latitude.
