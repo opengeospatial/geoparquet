@@ -37,9 +37,9 @@ All file-level metadata should be included under the "geo" key in the parquet me
 
 |     Field Name     |  Type  |                             Description                              |
 | ------------------ | ------ | -------------------------------------------------------------------- |
-| version     		 | string | **REQUIRED** The version of the GeoParquet metadata standard used when writing.   |
-| primary_column     | string | **REQUIRED** The name of the "primary" geometry column.                |
-| columns            | object<key, [Column Metadata](#column-metadata)> | **REQUIRED** Metadata about geometry columns, with each key is the name of a geometry column in the table. |
+| version     		   | string | **REQUIRED** The version of the GeoParquet metadata standard used when writing. |
+| primary_column     | string | **REQUIRED** The name of the "primary" geometry column.              |
+| columns            | object\<string, [Column Metadata](#column-metadata)> | **REQUIRED** Metadata about geometry columns. Each key is the name of a geometry column in the table. |
 
 At this level, additional implementation-specific fields (e.g. library name) are allowed, and thus readers should be robust in ignoring those.
 
@@ -58,15 +58,15 @@ Version of the GeoParquet spec used, currently 0.4.0
 
 Each geometry column in the dataset must be included in the columns field above with the following content, keyed by the column name:
 
-| Field Name | Type | Description |
-| --- | --- | --- |
-| encoding | string | **REQUIRED** Name of the geometry encoding format. Currently only `"WKB"` is supported. |
-| geometry_types | \[string] | **REQUIRED** The geometry types of all geometries, or an empty array if they are not known. |
-| crs | object | **OPTIONAL** [PROJJSON](https://proj.org/specifications/projjson.html) object representing the Coordinate Reference System (CRS) of the geometry. If the field is not provided, the default CRS is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84), which means the data in this column must be stored in longitude, latitude based on the WGS84 datum. |
-| orientation | string | **OPTIONAL** Winding order of exterior ring of polygons. If present must be `"counterclockwise"`; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order. |
-| edges | string | **OPTIONAL** Name of the coordinate system for the edges. Must be one of `"planar"` or `"spherical"`. The default value is `"planar"`. |
-| bbox | \[number] | **OPTIONAL** Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
-| epoch | number | **OPTIONAL** Coordinate epoch in case of a dynamic CRS, expressed as a decimal year. |
+| Field Name     | Type         | Description |
+| -------------- | ------------ | ----------- |
+| encoding       | string       | **REQUIRED** Name of the geometry encoding format. Currently only `"WKB"` is supported. |
+| geometry_types | \[string]    | **REQUIRED** The geometry types of all geometries, or an empty array if they are not known. |
+| crs            | object\|null | **OPTIONAL** [PROJJSON](https://proj.org/specifications/projjson.html) object representing the Coordinate Reference System (CRS) of the geometry. If the field is not provided, the default CRS is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84), which means the data in this column must be stored in longitude, latitude based on the WGS84 datum. |
+| orientation    | string       | **OPTIONAL** Winding order of exterior ring of polygons. If present must be `"counterclockwise"`; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order. |
+| edges          | string       | **OPTIONAL** Name of the coordinate system for the edges. Must be one of `"planar"` or `"spherical"`. The default value is `"planar"`. |
+| bbox           | \[number]    | **OPTIONAL** Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
+| epoch          | number       | **OPTIONAL** Coordinate epoch in case of a dynamic CRS, expressed as a decimal year. |
 
 #### crs
 
