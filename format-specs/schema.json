@@ -15,6 +15,7 @@
     },
     "columns": {
       "type": "object",
+      "minProperties": 1,
       "patternProperties": {
         ".+": {
           "type": "object",
