@@ -1,33 +1,30 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "GeoParquet",
-  "type": "object",
   "description": "Parquet metadata included in the geo field.",
+  "type": "object",
+  "required": ["version", "primary_column", "columns"],
   "properties": {
     "version": {
       "type": "string",
-      "const": "0.5.0-dev",
-      "description": "The version of the GeoParquet metadata standard used when writing."
+      "const": "0.5.0-dev"
     },
     "primary_column": {
       "type": "string",
-      "minLength": 1,
-      "description": "The name of the 'primary' geometry column."
+      "minLength": 1
     },
     "columns": {
       "type": "object",
-      "description": "Metadata about geometry columns, with each key is the name of a geometry column in the table.",
       "patternProperties": {
-        ".*": {
+        ".+": {
           "type": "object",
+          "required": ["encoding", "geometry_types"],
           "properties": {
             "encoding": {
               "type": "string",
-              "enum": ["WKB"],
-              "description": "Name of the geometry encoding format. Currently only 'WKB' is supported."
+              "const": "WKB"
             },
             "geometry_types": {
-              "description": "The geometry types of all geometries, or an empty array if they are not known.",
               "type": "array",
               "uniqueItems": true,
               "items": {
@@ -43,22 +40,18 @@
                 {
                   "type": "null"
                 }
-              ],
-              "description": "JSON object representing the Coordinate Reference System (CRS) of the geometry. If the crs field is not included then the data in this column must be stored in longitude, latitude based on the WGS84 datum, and CRS-aware implementations should assume a default value of OGC:CRS84."
+              ]
             },
             "edges": {
               "type": "string",
-              "enum": ["planar", "spherical"],
-              "description": "Name of the coordinate system for the edges. Must be one of 'planar' or 'spherical'. The default value is 'planar'."
+              "enum": ["planar", "spherical"]
             },
             "orientation": {
               "type": "string",
-              "enum": ["counterclockwise"],
-              "description": "Winding order of exterior ring of polygons; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order."
+              "const": "counterclockwise"
             },
             "bbox": {
               "type": "array",
-              "description": "Bounding Box of the geometries in the file, formatted according to RFC 7946, section 5.",
               "items": {
                 "type": "number"
               },
@@ -76,16 +69,12 @@
               ]
             },
             "epoch": {
-              "type": "number",
-              "description": "Coordinate epoch in case of a dynamic CRS, expressed as a decimal year."
+              "type": "number"
             }
-          },
-          "additionalProperties": true,
-          "required": ["encoding", "geometry_types"]
+          }
         }
-      }
+      },
+      "additionalProperties": false
     }
-  },
-  "additionalProperties": true,
-  "required": ["version", "primary_column", "columns"]
+  }
 }
