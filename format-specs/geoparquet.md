@@ -37,7 +37,7 @@ These are both stored under a `geo` key in the parquet metadata (the [`FileMetaD
 
 ## File metadata
 
-All file-level metadata should be included under the "geo" key in the parquet metadata.
+All file-level metadata should be included under the `geo` key in the parquet metadata.
 
 |     Field Name     |  Type  |                             Description                              |
 | ------------------ | ------ | -------------------------------------------------------------------- |
