@@ -229,11 +229,6 @@ def test_valid_schema(request, metadata):
     "metadata", invalid_cases.values(), ids=invalid_cases.keys()
 )
 def test_invalid_schema(request, metadata):
-    if "missing_columns_entry" in request.node.callspec.id:
-        request.node.add_marker(
-                pytest.mark.xfail(reason="Not yet working", strict=True)
-            )
-
     errors = Draft7Validator(SCHEMA).iter_errors(metadata)
 
     if not len(list(errors)):
