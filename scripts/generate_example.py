@@ -22,8 +22,15 @@ df = df.to_crs("crs84")
 table = pa.Table.from_pandas(df.head().to_wkb())
 
 
+def get_version() -> str:
+    """Read the version const from the schema.json file"""
+    with open(HERE / "../format-specs/schema.json") as f:
+        spec_schema = json.load(f)
+        return spec_schema["properties"]["version"]["const"]
+
+
 metadata = {
-    "version": "0.5.0-dev",
+    "version": get_version(),
     "primary_column": "geometry",
     "columns": {
         "geometry": {
@@ -42,4 +49,4 @@ schema = (
 )
 table = table.cast(schema)
 
-pq.write_table(table, HERE / "example.parquet")
+pq.write_table(table, HERE / "../examples/example.parquet")

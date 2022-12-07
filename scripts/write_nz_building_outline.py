@@ -13,7 +13,6 @@ import pyarrow.parquet as pq
 import pygeos
 from numpy.typing import NDArray
 
-GEOPARQUET_VERSION = "0.5.0-dev"
 AVAILABLE_COMPRESSIONS = ["NONE", "SNAPPY", "GZIP", "BROTLI", "LZ4", "ZSTD"]
 
 PygeosGeometryArray = NDArray[pygeos.Geometry]
@@ -72,13 +71,13 @@ def _create_metadata(
     # Construct metadata for each geometry
     column_metadata = {}
     for col, geometry_array in geometry_columns.items():
-        geometry_type = get_geometry_type(geometry_array)
+        geometry_types = get_geometry_types(geometry_array)
         bbox = list(pygeos.total_bounds(geometry_array))
 
         series = df[col]
         column_metadata[col] = {
             "encoding": "WKB",
-            "geometry_type": geometry_type,
+            "geometry_types": geometry_types,
             "crs": series.crs.to_json_dict() if series.crs else None,
             # We don't specify orientation for now
             # "orientation"
@@ -89,15 +88,19 @@ def _create_metadata(
             # "epoch":
         }
 
+    with open("../format-specs/schema.json") as f:
+        spec_schema = json.load(f)
+        version = spec_schema["properties"]["version"]["const"]
+
     return {
-        "version": GEOPARQUET_VERSION,
+        "version": version,
         "primary_column": df._geometry_column_name,
         "columns": column_metadata,
         # "creator": {"library": "geopandas", "version": geopandas.__version__},
     }
 
 
-def get_geometry_type(pygeos_geoms: PygeosGeometryArray) -> List[str]:
+def get_geometry_types(pygeos_geoms: PygeosGeometryArray) -> List[str]:
     type_ids = pygeos.get_type_id(pygeos_geoms)
     unique_type_ids = set(type_ids)
 

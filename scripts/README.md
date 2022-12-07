@@ -21,10 +21,20 @@ poetry update
 To run a script, prefix it with `poetry run`. For example:
 
 ```
-poetry run python update_example_schemas.py
+poetry run python generate_example.py
 ```
 
 Using `poetry run` ensures that you're running the python script using _this_ local environment, not your global environment.
+
+### example.parquet
+
+The `example.parquet` file in the `examples` directory is generated with the `generate_example.py` script.  This script needs to be updated and run any time there are changes to the "geo" file metadata or to the version constant in `schema.json`.
+
+To update the `../examples/example.parquet` file, run this from the `scripts` directory:
+
+```
+poetry run python generate_example.py
+```
 
 ### nz-building-outlines to Parquet
 
