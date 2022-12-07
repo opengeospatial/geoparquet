@@ -2,12 +2,16 @@
 
 ## Overview
 
-The [Apache Parquet][parquet] provides a standardized open-source columnar storage format. This specification defines how geospatial data
+The [Apache Parquet](https://parquet.apache.org/) provides a standardized open-source columnar storage format. This specification defines how geospatial data
 should be stored in parquet format, including the representation of geometries and the required additional metadata.
+
+**Additional resources:**
+* [Examples](../examples/)
+* [JSON Schema](schema.json)
 
 ## Version
 
-This is version 0.4.0 of the GeoParquet specification.
+This is version 0.5.0-dev of the GeoParquet specification.
 
 ## Geometry columns
 
@@ -16,11 +20,11 @@ See the [encoding](#encoding) section below for more details.
 
 ### Nesting
 
-Geometry columns must be at the root of the schema.  A geometry cannot be a group field or nested in a group.  In practice, this means that when writing to GeoParquet from another format, geometries cannot be contained in complex or nested types such as structs, lists, arrays, or map types.
+Geometry columns must be at the root of the schema. A geometry cannot be a group field or nested in a group. In practice, this means that when writing to GeoParquet from another format, geometries cannot be contained in complex or nested types such as structs, lists, arrays, or map types.
 
 ### Repetition
 
-The repetition for all geometry columns must be "required" (exactly one) or "optional" (zero or one).  A geometry column must not be repeated.  A GeoParquet file may have multiple geometry columns with different names, but those geometry columns cannot be repeated.
+The repetition for all geometry columns must be "required" (exactly one) or "optional" (zero or one). A geometry column must not be repeated. A GeoParquet file may have multiple geometry columns with different names, but those geometry columns cannot be repeated.
 
 ## Metadata
 
@@ -29,17 +33,17 @@ GeoParquet files include additional metadata at two levels:
 1. File metadata indicating things like the version of this specification used
 2. Column metadata with additional metadata for each geometry column
 
-These are both stored under a "geo" key in the parquet metadata (the [`FileMetaData::key_value_metadata`](https://github.com/apache/parquet-format#metadata)) as a JSON-encoded UTF-8 string.
+These are both stored under a `geo` key in the parquet metadata (the [`FileMetaData::key_value_metadata`](https://github.com/apache/parquet-format#metadata)) as a JSON-encoded UTF-8 string.
 
 ## File metadata
 
-All file-level metadata should be included under the "geo" key in the parquet metadata.
+All file-level metadata should be included under the `geo` key in the parquet metadata.
 
 |     Field Name     |  Type  |                             Description                              |
 | ------------------ | ------ | -------------------------------------------------------------------- |
-| version     		   | string | **REQUIRED** The version of the GeoParquet metadata standard used when writing. |
-| primary_column     | string | **REQUIRED** The name of the "primary" geometry column.              |
-| columns            | object\<string, [Column Metadata](#column-metadata)> | **REQUIRED** Metadata about geometry columns. Each key is the name of a geometry column in the table. |
+| version     		 | string | **REQUIRED.** The version of the GeoParquet metadata standard used when writing. |
+| primary_column     | string | **REQUIRED.** The name of the "primary" geometry column.             |
+| columns            | object\<string, [Column Metadata](#column-metadata)> | **REQUIRED.** Metadata about geometry columns. Each key is the name of a geometry column in the table. |
 
 At this level, additional implementation-specific fields (e.g. library name) are allowed, and thus readers should be robust in ignoring those.
 
@@ -52,7 +56,7 @@ but have a default geometry used for geospatial operations.
 
 #### version
 
-Version of the GeoParquet spec used, currently 0.4.0
+Version of the GeoParquet spec used, currently 0.5.0-dev
 
 ### Column metadata
 
@@ -60,13 +64,13 @@ Each geometry column in the dataset must be included in the columns field above 
 
 | Field Name     | Type         | Description |
 | -------------- | ------------ | ----------- |
-| encoding       | string       | **REQUIRED** Name of the geometry encoding format. Currently only `"WKB"` is supported. |
-| geometry_types | \[string]    | **REQUIRED** The geometry types of all geometries, or an empty array if they are not known. |
-| crs            | object\|null | **OPTIONAL** [PROJJSON](https://proj.org/specifications/projjson.html) object representing the Coordinate Reference System (CRS) of the geometry. If the crs field is not included then the data in this column must be stored in longitude, latitude based on the WGS84 datum, and CRS-aware implementations should assume a default value of [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84). A value of `null` indicates that the CRS is undefined or unknown. |
-| orientation    | string       | **OPTIONAL** Winding order of exterior ring of polygons. If present must be `"counterclockwise"`; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order. |
-| edges          | string       | **OPTIONAL** Name of the coordinate system for the edges. Must be one of `"planar"` or `"spherical"`. The default value is `"planar"`. |
-| bbox           | \[number]    | **OPTIONAL** Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
-| epoch          | number       | **OPTIONAL** Coordinate epoch in case of a dynamic CRS, expressed as a decimal year. |
+| encoding       | string       | **REQUIRED.** Name of the geometry encoding format. Currently only `"WKB"` is supported. |
+| geometry_types | \[string]    | **REQUIRED.** The geometry types of all geometries, or an empty array if they are not known. |
+| crs            | object\|null | [PROJJSON](https://proj.org/specifications/projjson.html) object representing the Coordinate Reference System (CRS) of the geometry. If the field is not provided, the default CRS is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84), which means the data in this column must be stored in longitude, latitude based on the WGS84 datum. |
+| orientation    | string       | Winding order of exterior ring of polygons. If present must be `"counterclockwise"`; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order. |
+| edges          | string       | Name of the coordinate system for the edges. Must be one of `"planar"` or `"spherical"`. The default value is `"planar"`. |
+| bbox           | \[number]    | Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
+| epoch          | number       | Coordinate epoch in case of a dynamic CRS, expressed as a decimal year. |
 
 #### crs
 
@@ -80,10 +84,10 @@ which itself implements the model of
 Apart from the difference of encodings, the semantics are intended to match
 WKT2:2019, and a CRS in one encoding can generally be represented in the other.
 
-If CRS is not provided, all coordinates in the geometry must use longitude, latitude
-based on the WGS84 datum to store their data.
+If CRS is not provided, all coordinates in the geometries must use longitude, latitude based on the WGS84 datum,
+and the default value is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84) for CRS-aware implementations.
 
-If an implementation is CRS-aware and needs a CRS representation of the data it should assume a default value is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84), which is equivalent to the well-known [EPSG:4326](https://epsg.org/crs_4326/WGS-84.html) but changes the axis from latitude-longitude to longitude-latitude.
+[OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84) is equivalent to the well-known [EPSG:4326](https://epsg.org/crs_4326/WGS-84.html) but changes the axis from latitude-longitude to longitude-latitude.
 
 Due to the large number of CRSes available and the difficulty of implementing all of them, we expect that a number of implementations will start without support for the optional `crs` field.
 Users are recommended to store their data in longitude, latitude (OGC:CRS84 or not including the `crs` field) for it to work with the widest number of tools. Data that are more appropriately represented in particular projections may use an alternate coordinate reference system. We expect many tools will support alternate CRSes, but encourage users to check to ensure their chosen tool supports their chosen CRS.
@@ -101,7 +105,7 @@ with the epoch at which they are valid.
 
 The optional `epoch` field allows to specify this in case the `crs` field
 defines a a dynamic CRS. The coordinate epoch is expressed as a decimal year
-(e.g. 2021.47). Currently, this specification only supports an epoch per
+(e.g. `2021.47`). Currently, this specification only supports an epoch per
 column (and not per geometry).
 
 #### encoding
@@ -142,9 +146,9 @@ specify `["Point"]`, but it is expected to list `["Point Z"]`.
 
 This attribute indicates the winding order of polygons. The only available value is `"counterclockwise"`. All vertices of exterior polygon rings MUST be ordered in the counterclockwise direction and all interior rings MUST be ordered in the clockwise direction.
 
-If no value is set, no assertions are made about winding order or consistency of such between exterior and interior rings or between individual geometries within a dataset.  Readers are responsible for verifying and if necessary re-ordering vertices as required for their analytical representation.
+If no value is set, no assertions are made about winding order or consistency of such between exterior and interior rings or between individual geometries within a dataset. Readers are responsible for verifying and if necessary re-ordering vertices as required for their analytical representation.
 
-Writers are encouraged but not required to set orientation="counterclockwise" for portability of the data within the broader ecosystem.
+Writers are encouraged but not required to set `orientation="counterclockwise"` for portability of the data within the broader ecosystem.
 
 It is recommended to always set the orientation (to counterclockwise) if `edges` is `"spherical"` (see below).
 
@@ -166,14 +170,14 @@ Implementations of this schema may choose to use those bounding boxes to filter
 partitions (files) of a partitioned dataset.
 
 The bbox, if specified, must be encoded with an array representing the range of values for each dimension in the
-geometry coordinates.  For geometries in a geographic coordinate reference system, longitude and latitude values are
-listed for the most southwesterly coordinate followed by values for the most northeasterly coordinate.  This follows the
+geometry coordinates. For geometries in a geographic coordinate reference system, longitude and latitude values are
+listed for the most southwesterly coordinate followed by values for the most northeasterly coordinate. This follows the
 GeoJSON specification ([RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5)), which also describes how
 to represent the bbox for a set of geometries that cross the antimeridian.
 
 For non-geographic coordinate reference systems, the items in the bbox are minimum values for each dimension followed by
-maximum values for each dimension.  For example, given geometries that have coordinates with two dimensions, the bbox
-would have the form `[<xmin>, <ymin>, <xmax>, <ymax>]`.  For three dimensions, the bbox would have the form
+maximum values for each dimension. For example, given geometries that have coordinates with two dimensions, the bbox
+would have the form `[<xmin>, <ymin>, <xmax>, <ymax>]`. For three dimensions, the bbox would have the form
 `[<xmin>, <ymin>, <zmin>, <xmax>, <ymax>, <zmax>]`.
 
 The bbox values are in the same coordinate reference system as the geometry.
@@ -182,22 +186,15 @@ The bbox values are in the same coordinate reference system as the geometry.
 
 #### Feature identifiers
 
-If you are using GeoParquet to serialize geospatial data with feature identifiers, it is recommended that you create your own [file key/value metadata](https://github.com/apache/parquet-format#metadata) to indicate the column that represents this identifier.  As an example, GDAL writes additional metadata using the `gdal:schema` key including information about feature identifiers and other information outside the scope of the GeoParquet specification.
-
-#### Example data
-
-You can find an example in the [examples](../examples/) folder.
-
-[parquet]: https://parquet.apache.org/
-
+If you are using GeoParquet to serialize geospatial data with feature identifiers, it is recommended that you create your own [file key/value metadata](https://github.com/apache/parquet-format#metadata) to indicate the column that represents this identifier. As an example, GDAL writes additional metadata using the `gdal:schema` key including information about feature identifiers and other information outside the scope of the GeoParquet specification.
 
 ### OGC:CRS84 details
 
-The PROJJSON JSON object for OGC:CRS84 is:
+The PROJJSON object for OGC:CRS84 is:
 
 ```json
 {
-    "$schema": "https://proj.org/schemas/v0.4/projjson.schema.json",
+    "$schema": "https://proj.org/schemas/v0.5/projjson.schema.json",
     "type": "GeographicCRS",
     "name": "WGS 84 longitude-latitude",
     "datum": {

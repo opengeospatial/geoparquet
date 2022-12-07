@@ -17,6 +17,11 @@ Anyone is welcome to join us, by building implementations, trying it out, giving
 Initial work started in the [geo-arrow-spec](https://github.com/geopandas/geo-arrow-spec/) GeoPandas repository, and that will continue on
 Arrow work in a compatible way, with this specification focused solely on Parquet.
 
+- [**Specification**](format-specs/geoparquet.md)
+- [JSON Schema](format-specs/schema.json)
+- [Examples](examples/)
+- [Validator](validator/)
+
 ## Goals
 
 There are a few core goals driving the initial development.
