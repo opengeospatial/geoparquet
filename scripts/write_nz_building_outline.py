@@ -13,7 +13,7 @@ import pyarrow.parquet as pq
 import pygeos
 from numpy.typing import NDArray
 
-GEOPARQUET_VERSION = "0.4.0"
+GEOPARQUET_VERSION = "0.5.0-dev"
 AVAILABLE_COMPRESSIONS = ["NONE", "SNAPPY", "GZIP", "BROTLI", "LZ4", "ZSTD"]
 
 PygeosGeometryArray = NDArray[pygeos.Geometry]
