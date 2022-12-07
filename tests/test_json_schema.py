@@ -77,6 +77,17 @@ metadata["columns"]["geometry"]["custom_key"] = "value"
 valid_cases["custom_key_column"] = metadata
 
 
+# Geometry columns
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["other_geom"] = copy.deepcopy(metadata["columns"]["geometry"])
+valid_cases["geometry_columns_multiple"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["invalid_column_object"] = "foo"
+invalid_cases["geometry_columns_invalid_object"] = metadata
+
+
 # Geometry column name
 
 metadata = copy.deepcopy(metadata_template)
@@ -86,6 +97,10 @@ valid_cases["geometry_column_name"] = metadata
 
 metadata = copy.deepcopy(metadata_template)
 metadata["primary_column"] = ""
+invalid_cases["geometry_column_name_primary_empty"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"][""] = metadata["columns"]["geometry"]
 invalid_cases["geometry_column_name_empty"] = metadata
 
 
@@ -110,6 +125,15 @@ metadata = copy.deepcopy(metadata_template)
 metadata["columns"]["geometry"]["geometry_types"] = ["Curve"]
 invalid_cases["geometry_type_nonexistent"] = metadata
 
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["geometry_types"] = ["Point", "Point"]
+invalid_cases["geometry_type_uniqueness"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["geometry_types"] = ["PointZ"]
+invalid_cases["geometry_type_z_missing_space"] = metadata
+
+
 # CRS - explicit null
 
 metadata = copy.deepcopy(metadata_template)
@@ -119,6 +143,26 @@ valid_cases["crs_null"] = metadata
 metadata = copy.deepcopy(metadata_template)
 metadata["columns"]["geometry"]["crs"] = "EPSG:4326"
 invalid_cases["crs_string"] = metadata
+
+
+# Bbox
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["bbox"] = [0, 0, 0, 0]
+valid_cases["bbox_4_element"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["bbox"] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+valid_cases["bbox_6_element"] = metadata
+
+for n in [3, 5, 7]:
+    metadata = copy.deepcopy(metadata_template)
+    metadata["columns"]["geometry"]["bbox"] = [0] * n
+    invalid_cases[f"bbox_{str(n)}_element"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["bbox"] = ["0", "0", "0", "0"]
+invalid_cases["bbox_invalid_type"] = metadata
 
 
 # Orientation
