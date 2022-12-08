@@ -26,6 +26,14 @@ poetry run python generate_example.py
 
 Using `poetry run` ensures that you're running the python script using _this_ local environment, not your global environment.
 
+### Tests
+
+To run the tests, change into the `scripts` directory and run the following:
+
+```
+poetry run pytest test_json_schema.py -v
+```
+
 ### example.parquet
 
 The `example.parquet` file in the `examples` directory is generated with the `generate_example.py` script.  This script needs to be updated and run any time there are changes to the "geo" file metadata or to the version constant in `schema.json`.

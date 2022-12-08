@@ -1,3 +1,2 @@
-# Ignore GeoPackage file used in conversion to GeoParquet
-*.gpkg*
-tests/data/*
+/scripts/data/
+/scripts/__pycache__/

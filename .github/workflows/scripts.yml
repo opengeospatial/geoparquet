@@ -29,12 +29,6 @@ jobs:
             geoparquet_validator $example || exit 1;
           done
 
-      - name: Test json schema
-        run: |
-          python -m pip install pytest
-          cd tests
-          pytest test_json_schema.py -v
-
   test-json-metadata:
     runs-on: ubuntu-latest
     steps:
@@ -56,6 +50,7 @@ jobs:
       - name: Run scripts
         run: |
           cd scripts
+          poetry run pytest test_json_schema.py -v
           poetry run python generate_example.py
           poetry run python update_example_schemas.py
           cd ../examples

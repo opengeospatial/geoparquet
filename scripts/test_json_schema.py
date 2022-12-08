@@ -27,8 +27,15 @@ valid_cases = {}
 invalid_cases = {}
 
 
+def get_version() -> str:
+    """Read the version const from the schema.json file"""
+    with open(HERE / "../format-specs/schema.json") as f:
+        spec_schema = json.load(f)
+        return spec_schema["properties"]["version"]["const"]
+
+
 metadata_template = {
-    "version": "0.5.0-dev",
+    "version": get_version(),
     "primary_column": "geometry",
     "columns": {
         "geometry": {
@@ -47,6 +54,10 @@ valid_cases["minimal"] = metadata
 metadata = copy.deepcopy(metadata_template)
 metadata.pop("version")
 invalid_cases["missing_version"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["version"] = "bad-version"
+invalid_cases["bad_version"] = metadata
 
 metadata = copy.deepcopy(metadata_template)
 metadata.pop("primary_column")

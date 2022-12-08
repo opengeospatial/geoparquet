@@ -41,22 +41,11 @@ All file-level metadata should be included under the `geo` key in the parquet me
 
 |     Field Name     |  Type  |                             Description                              |
 | ------------------ | ------ | -------------------------------------------------------------------- |
-| version     		 | string | **REQUIRED.** The version of the GeoParquet metadata standard used when writing. |
-| primary_column     | string | **REQUIRED.** The name of the "primary" geometry column.             |
+| version     		 | string | **REQUIRED.** The version identifier for the GeoParquet specification. |
+| primary_column     | string | **REQUIRED.** The name of the "primary" geometry column. In cases where a GeoParquet file contains multiple geometry columns, the primary geometry may be used by default in geospatial operations. |
 | columns            | object\<string, [Column Metadata](#column-metadata)> | **REQUIRED.** Metadata about geometry columns. Each key is the name of a geometry column in the table. |
 
 At this level, additional implementation-specific fields (e.g. library name) are allowed, and thus readers should be robust in ignoring those.
-
-### Additional file metadata information
-
-#### primary_column
-
-This indicates the "primary" or "active" geometry for systems that can store multiple geometries,
-but have a default geometry used for geospatial operations.
-
-#### version
-
-Version of the GeoParquet spec used, currently 0.5.0-dev
 
 ### Column metadata
 
