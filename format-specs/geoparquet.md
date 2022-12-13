@@ -9,22 +9,24 @@ should be stored in parquet format, including the representation of geometries a
 * [Examples](../examples/)
 * [JSON Schema](schema.json)
 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt).
+
 ## Version
 
 This is version 0.5.0-dev of the GeoParquet specification.
 
 ## Geometry columns
 
-Geometry columns are stored using the `BYTE_ARRAY` parquet type. They are encoded as [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary).
+Geometry columns MUST be stored using the `BYTE_ARRAY` parquet type. They MUST be encoded as [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary).
 See the [encoding](#encoding) section below for more details.
 
 ### Nesting
 
-Geometry columns must be at the root of the schema. A geometry cannot be a group field or nested in a group. In practice, this means that when writing to GeoParquet from another format, geometries cannot be contained in complex or nested types such as structs, lists, arrays, or map types.
+Geometry columns MUST be at the root of the schema. A geometry MUST NOT be a group field or nested in a group. In practice, this means that when writing to GeoParquet from another format, geometries cannot be contained in complex or nested types such as structs, lists, arrays, or map types.
 
 ### Repetition
 
-The repetition for all geometry columns must be "required" (exactly one) or "optional" (zero or one). A geometry column must not be repeated. A GeoParquet file may have multiple geometry columns with different names, but those geometry columns cannot be repeated.
+The repetition for all geometry columns MUST be "required" (exactly one) or "optional" (zero or one). A geometry column MUST NOT be repeated. A GeoParquet file MAY have multiple geometry columns with different names, but those geometry columns cannot be repeated.
 
 ## Metadata
 
@@ -33,11 +35,9 @@ GeoParquet files include additional metadata at two levels:
 1. File metadata indicating things like the version of this specification used
 2. Column metadata with additional metadata for each geometry column
 
-These are both stored under a `geo` key in the parquet metadata (the [`FileMetaData::key_value_metadata`](https://github.com/apache/parquet-format#metadata)) as a JSON-encoded UTF-8 string.
+A GeoParquet file MUST include a `geo` key in the Parquet metadata (see [`FileMetaData::key_value_metadata`](https://github.com/apache/parquet-format#metadata)).  The value of this key MUST be a JSON-encoded UTF-8 string representing the file and column metadata that validates against the [GeoParquet metadata schema](schema.json). The file and column metadata fields are described below.
 
 ## File metadata
-
-All file-level metadata should be included under the `geo` key in the parquet metadata.
 
 |     Field Name     |  Type  |                             Description                              |
 | ------------------ | ------ | -------------------------------------------------------------------- |
@@ -45,7 +45,7 @@ All file-level metadata should be included under the `geo` key in the parquet me
 | primary_column     | string | **REQUIRED.** The name of the "primary" geometry column.             |
 | columns            | object\<string, [Column Metadata](#column-metadata)> | **REQUIRED.** Metadata about geometry columns. Each key is the name of a geometry column in the table. |
 
-At this level, additional implementation-specific fields (e.g. library name) are allowed, and thus readers should be robust in ignoring those.
+At this level, additional implementation-specific fields (e.g. library name) MAY be present, and readers should be robust in ignoring those.
 
 ### Additional file metadata information
 
@@ -60,7 +60,7 @@ Version of the GeoParquet spec used, currently 0.5.0-dev
 
 ### Column metadata
 
-Each geometry column in the dataset must be included in the columns field above with the following content, keyed by the column name:
+Each geometry column in the dataset MUST be included in the `columns` field above with the following content, keyed by the column name:
 
 | Field Name     | Type         | Description |
 | -------------- | ------------ | ----------- |
@@ -76,7 +76,7 @@ Each geometry column in the dataset must be included in the columns field above 
 
 The Coordinate Reference System (CRS) is an optional parameter for each geometry column defined in GeoParquet format.
 
-The CRS must be provided in
+The CRS MUST be provided in
 [PROJJSON](https://proj.org/specifications/projjson.html) format, which is a JSON encoding of
 [WKT2:2019 / ISO-19162:2019](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html),
 which itself implements the model of
@@ -84,7 +84,7 @@ which itself implements the model of
 Apart from the difference of encodings, the semantics are intended to match
 WKT2:2019, and a CRS in one encoding can generally be represented in the other.
 
-If CRS is not provided, all coordinates in the geometries must use longitude, latitude based on the WGS84 datum,
+If CRS is not provided, all coordinates in the geometries MUST use longitude, latitude based on the WGS84 datum,
 and the default value is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84) for CRS-aware implementations.
 
 [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84) is equivalent to the well-known [EPSG:4326](https://epsg.org/crs_4326/WGS-84.html) but changes the axis from latitude-longitude to longitude-latitude.
@@ -112,7 +112,7 @@ column (and not per geometry).
 
 This is the binary format that the geometry is encoded in.
 The string `"WKB"`, signifying Well Known Binary is the only current option, but future versions
-of the spec may support alternative encodings. This should be the ["OpenGIS® Implementation Specification for Geographic information - Simple feature access - Part 1: Common architecture"](https://portal.ogc.org/files/?artifact_id=18241) WKB representation (using codes for 3D geometry types in the \[1001,1007\] range). This encoding is also consistent with the one defined in the ["ISO/IEC 13249-3:2016 (Information technology - Database languages - SQL multimedia and application packages - Part 3: Spatial)"](https://www.iso.org/standard/60343.html) standard.
+of the spec may support alternative encodings. This SHOULD be the ["OpenGIS® Implementation Specification for Geographic information - Simple feature access - Part 1: Common architecture"](https://portal.ogc.org/files/?artifact_id=18241) WKB representation (using codes for 3D geometry types in the \[1001,1007\] range). This encoding is also consistent with the one defined in the ["ISO/IEC 13249-3:2016 (Information technology - Database languages - SQL multimedia and application packages - Part 3: Spatial)"](https://www.iso.org/standard/60343.html) standard.
 
 Note that the current version of the spec only allows for a subset of WKB: 2D or 3D geometries of the standard geometry types (the Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection geometry types). This means that M values or non-linear geometry types are not yet supported.
 
@@ -150,7 +150,7 @@ If no value is set, no assertions are made about winding order or consistency of
 
 Writers are encouraged but not required to set `orientation="counterclockwise"` for portability of the data within the broader ecosystem.
 
-It is recommended to always set the orientation (to counterclockwise) if `edges` is `"spherical"` (see below).
+It is RECOMMENDED to always set the orientation (to counterclockwise) if `edges` is `"spherical"` (see below).
 
 #### edges
 
@@ -160,7 +160,7 @@ This attribute indicates how to interpret the edges of the geometries: whether t
 
 If no value is set, the default value to assume is `"planar"`.
 
-Note if `edges` is `"spherical"` then it is recommended that `orientation` is always ensured to be `"counterclockwise"`. If it is not set, it is not clear how polygons should be interpreted within spherical coordinate systems, which can lead to major analytical errors if interpreted incorrectly.
+Note if `edges` is `"spherical"` then it is RECOMMENDED that `orientation` is always ensured to be `"counterclockwise"`. If it is not set, it is not clear how polygons should be interpreted within spherical coordinate systems, which can lead to major analytical errors if interpreted incorrectly.
 In this case, software will typically interpret the rings of a polygon such that it encloses at most half of the sphere (i.e. the smallest polygon of both ways it could be interpreted). But the specification itself does not make any guarantee about this.
 
 #### bbox
@@ -169,7 +169,7 @@ Bounding boxes are used to help define the spatial extent of each geometry colum
 Implementations of this schema may choose to use those bounding boxes to filter
 partitions (files) of a partitioned dataset.
 
-The bbox, if specified, must be encoded with an array representing the range of values for each dimension in the
+The bbox, if specified, MUST be encoded with an array representing the range of values for each dimension in the
 geometry coordinates. For geometries in a geographic coordinate reference system, longitude and latitude values are
 listed for the most southwesterly coordinate followed by values for the most northeasterly coordinate. This follows the
 GeoJSON specification ([RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5)), which also describes how
@@ -186,7 +186,7 @@ The bbox values are in the same coordinate reference system as the geometry.
 
 #### Feature identifiers
 
-If you are using GeoParquet to serialize geospatial data with feature identifiers, it is recommended that you create your own [file key/value metadata](https://github.com/apache/parquet-format#metadata) to indicate the column that represents this identifier. As an example, GDAL writes additional metadata using the `gdal:schema` key including information about feature identifiers and other information outside the scope of the GeoParquet specification.
+If you are using GeoParquet to serialize geospatial data with feature identifiers, it is RECOMMENDED that you create your own [file key/value metadata](https://github.com/apache/parquet-format#metadata) to indicate the column that represents this identifier. As an example, GDAL writes additional metadata using the `gdal:schema` key including information about feature identifiers and other information outside the scope of the GeoParquet specification.
 
 ### OGC:CRS84 details
 
