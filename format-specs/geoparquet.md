@@ -4,15 +4,11 @@
 
 The [Apache Parquet](https://parquet.apache.org/) provides a standardized open-source columnar storage format. The GeoParquet specification defines how geospatial data should be stored in parquet format, including the representation of geometries and the required additional metadata.
 
-**Additional resources:**
-* [Examples](../examples/)
-* [JSON Schema](schema.json)
-
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt).
 
-## Version
+## Version and schema
 
-This is version 1.0.0-dev of the GeoParquet specification.
+This is version 1.0.0-dev of the GeoParquet specification.  See the [JSON Schema](schema.json) to validate metadata for this version.
 
 ## Geometry columns
 
