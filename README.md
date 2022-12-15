@@ -11,6 +11,11 @@ Anyone is welcome to join us, by building implementations, trying it out, giving
 Initial work started in the [geo-arrow-spec](https://github.com/geopandas/geo-arrow-spec/) GeoPandas repository, and that will continue on
 Arrow work in a compatible way, with this specification focused solely on Parquet.
 
+- [**Specification**](format-specs/geoparquet.md)
+- [JSON Schema](format-specs/schema.json)
+- [Examples](examples/)
+- [Validator](validator/)
+
 ## Goals
 
 There are a few core goals driving the initial development.
@@ -59,4 +64,4 @@ will be any more potential breaking changes. Though the full commitment to that 
 
 ## Current Implementations & Examples
 
-Examples of GeoParquet files following the current spec can be found in the [examples/](examples/) folder. For information on all the tools and libraries implementing GeoParquet see the [implementations section](https://geoparquet.org/#implementations) of the website.
+Examples of GeoParquet files following the current spec can be found in the [examples/](examples/) folder. For information on all the tools and libraries implementing GeoParquet, as well as sample data, see the [implementations section](https://geoparquet.org/#implementations) of the website.
