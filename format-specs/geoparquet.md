@@ -12,7 +12,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ## Version
 
-This is version 1.0.0-beta.1 of the GeoParquet specification.
+This is version 1.0.0-dev of the GeoParquet specification.
 
 ## Geometry columns
 
