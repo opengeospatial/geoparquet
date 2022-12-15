@@ -54,7 +54,7 @@ will work much better if it is backing a system that is constantly updating the 
 
 ## Roadmap
 
-Our aim is to get to a 1.0.0 in the next few months. The next steps are to push towards our 1.0.0 acceptance criteria, articulated in this [discussion post], which mostly involves getting great validation tools, more software implementations, and more data providers. This should provide key feedback to feel confident in going to 1.0. The goal of 1.0.0 is to establish a baseline of interoperability for geospatial information in Parquet. We've got some exciting plans to go beyond that, which we'll articulate soon on the website.
+Our aim is to get to a 1.0.0 in the next few months. The next steps are to push towards our 1.0.0 acceptance criteria, articulated in this [discussion post](https://github.com/opengeospatial/geoparquet/discussions/122), which mostly involves getting great validation tools, more software implementations, and more data providers. This should provide key feedback to feel confident in going to 1.0. The goal of 1.0.0 is to establish a baseline of interoperability for geospatial information in Parquet. We've got some exciting plans to go beyond that, which we'll articulate soon on the website.
 
 ## Versioning
 
