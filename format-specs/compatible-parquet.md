@@ -26,7 +26,7 @@ The above are the key recommendations a data producer should follow. Any impleme
 
 * No assertions are made on the winding order, the default of the [orientation](./geoparquet.md#orientation) section of the spec.
 
-* Edges are planer, as explained to be the default in the [edges](./geoparquet.md#edges) section of the spec.
+* Edges are planar, as explained to be the default in the [edges](./geoparquet.md#edges) section of the spec.
 
 ## Data Reader Implementation Considerations
 
