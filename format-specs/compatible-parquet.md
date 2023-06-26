@@ -1,4 +1,3 @@
-
 # Parquet Geospatial Compatibility
 
 The goal of GeoParquet is that every tool producing Parquet and includes geospatial data uses official [metadata defined in the GeoParquet spec](./geoparquet_spec) to achieve true interoperability. Thid document represents a set of guidelines for those would like to produce geospatial Parquet data but are using tools that are not yet fully implementing GeoParquet metadata. It is meant to be used just for the interim time when only some tools properly produce GeoParquet, to data producer support the growing ecosystem.
@@ -21,7 +20,7 @@ The core idea of the compatibility guidelines is to have the output match the de
 
 The above are the key recommendations a data producer should follow. Any implemented reader will need to make the following assumptions when reading one of these columns, unless the user supplies additional information that they are aware of:
 
-* The geometry_types values is an empty array, signaling the geometry type is not known and the reader should make no assumptions about the types, as defined in the [geometry_types](./geoparquet.md#geometry_types) section of the spec. 
+* The geometry_types values is an empty array, signaling the geometry type is not known and the reader should make no assumptions about the types, as defined in the [geometry_types](./geoparquet.md#geometry_types) section of the spec.
 
 * Any CRS-aware reader should assume that the CRS is OGC:CRS84 as explained in the [crs](./geoparquet.md#crs) section of the spec. (Or it could assume it is EPSG:4326 but overriding the axis order to assume longitude latitude as explained in the [Coordinate axis order](./geoparquet.md#coordinate-axis-order)) section.
 
@@ -40,6 +39,3 @@ We strongly advise against creating a reader that can only understand these geos
 As mentioned above, we strongly recommend trying to find tools that will produce valid GeoParquet. If the tool you are working with does not support it directdly then there are [many tools](geoparquet.org) that can help you. Only if there is no way to create valid GeoParquet metadata do we recommend this route. This will enable those who have readers that understand GeoParquet and these compatible files to turn it into valid GeoParquet themselves.
 
 We recommend sticking to the core recommendations as much as possible - naming the geometry column 'geometry', using WKB, and storing data as long, lat. If your data must be formatted differently then less readers will be able to work with it. If you do go that route be sure to make it clear in all your documentation where things are different.
-
-
-
