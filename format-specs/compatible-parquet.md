@@ -22,7 +22,7 @@ The above are the key recommendations a data producer should follow. Any impleme
 
 * The geometry_types values is an empty array, signaling the geometry type is not known and the reader should make no assumptions about the types, as defined in the [geometry_types](./geoparquet.md#geometry_types) section of the spec.
 
-* Any CRS-aware reader should assume that the CRS is OGC:CRS84 as explained in the [crs](./geoparquet.md#crs) section of the spec. (Or it could assume it is EPSG:4326 but overriding the axis order to assume longitude latitude as explained in the [Coordinate axis order](./geoparquet.md#coordinate-axis-order)) section.
+* Any CRS-aware reader should assume that the CRS is OGC:CRS84 as explained in the [crs](./geoparquet.md#crs) section of the spec. (Or it could assume it is EPSG:4326 but overriding the axis order to assume longitude latitude as explained in the [Coordinate axis order](./geoparquet.md#coordinate-axis-order) section).
 
 * No assertions are made on the winding order, the default of the [orientation](./geoparquet.md#orientation) section of the spec.
 
