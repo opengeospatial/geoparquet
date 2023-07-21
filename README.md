@@ -9,7 +9,7 @@ This repository defines a [specification](https://geoparquet.org/releases/) for 
 Early contributors include developers from GeoPandas, GeoTrellis, OpenLayers, Vis.gl, Voltron Data, Microsoft, Carto, Azavea, Planet & Unfolded.
 Anyone is welcome to join the project, by building implementations, trying it out, giving feedback through issues and contributing to the spec via pull requests.
 Initial work started in the [geo-arrow-spec](https://github.com/geopandas/geo-arrow-spec/) GeoPandas repository, and that will continue on
-Arrow work in a compatible way, with this specification focused solely on Parquet. We are in the process of becoming an [OGC](https://ogc.org) official 
+Arrow work in a compatible way, with this specification focused solely on Parquet. We are in the process of becoming an [OGC](https://ogc.org) official
 [Standards Working Group](https://portal.ogc.org/files/103450) and are on the path to be a full OGC standard.
 
 - [**Specification**](format-specs/geoparquet.md)
