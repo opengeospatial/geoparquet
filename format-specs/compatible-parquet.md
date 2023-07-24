@@ -10,11 +10,13 @@ The core idea behind these compatibility guidelines is that tools and libraries 
 
 The core idea of the compatibility guidelines is to have the output match the defaults of the official spec as closely as possible, so it is very easy for tools to simply add the appropriate Parquet metadata and create valid GeoParquet. The guidelines are as follows:
 
-* The geometry column should be named 'geometry'.
+* The geometry column should be named either `"geometry"` or `"geography"`.
 
 * The geometry column should be a `BYTE_ARRAY` with Well Known Binary (WKB) used to define the geometries, as defined in the [encoding](./geoparquet.md#encoding) section of the GeoParquet spec.
 
 * All data is stored in longitude, latitude based on the WGS84 datum, as defined as the default in the [crs](./geoparquet.md#crs) section of the GeoParquet spec.
+
+* If the column is named `"geometry"` then the [edges](./geoparquet.md#edges) must be `"planar"`. If the column is named `"geography"` then the edges must be `"spherical"`.
 
 ### Data Reader Assumptions
 
@@ -26,11 +28,11 @@ The above are the key recommendations a data producer should follow. Any impleme
 
 * No assertions are made on the winding order, the default of the [orientation](./geoparquet.md#orientation) section of the spec.
 
-* Edges are planar, as explained to be the default in the [edges](./geoparquet.md#edges) section of the spec.
+* The edge definition is based on whether the column is named `"geometry"` or `"geography"`.
 
 ## Data Reader Implementation Considerations
 
-Reading this non-compliant geospatial data from Parquet should ideally work with no user intervention if the producer followed all the guidelines and named their geometry column 'geometry'. Readers can optionally support user input (in whatever manner works for the tool / library) to provide hints for metadata that is not inline with the lowest common denominator compatibility. This would include things like letting the user supply a geometry column name (ie something other than 'geometry'), using Well Known Text (WKT) in a `STRING` column instead of WKB, providing a more specific geometry_type value, or providing other enhanced metadata (specifying the CRS, the winding order, the edges, the bbox or the epoch).
+Reading this non-compliant geospatial data from Parquet should ideally work with no user intervention if the producer followed all the guidelines and named their geometry column 'geometry'. Readers can optionally support user input (in whatever manner works for the tool / library) to provide hints for metadata that is not inline with the lowest common denominator compatibility. This would include things like letting the user supply a geometry column name (i.e., something other than 'geometry' or 'geography'), using Well Known Text (WKT) in a `STRING` column instead of WKB, providing a more specific geometry_type value, or providing other enhanced metadata (specifying the CRS, the winding order, the edges, the bbox or the epoch).
 
 We strongly advise against creating a reader that can only understand these geospatial compatible files - all readers should start by looking at the metadata specified by GeoParquet and only fall back on these compatibility techniques if the metadata is not present. A reader that could not read GeoParquet but would read compatible geodata would have no idea if there was in fact metadata, and thus could easily decrease interoperability.
 
