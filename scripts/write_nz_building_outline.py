@@ -1,6 +1,5 @@
 import json
 import sys
-from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -10,12 +9,13 @@ import numpy as np
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
-import pygeos
+import shapely
 from numpy.typing import NDArray
+from shapely import GeometryType
 
 AVAILABLE_COMPRESSIONS = ["NONE", "SNAPPY", "GZIP", "BROTLI", "LZ4", "ZSTD"]
 
-PygeosGeometryArray = NDArray[pygeos.Geometry]
+ShapelyGeometryArray = NDArray[np.object_]
 
 
 class PathType(click.Path):
@@ -25,37 +25,21 @@ class PathType(click.Path):
         return Path(super().convert(value, param, ctx))
 
 
-class GeometryType(int, Enum):
-    """Pygeos (GEOS) geometry type mapping
-    From https://pygeos.readthedocs.io/en/latest/geometry.html?highlight=type#pygeos.geometry.get_type_id
-    """
-
-    Missing = -1
-    Point = 0
-    LineString = 1
-    LinearRing = 2
-    Polygon = 3
-    MultiPoint = 4
-    MultiLinestring = 5
-    MultiPolygon = 6
-    GeometryCollection = 7
-
-
-def parse_to_pygeos(df: gpd.GeoDataFrame) -> Dict[str, PygeosGeometryArray]:
-    """Parse to pygeos geometry array
+def parse_to_shapely(df: gpd.GeoDataFrame) -> Dict[str, ShapelyGeometryArray]:
+    """Parse to shapely geometry array
 
     This is split out from _create_metadata so that we don't have to create the pygeos
     array twice: once for converting to wkb and another time for metadata handling.
     """
-    geometry_columns: Dict[str, PygeosGeometryArray] = {}
+    geometry_columns: Dict[str, ShapelyGeometryArray] = {}
     for col in df.columns[df.dtypes == "geometry"]:
-        geometry_columns[col] = df[col].array.data
+        geometry_columns[col] = df[col].values
 
     return geometry_columns
 
 
 def _create_metadata(
-    df: gpd.GeoDataFrame, geometry_columns: Dict[str, PygeosGeometryArray]
+    df: gpd.GeoDataFrame, geometry_columns: Dict[str, ShapelyGeometryArray]
 ) -> Dict[str, Any]:
     """Create and encode geo metadata dict.
 
@@ -72,7 +56,7 @@ def _create_metadata(
     column_metadata = {}
     for col, geometry_array in geometry_columns.items():
         geometry_types = get_geometry_types(geometry_array)
-        bbox = list(pygeos.total_bounds(geometry_array))
+        bbox = list(shapely.total_bounds(geometry_array))
 
         series = df[col]
         column_metadata[col] = {
@@ -100,8 +84,8 @@ def _create_metadata(
     }
 
 
-def get_geometry_types(pygeos_geoms: PygeosGeometryArray) -> List[str]:
-    type_ids = pygeos.get_type_id(pygeos_geoms)
+def get_geometry_types(shapely_geoms: ShapelyGeometryArray) -> List[str]:
+    type_ids = shapely.get_type_id(shapely_geoms)
     unique_type_ids = set(type_ids)
 
     geom_type_names: List[str] = []
@@ -124,7 +108,7 @@ def encode_metadata(metadata: Dict) -> bytes:
     """
     # Remove unnecessary whitespace in JSON metadata
     # https://stackoverflow.com/a/33233406
-    return json.dumps(metadata, separators=(',', ':')).encode("utf-8")
+    return json.dumps(metadata, separators=(",", ":")).encode("utf-8")
 
 
 def cast_dtypes(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -149,12 +133,12 @@ def cast_dtypes(df: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
 
 
 def geopandas_to_arrow(df: gpd.GeoDataFrame) -> pa.Table:
-    geometry_columns = parse_to_pygeos(df)
+    geometry_columns = parse_to_shapely(df)
     geo_metadata = _create_metadata(df, geometry_columns)
 
     df = pd.DataFrame(df)
     for col, geometry_array in geometry_columns.items():
-        df[col] = pygeos.to_wkb(geometry_array)
+        df[col] = shapely.to_wkb(geometry_array)
 
     table = pa.Table.from_pandas(df, preserve_index=False)
 

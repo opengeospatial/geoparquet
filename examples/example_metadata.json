@@ -9,7 +9,7 @@
           83.6451
         ],
         "crs": {
-          "$schema": "https://proj.org/schemas/v0.5/projjson.schema.json",
+          "$schema": "https://proj.org/schemas/v0.6/projjson.schema.json",
           "area": "World.",
           "bbox": {
             "east_longitude": 180,
