@@ -7,10 +7,10 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pyarrow = "^7.0.0"
-geopandas = "^0.10.2"
-pygeos = "^0.12.0"
-pandas = "^1.4.2"
+pyarrow = "^12.0.0"
+geopandas = "^0.13.2"
+shapely = "^2"
+pandas = "^2"
 click = "^8.1.2"
 
 [tool.poetry.group.dev.dependencies]
