@@ -1,0 +1,14 @@
+{
+  "geo": {
+    "columns": {
+      "geometry": {
+        "encoding": "WKB",
+        "geometry_type": [
+          "Point"
+        ]
+      }
+    },
+    "primary_column": "geometry",
+    "version": "0.4.0"
+  }
+}
