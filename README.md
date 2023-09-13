@@ -23,7 +23,7 @@ The 'dev' versions of the spec are available in this repo:
 There are two tools that validate the metadata and the actual data. It is recommended to use one of them to ensure any GeoParquet you produce or are given is completely valid according to the specification:
 
 * **[GPQ](https://github.com/planetlabs/gpq)** - the `validate` command generates a report with `gpq validate example.parquet`.
-* **[GDAL/OGR Validation Script](https://gdal.org/drivers/vector/parquet.html#validation-script)** - a python scrip that can check with `python3 validate_geoparquet.py --check-data my_geo.parquet`
+* **[GDAL/OGR Validation Script](https://gdal.org/drivers/vector/parquet.html#validation-script)** - a Python script that can check compliance with `python3 validate_geoparquet.py --check-data my_geo.parquet`
 
 ## Goals
 
