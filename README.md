@@ -65,7 +65,7 @@ will work much better if it is backing a system that is constantly updating the 
 The goal of 1.0.0 was to establish a baseline of interoperability for geospatial information in Parquet. For 1.0.0
 the only geometry encoding option is Well Known Binary, but there is an option to allow other encodings. The main goal of 1.1.0 will be to incorporate a more columnar-oriented
 geometry format, which is currently being worked on as part of the [GeoArrow spec](https://github.com/geoarrow/geoarrow). Once that gets finalized we will add the option to
-GeoParquet. In general 1.1.0 will further explore spatial optimization, spatial indices and spatial partitioning to improve GeoParquet's.
+GeoParquet. In general 1.1.0 will further explore spatial optimization, spatial indices and spatial partitioning to improve performance reading spatial subsets.
 
 ## Versioning
 
