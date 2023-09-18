@@ -2,9 +2,7 @@
 
 ## About
 
-This repository defines a [specification](https://geoparquet.org/releases/) for how to store geospatial [vector data](https://gisgeography.com/spatial-data-types-vector-raster/) (point, lines, polygons) in [Apache Parquet](https://parquet.apache.org/), a popular columnar storage format for tabular data - see [this vendor explanation](https://databricks.com/glossary/what-is-parquet) for more on what that means. Our goal is to standardize how geospatial data is represented in Parquet to further geospatial interoperability among tools using Parquet today, and hopefully help push forward what's possible with 'cloud-native geospatial' workflows. There are now more than 10 different tools and libraries in 6 different languages that support GeoParquet, you can learn more at [geoparquet.org](https://geoparquet.org).
-
-**Note:** This specification is currently in 1.0 'release candidate' status, which means the community is proposing the current version to be 1.0.0, and if no blocking negative feedback is made until end of August 2023 then it will become 1.0.0. This means breaking changes are still possible, but quite unlikely - see the [versioning](#versioning) section below for more info.
+This repository defines a [specification](https://geoparquet.org/releases/) for how to store geospatial [vector data](https://gisgeography.com/spatial-data-types-vector-raster/) (point, lines, polygons) in [Apache Parquet](https://parquet.apache.org/), a popular columnar storage format for tabular data - see [this vendor explanation](https://databricks.com/glossary/what-is-parquet) for more on what that means. Our goal is to standardize how geospatial data is represented in Parquet to further geospatial interoperability among tools using Parquet today, and hopefully help push forward what's possible with 'cloud-native geospatial' workflows. There are now more than 20 different tools and libraries in 6 different languages that support GeoParquet, you can learn more at [geoparquet.org](https://geoparquet.org).
 
 Early contributors include developers from GeoPandas, GeoTrellis, OpenLayers, Vis.gl, Voltron Data, Microsoft, Carto, Azavea, Planet & Unfolded.
 Anyone is welcome to join the project, by building implementations, trying it out, giving feedback through issues and contributing to the spec via pull requests.
@@ -12,9 +10,20 @@ Initial work started in the [geo-arrow-spec](https://github.com/geoarrow/geoarro
 Arrow work in a compatible way, with this specification focused solely on Parquet. We are in the process of becoming an [OGC](https://ogc.org) official
 [Standards Working Group](https://portal.ogc.org/files/103450) and are on the path to be a full OGC standard.
 
-- [**Specification**](format-specs/geoparquet.md)
+The latest [stable specification](https://geoparquet.org/releases/v1.0.0/) and [JSON schema](https://geoparquet.org/releases/v1.0.0/schema.json) are published at [geoparquet.org/releases/](https://geoparquet.org/releases/).
+
+The 'dev' versions of the spec are available in this repo:
+
+- [**Specification**](format-specs/geoparquet.md) (dev version - not stable, go to  for latest stable)
 - [JSON Schema](format-specs/schema.json)
 - [Examples](examples/)
+
+## Validating GeoParquet
+
+There are two tools that validate the metadata and the actual data. It is recommended to use one of them to ensure any GeoParquet you produce or are given is completely valid according to the specification:
+
+* **[GPQ](https://github.com/planetlabs/gpq)** - the `validate` command generates a report with `gpq validate example.parquet`.
+* **[GDAL/OGR Validation Script](https://gdal.org/drivers/vector/parquet.html#validation-script)** - a Python script that can check compliance with `python3 validate_geoparquet.py --check-data my_geo.parquet`
 
 ## Goals
 
@@ -53,16 +62,14 @@ will work much better if it is backing a system that is constantly updating the 
 
 ## Roadmap
 
-Our aim is to get to a 1.0.0 final by the end of August 2023. The goal of 1.0.0 is to establish a baseline of interoperability for geospatial information in Parquet. For 1.0.0
-the only geometry encoding option is Well Known Binary, but we made it an option to allow other encodings. The main goal of 1.1.0 will be to incorporate a more columnar-oriented
+The goal of 1.0.0 was to establish a baseline of interoperability for geospatial information in Parquet. For 1.0.0
+the only geometry encoding option is Well Known Binary, but there is an option to allow other encodings. The main goal of 1.1.0 will be to incorporate a more columnar-oriented
 geometry format, which is currently being worked on as part of the [GeoArrow spec](https://github.com/geoarrow/geoarrow). Once that gets finalized we will add the option to
-GeoParquet. In general 1.1.0 will further explore spatial optimization, spatial indices and spatial partitioning to improve GeoParquet's performance.
+GeoParquet. In general 1.1.0 will further explore spatial optimization, spatial indices and spatial partitioning to improve performance reading spatial subsets.
 
 ## Versioning
 
-After we reach version 1.0 we will follow [SemVer](https://semver.org/), so at that point any breaking change will require the spec to go to 2.0.0.
-Currently implementors should expect breaking changes, though at some point, hopefully relatively soon (0.4?), we will declare that we don't *think* there
-will be any more potential breaking changes. Though the full commitment to that won't be made until 1.0.0.
+As of version 1.0 the specification follows [Semantic Versioning](https://semver.org/), so at that point any breaking change will require the spec to go to 2.0.0.
 
 ## Current Implementations & Examples
 

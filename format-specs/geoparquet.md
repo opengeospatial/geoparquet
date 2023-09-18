@@ -8,7 +8,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ## Version and schema
 
-This is version 1.0.0-dev of the GeoParquet specification.  See the [JSON Schema](schema.json) to validate metadata for this version.
+This is version 1.1.0-dev of the GeoParquet specification.  See the [JSON Schema](schema.json) to validate metadata for this version.
 
 ## Geometry columns
 
