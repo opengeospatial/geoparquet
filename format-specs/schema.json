@@ -72,7 +72,7 @@
             "epoch": {
               "type": "number"
             },
-            "extension_name": {
+            "geoarrow_type": {
               "type": "string",
               "pattern": "^geoarrow\\.(point|linestring|polygon|multipoint|multilinestring|multipolygon)$"
             }
