@@ -51,13 +51,14 @@ Each geometry column in the dataset MUST be included in the `columns` field abov
 
 | Field Name     | Type         | Description |
 | -------------- | ------------ | ----------- |
-| encoding       | string       | **REQUIRED.** Name of the geometry encoding format. Currently only `"WKB"` is supported. |
+| encoding       | string       | **REQUIRED.** Name of the geometry encoding format. Currently `"WKB"` and `"geoarrow"` are supported. |
 | geometry_types | \[string]    | **REQUIRED.** The geometry types of all geometries, or an empty array if they are not known. |
 | crs            | object\|null | [PROJJSON](https://proj.org/specifications/projjson.html) object representing the Coordinate Reference System (CRS) of the geometry. If the field is not provided, the default CRS is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84), which means the data in this column must be stored in longitude, latitude based on the WGS84 datum. |
 | orientation    | string       | Winding order of exterior ring of polygons. If present must be `"counterclockwise"`; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order. |
 | edges          | string       | Name of the coordinate system for the edges. Must be one of `"planar"` or `"spherical"`. The default value is `"planar"`. |
 | bbox           | \[number]    | Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
 | epoch          | number       | Coordinate epoch in case of a dynamic CRS, expressed as a decimal year. |
+| extension_name          | string       | The [GeoArrow extension name](https://geoarrow.org/extension-types#extension-names) corresponding to the column memory layout. This is required when `encoding` is `"geoarrow"` and must be omitted otherwise. |
 
 #### crs
 
@@ -83,9 +84,15 @@ The optional `epoch` field allows to specify this in case the `crs` field define
 
 #### encoding
 
-This is the binary format that the geometry is encoded in. The string `"WKB"`, signifying Well Known Binary is the only current option, but future versions of the spec may support alternative encodings. This SHOULD be the ["OpenGIS® Implementation Specification for Geographic information - Simple feature access - Part 1: Common architecture"](https://portal.ogc.org/files/?artifact_id=18241) WKB representation (using codes for 3D geometry types in the \[1001,1007\] range). This encoding is also consistent with the one defined in the ["ISO/IEC 13249-3:2016 (Information technology - Database languages - SQL multimedia and application packages - Part 3: Spatial)"](https://www.iso.org/standard/60343.html) standard.
+This is the memory layout used to encode geometries in the geometry column.
+
+The preferred option for maximum portability is `"WKB"`, signifying Well Known Binary. This SHOULD be the ["OpenGIS® Implementation Specification for Geographic information - Simple feature access - Part 1: Common architecture"](https://portal.ogc.org/files/?artifact_id=18241) WKB representation (using codes for 3D geometry types in the \[1001,1007\] range). This encoding is also consistent with the one defined in the ["ISO/IEC 13249-3:2016 (Information technology - Database languages - SQL multimedia and application packages - Part 3: Spatial)"](https://www.iso.org/standard/60343.html) standard.
 
 Note that the current version of the spec only allows for a subset of WKB: 2D or 3D geometries of the standard geometry types (the Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection geometry types). This means that M values or non-linear geometry types are not yet supported.
+
+Using the `"geoarrow"` encoding may provide better performance and enable readers to leverage more features of the Parquet format to accelerate geospatial queries (e.g., row group-level min/max statistics). When `encoding` is set to `"geoarrow"`, the column metadata must also specify `extension_name` according to the [GeoArrow metadata specification](https://geoarrow.org/extension-types#extension-names) to signify the memory layout used by the geometry column.
+
+Note that the current version of the spec only allows for a subset of GeoArrow: separated (struct) coordinates are required, only 2D or 3D geometries are permitted, and supported extension are currently `"geoarrow.point"`, `"geoarrow.linestring"`, `"geoarrow.polygon"`, `"geoarrow.multipoint"`, `"geoarrow.multilinestring"`, and `"geoarrow.multipolygon"`. This means that M values and serialized encodings are not yet supported.
 
 #### Coordinate axis order
 
