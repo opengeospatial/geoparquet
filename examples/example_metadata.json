@@ -108,6 +108,9 @@
         },
         "edges": "planar",
         "encoding": "WKB",
+        "geometry_bbox": {
+          "column": "bbox"
+        },
         "geometry_types": [
           "Polygon",
           "MultiPolygon"
