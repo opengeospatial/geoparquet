@@ -41,6 +41,9 @@ metadata_template = {
         "geometry": {
             "encoding": "WKB",
             "geometry_types": [],
+            "geometry_bbox": {
+                "column": "bbox",
+            },
         },
     },
 }
@@ -209,6 +212,18 @@ valid_cases["epoch"] = metadata
 metadata = copy.deepcopy(metadata_template)
 metadata["columns"]["geometry"]["epoch"] = "2015.1"
 invalid_cases["epoch_string"] = metadata
+
+# Geometry Bbox
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["geometry_bbox"].pop("column")
+invalid_cases["empty_geometry_bbox"] = metadata
+
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["geometry_bbox"]["column"] = ""
+invalid_cases["empty_geometry_bbox_column"] = metadata
+
 
 
 # # Tests

@@ -71,6 +71,16 @@
             },
             "epoch": {
               "type": "number"
+            },
+            "geometry_bbox": {
+              "type": "object",
+              "required": ["column"],
+              "properties": {
+                "column": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
             }
           }
         }
