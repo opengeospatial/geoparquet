@@ -58,7 +58,7 @@ Each geometry column in the dataset MUST be included in the `columns` field abov
 | edges          | string       | Name of the coordinate system for the edges. Must be one of `"planar"` or `"spherical"`. The default value is `"planar"`. |
 | bbox           | \[number]    | Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
 | epoch          | number       | Coordinate epoch in case of a dynamic CRS, expressed as a decimal year. |
-| geometry_bbox  | object       | Object specifying a column name of a [Bounding Box Column](#bounding-box-columns). |
+| covering       | object       | Object containing information like bounding boxes to help accelerate spatial data retrieval |
 
 
 #### crs
@@ -136,17 +136,28 @@ For non-geographic coordinate reference systems, the items in the bbox are minim
 
 The bbox values are in the same coordinate reference system as the geometry.
 
-#### geometry_bbox
+#### covering
+
+The covering field specifies optional simplified representations of each geometry. The keys of the "covering" object MUST be a supported encoding. Currently the only supported encoding is "box" which specifies the name of a [bounding box column](#bounding-box-columns)
+
+Example:
+```
+"covering": {
+    "box": {"column": "bbox"}
+}
+```
+
+##### box encoding
 
 Including a per-row bounding box can be useful for accelerating spatial queries by allowing consumers to inspect row group bounding box summary statistics. Furthermore a bounding box may be used to avoid complex spatial operations by first checking for bounding box overlaps. This field captures the name of a column containing the bounding box of the geometry for every row.
 
-The format of `geometry_bbox` is `{"name": "column_name"}` where `column_name` MUST exist in the Parquet file and meet the criteria in the [Bounding Box Column](#bounding-box-columns) definition.
+The format of `box` encoding is `{"name": "column_name"}` where `column_name` MUST exist in the Parquet file and meet the criteria in the [Bounding Box Column](#bounding-box-columns) definition.
 
-Note: the value specified in this field should not be confused with the [`bbox`](#bbox) field which contains the single bounding box of this geometry over the whole GeoParquet file.
+Note: the value specified in this field should not be confused with the top-level [`bbox`](#bbox) field which contains the single bounding box of this geometry over the whole GeoParquet file.
 
 ### Bounding Box Columns
 
-A bounding box column MUST be a Parquet struct with required fields `xmin`, `xmax`, `ymin`, and `ymax`. For three dimensions the additional fields `zmin` and `zmax` MUST be present. The fields MUST be of Parquet type `FLOAT` or `DOUBLE`. The repetition of a bounding box column MUST match the geometry column's [repetition](#repetition). A row MUST contain a bounding box value if and only if the row contains a geometry value. In cases where the geometry is optional and a row not contain a geometry value, the row MUST NOT contain a bounding box value.
+A bounding box column MUST be a Parquet group field with 4 child fields named `xmin`, `xmax`, `ymin`, and `ymax`. For three dimensions the additional fields `zmin` and `zmax` MAY be present but are not required. The fields MUST be of Parquet type `FLOAT` or `DOUBLE`. The repetition of a bounding box column MUST match the geometry column's [repetition](#repetition). A row MUST contain a bounding box value if and only if the row contains a geometry value. In cases where the geometry is optional and a row not contain a geometry value, the row MUST NOT contain a bounding box value.
 
 The bounding box column MUST be at the root of the schema. The bounding box column MUST NOT be nested in a group.
 

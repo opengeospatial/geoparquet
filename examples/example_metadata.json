@@ -8,6 +8,11 @@
           180.0,
           83.6451
         ],
+        "covering": {
+          "box": {
+            "column": "bbox"
+          }
+        },
         "crs": {
           "$schema": "https://proj.org/schemas/v0.6/projjson.schema.json",
           "area": "World.",
@@ -108,9 +113,6 @@
         },
         "edges": "planar",
         "encoding": "WKB",
-        "geometry_bbox": {
-          "column": "bbox"
-        },
         "geometry_types": [
           "Polygon",
           "MultiPolygon"

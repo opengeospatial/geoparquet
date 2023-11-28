@@ -48,7 +48,9 @@ metadata = {
             "crs": json.loads(df.crs.to_json()),
             "edges": "planar",
             "bbox": [round(x, 4) for x in df.total_bounds],
-            "geometry_bbox": {"column": "bbox"},
+            "covering": {
+                "box": {"column": "bbox"},
+            },
         },
     },
 }

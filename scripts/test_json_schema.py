@@ -41,8 +41,10 @@ metadata_template = {
         "geometry": {
             "encoding": "WKB",
             "geometry_types": [],
-            "geometry_bbox": {
-                "column": "bbox",
+            "covering": {
+                "box": {
+                    "column": "bbox",
+                },
             },
         },
     },
@@ -216,14 +218,13 @@ invalid_cases["epoch_string"] = metadata
 # Geometry Bbox
 
 metadata = copy.deepcopy(metadata_template)
-metadata["columns"]["geometry"]["geometry_bbox"].pop("column")
+metadata["columns"]["geometry"]["covering"].pop("box")
 invalid_cases["empty_geometry_bbox"] = metadata
 
 
 metadata = copy.deepcopy(metadata_template)
-metadata["columns"]["geometry"]["geometry_bbox"]["column"] = ""
+metadata["columns"]["geometry"]["covering"]["box"]["column"] = ""
 invalid_cases["empty_geometry_bbox_column"] = metadata
-
 
 
 # # Tests
