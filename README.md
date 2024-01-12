@@ -14,7 +14,7 @@ Arrow work in a compatible way, with this specification focused solely on Parque
 
 The 'dev' versions of the spec are available in this repo:
 
-- [**Specification**](format-specs/geoparquet.md) (dev version - not stable, go to [stable specification](https://geoparquet.org/releases/v1.0.0/) instead)
+- [**Specification**](format-specs/geoparquet.md) (dev version - not stable, go to the [stable specification](https://geoparquet.org/releases/v1.0.0/) instead)
 - [JSON Schema](format-specs/schema.json)
 - [Examples](examples/)
 
