@@ -79,7 +79,7 @@ The value of this key may be explicitly set to `null` to indicate that there is 
 
 In a dynamic CRS, coordinates of a point on the surface of the Earth may change with time. To be unambiguous, the coordinates must always be qualified with the epoch at which they are valid.
 
-The optional `epoch` field allows to specify this in case the `crs` field defines a a dynamic CRS. The coordinate epoch is expressed as a decimal year (e.g. `2021.47`). Currently, this specification only supports an epoch per column (and not per geometry).
+The optional `epoch` field allows to specify this in case the `crs` field defines a dynamic CRS. The coordinate epoch is expressed as a decimal year (e.g. `2021.47`). Currently, this specification only supports an epoch per column (and not per geometry).
 
 #### encoding
 
