@@ -10,10 +10,10 @@
         ],
         "covering": {
           "bbox": {
-            "xmin": "bbox.xmin",
             "xmax": "bbox.xmax",
-            "ymin": "bbox.ymin",
-            "ymax": "bbox.ymax"
+            "xmin": "bbox.xmin",
+            "ymax": "bbox.ymax",
+            "ymin": "bbox.ymin"
           }
         },
         "crs": {
