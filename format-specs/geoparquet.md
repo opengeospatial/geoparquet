@@ -58,7 +58,7 @@ Each geometry column in the dataset MUST be included in the `columns` field abov
 | edges          | string       | Name of the coordinate system for the edges. Must be one of `"planar"` or `"spherical"`. The default value is `"planar"`. |
 | bbox           | \[number]    | Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
 | epoch          | number       | Coordinate epoch in case of a dynamic CRS, expressed as a decimal year. |
-| covering       | object       | Object containing information like bounding boxes to help accelerate spatial data retrieval |
+| covering       | object       | Object containing bounding box column names to help accelerate spatial data retrieval |
 
 
 #### crs
@@ -162,7 +162,7 @@ Note: the value specified in this field should not be confused with the top-leve
 
 ### Bounding Box Columns
 
-A bounding box column MUST be a Parquet group field with 4 child fields named `xmin`, `xmax`, `ymin`, and `ymax`. For three dimensions the additional fields `zmin` and `zmax` MAY be present but are not required. The fields MUST be of Parquet type `FLOAT` or `DOUBLE`. The repetition of a bounding box column MUST match the geometry column's [repetition](#repetition). A row MUST contain a bounding box value if and only if the row contains a geometry value. In cases where the geometry is optional and a row not contain a geometry value, the row MUST NOT contain a bounding box value.
+A bounding box column MUST be a Parquet group field with 4 child fields named `xmin`, `xmax`, `ymin`, and `ymax`. For three dimensions the additional fields `zmin` and `zmax` MAY be present but are not required. The fields MUST be of Parquet type `FLOAT` or `DOUBLE`. The repetition of a bounding box column MUST match the geometry column's [repetition](#repetition). A row MUST contain a bounding box value if and only if the row contains a geometry value. In cases where the geometry is optional and a row does not contain a geometry value, the row MUST NOT contain a bounding box value.
 
 The bounding box column MUST be at the root of the schema. The bounding box column MUST NOT be nested in a group.
 
