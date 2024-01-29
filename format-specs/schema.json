@@ -76,13 +76,25 @@
               "type": "object",
               "minProperties": 1,
               "properties": {
-                "box": {
+                "bbox": {
                   "type": "object",
-                  "required": ["column"],
+                  "required": ["xmin", "xmax", "ymin", "ymax"],
                   "properties": {
-                    "column": {
+                    "xmin": {
                       "type": "string",
-                      "minLength": 1
+                      "pattern": "\\.xmin$"
+                    },
+                    "xmax": {
+                      "type": "string",
+                      "pattern": "\\.xmax$"
+                    },
+                    "ymin": {
+                      "type": "string",
+                      "pattern": "\\.ymin$"
+                    },
+                    "ymax": {
+                      "type": "string",
+                      "pattern": "\\.ymax$"
                     }
                   }
                 }

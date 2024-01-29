@@ -138,20 +138,25 @@ The bbox values are in the same coordinate reference system as the geometry.
 
 #### covering
 
-The covering field specifies optional simplified representations of each geometry. The keys of the "covering" object MUST be a supported encoding. Currently the only supported encoding is "box" which specifies the name of a [bounding box column](#bounding-box-columns)
+The covering field specifies optional simplified representations of each geometry. The keys of the "covering" object MUST be a supported encoding. Currently the only supported encoding is "bbox" which specifies the names of [bounding box columns](#bounding-box-columns)
 
 Example:
 ```
 "covering": {
-    "box": {"column": "bbox"}
+    "bbox": {
+        "xmin": "bbox.xmin",
+        "ymin": "bbox.ymin",
+        "xmax": "bbox.xmax",
+        "ymax": "bbox.ymax"
+    }
 }
 ```
 
-##### box encoding
+##### bbox covering encoding
 
 Including a per-row bounding box can be useful for accelerating spatial queries by allowing consumers to inspect row group bounding box summary statistics. Furthermore a bounding box may be used to avoid complex spatial operations by first checking for bounding box overlaps. This field captures the name of a column containing the bounding box of the geometry for every row.
 
-The format of `box` encoding is `{"name": "column_name"}` where `column_name` MUST exist in the Parquet file and meet the criteria in the [Bounding Box Column](#bounding-box-columns) definition.
+The format of `bbox` encoding is `{"xmin": "column_name.xmin", "ymin": "column_name.ymin", "xmax": "column_name.xmax", "ymax": "column_name.ymax"}` where `column_name` MUST exist in the Parquet file and meet the criteria in the [Bounding Box Column](#bounding-box-columns) definition. The values MUST end in `.xmin`, `.ymin`, etc. All values MUST use the same column name.
 
 Note: the value specified in this field should not be confused with the top-level [`bbox`](#bbox) field which contains the single bounding box of this geometry over the whole GeoParquet file.
 

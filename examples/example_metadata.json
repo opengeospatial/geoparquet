@@ -9,8 +9,11 @@
           83.6451
         ],
         "covering": {
-          "box": {
-            "column": "bbox"
+          "bbox": {
+            "xmin": "bbox.xmin",
+            "xmax": "bbox.xmax",
+            "ymin": "bbox.ymin",
+            "ymax": "bbox.ymax"
           }
         },
         "crs": {
