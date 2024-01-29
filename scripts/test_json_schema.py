@@ -40,16 +40,8 @@ metadata_template = {
     "columns": {
         "geometry": {
             "encoding": "WKB",
-            "geometry_types": [],
-            "covering": {
-                "bbox": {
-                    "xmin": "bbox.xmin",
-                    "ymin": "bbox.ymin",
-                    "xmax": "bbox.xmax",
-                    "ymax": "bbox.ymax",
-                },
-            },
-        },
+            "geometry_types": []
+        }
     },
 }
 
@@ -219,9 +211,19 @@ metadata["columns"]["geometry"]["epoch"] = "2015.1"
 invalid_cases["epoch_string"] = metadata
 
 # Geometry Bbox
+metadata_covering_template = copy.deepcopy(metadata_template)
+metadata_covering_template["columns"]["geometry"]["covering"] = {
+    "bbox": {
+        "xmin": "bbox.xmin",
+        "ymin": "bbox.ymin",
+        "xmax": "bbox.xmax",
+        "ymax": "bbox.ymax",
+    },
+}
+
 
 # Allow "any_column.xmin" etc.
-metadata = copy.deepcopy(metadata_template)
+metadata = copy.deepcopy(metadata_covering_template)
 metadata["columns"]["geometry"]["covering"]["bbox"] = {
     "xmin": "any_column.xmin",
     "ymin": "any_column.ymin",
@@ -230,45 +232,44 @@ metadata["columns"]["geometry"]["covering"]["bbox"] = {
 }
 valid_cases["valid_but_not_bbox_struct_name"] = metadata
 
-metadata = copy.deepcopy(metadata_template)
+metadata = copy.deepcopy(metadata_covering_template)
 metadata["columns"]["geometry"]["covering"].pop("bbox")
 invalid_cases["empty_geometry_bbox"] = metadata
 
-
-metadata = copy.deepcopy(metadata_template)
+metadata = copy.deepcopy(metadata_covering_template)
 metadata["columns"]["geometry"]["covering"]["bbox"] = {}
 invalid_cases["empty_geometry_bbox_missing_fields"] = metadata
 
-metadata = copy.deepcopy(metadata_template)
+metadata = copy.deepcopy(metadata_covering_template)
 metadata["columns"]["geometry"]["covering"]["bbox"].pop("xmin")
 invalid_cases["covering_bbox_missing_xmin"] = metadata
 
-metadata = copy.deepcopy(metadata_template)
+metadata = copy.deepcopy(metadata_covering_template)
 metadata["columns"]["geometry"]["covering"]["bbox"].pop("ymin")
 invalid_cases["covering_bbox_missing_ymin"] = metadata
 
-metadata = copy.deepcopy(metadata_template)
+metadata = copy.deepcopy(metadata_covering_template)
 metadata["columns"]["geometry"]["covering"]["bbox"].pop("xmax")
 invalid_cases["covering_bbox_missing_xmax"] = metadata
 
-metadata = copy.deepcopy(metadata_template)
+metadata = copy.deepcopy(metadata_covering_template)
 metadata["columns"]["geometry"]["covering"]["bbox"].pop("ymax")
 invalid_cases["covering_bbox_missing_ymax"] = metadata
 
 ## Invalid bbox xmin/xmax/ymin/ymax values
-metadata = copy.deepcopy(metadata_template)
+metadata = copy.deepcopy(metadata_covering_template)
 metadata["columns"]["geometry"]["covering"]["bbox"]["xmin"] = "not_bbox_dot_xmin"
 invalid_cases["covering_bbox_invalid_xmin"] = metadata
 
-metadata = copy.deepcopy(metadata_template)
+metadata = copy.deepcopy(metadata_covering_template)
 metadata["columns"]["geometry"]["covering"]["bbox"]["xmax"] = "not_bbox_dot_xmax"
 invalid_cases["covering_bbox_invalid_xmax"] = metadata
 
-metadata = copy.deepcopy(metadata_template)
+metadata = copy.deepcopy(metadata_covering_template)
 metadata["columns"]["geometry"]["covering"]["bbox"]["ymin"] = "not_bbox_dot_ymin"
 invalid_cases["covering_bbox_invalid_ymin"] = metadata
 
-metadata = copy.deepcopy(metadata_template)
+metadata = copy.deepcopy(metadata_covering_template)
 metadata["columns"]["geometry"]["covering"]["bbox"]["ymax"] = "not_bbox_dot_ymax"
 invalid_cases["covering_bbox_invalid_ymax"] = metadata
 
