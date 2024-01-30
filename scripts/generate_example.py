@@ -50,10 +50,10 @@ metadata = {
             "bbox": [round(x, 4) for x in df.total_bounds],
             "covering": {
                 "bbox": {
-                    "xmin": "bbox.xmin",
-                    "ymin": "bbox.ymin",
-                    "xmax": "bbox.xmax",
-                    "ymax": "bbox.ymax",
+                    "xmin": ["bbox", "xmin"],
+                    "ymin": ["bbox", "ymin"],
+                    "xmax": ["bbox", "xmax"],
+                    "ymax": ["bbox", "ymax"],
                 },
             },
         },
