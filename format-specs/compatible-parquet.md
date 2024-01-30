@@ -12,7 +12,7 @@ The core idea of the compatibility guidelines is to have the output match the de
 
 * The geometry column should be named either `"geometry"` or `"geography"`.
 
-* The geometry column should be a `BYTE_ARRAY` with Well Known Binary (WKB) used to define the geometries, as defined in the [encoding](./geoparquet.md#encoding) section of the GeoParquet spec. Alternatively, the geometry column can be stored according to the Point, MultiPoint, MultiLinestring, or MultiPolygon memory layouts with separated (struct) coordinates as specified in the [GeoArrow format](https://geoarrow.org/format).
+* The geometry column should be a `BYTE_ARRAY` with Well Known Binary (WKB) used to define the geometries, as defined in the [encoding](./geoparquet.md#encoding) section of the GeoParquet spec. Alternatively, the geometry column can be stored according to the Point, MultiPoint, MultiLineString, or MultiPolygon memory layouts with separated (struct) coordinates as specified in the [GeoArrow format](https://geoarrow.org/format).
 
 * All data is stored in longitude, latitude based on the WGS84 datum, as defined as the default in the [crs](./geoparquet.md#crs) section of the GeoParquet spec.
 

@@ -3,7 +3,7 @@
     "columns": {
       "geometry": {
         "encoding": "geoarrow",
-        "extension_name": "geoarrow.point",
+        "geoarrow_type": "geoarrow.point",
         "geometry_types": [
           "Point"
         ]
