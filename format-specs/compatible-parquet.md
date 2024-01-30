@@ -1,6 +1,6 @@
 # Parquet Geospatial Compatibility
 
-The goal of GeoParquet is that every tool producing Parquet and includes geospatial data uses official [metadata defined in the GeoParquet spec](./geoparquet_spec) to achieve true interoperability. This document represents a set of guidelines for those would like to produce geospatial Parquet data but are using tools that are not yet fully implementing GeoParquet metadata. It is meant to be used just for the interim time when only some tools properly produce GeoParquet, to enable data producers to support the growing ecosystem.
+The goal of GeoParquet is that every tool producing Parquet and includes geospatial data uses official [metadata defined in the GeoParquet spec](./schema.json) to achieve true interoperability. This document represents a set of guidelines for those would like to produce geospatial Parquet data but are using tools that are not yet fully implementing GeoParquet metadata. It is meant to be used just for the interim time when only some tools properly produce GeoParquet, to enable data producers to support the growing ecosystem.
 
 To be clear, this is *only* recommended for those who are using tools that don't yet produce valid GeoParquet, and we encourage advocating to the creaters of tools you are using to implement the GeoParquet spec. Feel free to [start a discussion](https://github.com/opengeospatial/geoparquet/discussions) to raise awareness of tools that ideally support GeoParquet - the community can likely help in encouraging an implementation.
 
