@@ -54,7 +54,7 @@ Each geometry column in the dataset MUST be included in the `columns` field abov
 | edges          | string       | Name of the coordinate system for the edges. Must be one of `"planar"` or `"spherical"`. The default value is `"planar"`. |
 | bbox           | \[number]    | Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
 | epoch          | number       | Coordinate epoch in case of a dynamic CRS, expressed as a decimal year. |
-| geoarrow_type  | string       | The [GeoArrow extension name](https://geoarrow.org/extension-types#extension-names) corresponding to the column memory layout. This is required when `encoding` is `"geoarrow"` and must be omitted otherwise. |
+| geoarrow_type  | string       | The [GeoArrow extension name](https://geoarrow.org/extension-types#extension-names) corresponding to the column's memory layout. This is required when `encoding` is `"geoarrow"` and must be omitted otherwise. |
 
 #### crs
 
