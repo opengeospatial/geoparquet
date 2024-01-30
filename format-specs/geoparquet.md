@@ -162,7 +162,7 @@ Note: the value specified in this field should not be confused with the top-leve
 
 ### Bounding Box Columns
 
-A bounding box column MUST be a Parquet group field with 4 child fields named `xmin`, `xmax`, `ymin`, and `ymax`. For three dimensions the additional fields `zmin` and `zmax` MAY be present but are not required. The fields MUST be of Parquet type `FLOAT` or `DOUBLE`. The repetition of a bounding box column MUST match the geometry column's [repetition](#repetition). A row MUST contain a bounding box value if and only if the row contains a geometry value. In cases where the geometry is optional and a row does not contain a geometry value, the row MUST NOT contain a bounding box value.
+A bounding box column MUST be a Parquet group field with 4 child fields named `xmin`, `xmax`, `ymin`, and `ymax` representing the geometry's coordinate range. For three dimensions the additional fields `zmin` and `zmax` MAY be present but are not required. The fields MUST be of Parquet type `FLOAT` or `DOUBLE`. The repetition of a bounding box column MUST match the geometry column's [repetition](#repetition). A row MUST contain a bounding box value if and only if the row contains a geometry value. In cases where the geometry is optional and a row does not contain a geometry value, the row MUST NOT contain a bounding box value.
 
 The bounding box column MUST be at the root of the schema. The bounding box column MUST NOT be nested in a group.
 
