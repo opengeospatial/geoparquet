@@ -154,7 +154,7 @@ Example:
 
 ##### bbox covering encoding
 
-Including a per-row bounding box can be useful for accelerating spatial queries by allowing consumers to inspect row group or page index bounding box summary statistics. Furthermore a bounding box may be used to avoid complex spatial operations by first checking for bounding box overlaps. This field captures the column name and fields containing the bounding box of the geometry for every row.
+Including a per-row bounding box can be useful for accelerating spatial queries by allowing consumers to inspect row group and page index bounding box summary statistics. Furthermore a bounding box may be used to avoid complex spatial operations by first checking for bounding box overlaps. This field captures the column name and fields containing the bounding box of the geometry for every row.
 
 The format of the `bbox` encoding is `{"xmin": ["column_name", "xmin"], "ymin": ["column_name", "ymin"], "xmax": ["column_name", "xmax"], "ymax": ["column_name", "ymax"]}`. The arrays represent Parquet schema paths for nested groups. In this example, `column_name` is a Parquet group with fields `xmin`, `ymin`, `xmax`, `ymax`. The value in `column_name` MUST exist in the Parquet file and meet the criteria in the [Bounding Box Column](#bounding-box-columns) definition. In order to constrain this value to a single bounding group field, the second item in each element MUST be `xmin`, `ymin`, etc. All values MUST use the same column name.
 
