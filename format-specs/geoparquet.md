@@ -14,6 +14,8 @@ This is version 1.1.0-dev of the GeoParquet specification.  See the [JSON Schema
 
 Geometry columns MUST be encoded as [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary) or using the single-geometry type encodings based on the [GeoArrow](https://geoarrow.org/) specification. See the [encoding](#encoding) section below for more details.
 
+WKB geometry columns MUST be stored using the `BYTE_ARRAY` parquet type. They MUST be encoded as [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary).
+
 ### Nesting
 
 Geometry columns MUST be at the root of the schema. A geometry MUST NOT be a group field or nested in a group. In practice, this means that when writing to GeoParquet from another format, geometries cannot be contained in complex or nested types such as structs, lists, arrays, or map types.
