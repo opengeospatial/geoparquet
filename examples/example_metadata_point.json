@@ -2,8 +2,7 @@
   "geo": {
     "columns": {
       "geometry": {
-        "encoding": "geoarrow",
-        "geoarrow_type": "geoarrow.point",
+        "encoding": "point",
         "geometry_types": [
           "Point"
         ]
