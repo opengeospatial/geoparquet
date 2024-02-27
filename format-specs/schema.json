@@ -23,7 +23,7 @@
           "properties": {
             "encoding": {
               "type": "string",
-              "pattern": "^(WKB|geoarrow)$"
+              "pattern": "^(WKB|point|linestring|polygon|multipoint|multilinestring|multipolygon)$"
             },
             "geometry_types": {
               "type": "array",
@@ -71,10 +71,6 @@
             },
             "epoch": {
               "type": "number"
-            },
-            "geoarrow_type": {
-              "type": "string",
-              "pattern": "^geoarrow\\.(point|linestring|polygon|multipoint|multilinestring|multipolygon)$"
             }
           }
         }

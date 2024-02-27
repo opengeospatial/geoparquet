@@ -12,7 +12,7 @@ This is version 1.1.0-dev of the GeoParquet specification.  See the [JSON Schema
 
 ## Geometry columns
 
-Geometry columns MUST be encoded as [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary) or [GeoArrow](https://geoarrow.org/). See the [encoding](#encoding) section below for more details.
+Geometry columns MUST be encoded as [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary) or using the single-geometry type encodings based on the [GeoArrow](https://geoarrow.org/) specification. See the [encoding](#encoding) section below for more details.
 
 ### Nesting
 
@@ -47,14 +47,13 @@ Each geometry column in the dataset MUST be included in the `columns` field abov
 
 | Field Name     | Type         | Description |
 | -------------- | ------------ | ----------- |
-| encoding       | string       | **REQUIRED.** Name of the geometry encoding format. Currently `"WKB"` and `"geoarrow"` are supported. |
+| encoding       | string       | **REQUIRED.** Name of the geometry encoding format. Currently `"WKB"`, `"point"`, `"linestring"`, `"polygon"`, `"multipoint"`, `"multilinestring"`, and `"multipolygon"` are supported. |
 | geometry_types | \[string]    | **REQUIRED.** The geometry types of all geometries, or an empty array if they are not known. |
 | crs            | object\|null | [PROJJSON](https://proj.org/specifications/projjson.html) object representing the Coordinate Reference System (CRS) of the geometry. If the field is not provided, the default CRS is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84), which means the data in this column must be stored in longitude, latitude based on the WGS84 datum. |
 | orientation    | string       | Winding order of exterior ring of polygons. If present must be `"counterclockwise"`; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order. |
 | edges          | string       | Name of the coordinate system for the edges. Must be one of `"planar"` or `"spherical"`. The default value is `"planar"`. |
 | bbox           | \[number]    | Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
 | epoch          | number       | Coordinate epoch in case of a dynamic CRS, expressed as a decimal year. |
-| geoarrow_type  | string       | The [GeoArrow extension name](https://geoarrow.org/extension-types#extension-names) corresponding to the column's memory layout. This is required when `encoding` is `"geoarrow"` and must be omitted otherwise. |
 
 #### crs
 
@@ -86,9 +85,7 @@ The preferred option for maximum portability is `"WKB"`, signifying Well Known B
 
 Note that the current version of the spec only allows for a subset of WKB: 2D or 3D geometries of the standard geometry types (the Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection geometry types). This means that M values or non-linear geometry types are not yet supported.
 
-Using the `"geoarrow"` encoding may provide better performance and enable readers to leverage more features of the Parquet format to accelerate geospatial queries (e.g., row group-level min/max statistics). When `encoding` is set to `"geoarrow"`, the column metadata must also specify `geoarrow_type` according to the [GeoArrow metadata specification for extension names](https://geoarrow.org/extension-types#extension-names) to signify the memory layout used by the geometry column.
-
-Note that the current version of the spec only allows for a subset of GeoArrow: separated (struct) coordinates are required, only 2D or 3D geometries are permitted, and supported extension are currently `"geoarrow.point"`, `"geoarrow.linestring"`, `"geoarrow.polygon"`, `"geoarrow.multipoint"`, `"geoarrow.multilinestring"`, and `"geoarrow.multipolygon"`. This means that M values and serialized encodings are not yet supported.
+Using the single-geometry type encodings (i.e., `"point"`, `"linestring"`, `"polygon"`, `"multipoint"`, `"multilinestring"`, `"multipolygon"`) may provide better performance and enable readers to leverage more features of the Parquet format to accelerate geospatial queries (e.g., row group-level min/max statistics). These encodings correspond to extension name suffix in the [GeoArrow metadata specification for extension names](https://geoarrow.org/extension-types#extension-names) to signify the memory layout used by the geometry column. GeoParquet uses the separated (struct) representation of coordinates for single-geometry type encodings because this encoding results in useful column statistics when row groups and/or files contain related features.
 
 Implementation note: when using WKB encoding with the ecosystem of Arrow libraries, Parquet types such as `BYTE_ARRAY` might not be directly accessible. Instead, the corresponding Arrow data type can be `Arrow::Type::BINARY` (for arrays that whose elements can be indexed through a 32-bit index) or `Arrow::Type::LARGE_BINARY` (64-bit index). It is recommended that GeoParquet readers are compatible with both data types, and writers preferably use `Arrow::Type::BINARY` (thus limiting to row groups with content smaller than 2 GB) for larger compatibility.
 
