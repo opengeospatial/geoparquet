@@ -97,9 +97,51 @@ WKB geometry columns MUST be stored using the `BYTE_ARRAY` parquet type.
 
 Implementation note: when using WKB encoding with the ecosystem of Arrow libraries, Parquet types such as `BYTE_ARRAY` might not be directly accessible. Instead, the corresponding Arrow data type can be `Arrow::Type::BINARY` (for arrays that whose elements can be indexed through a 32-bit index) or `Arrow::Type::LARGE_BINARY` (64-bit index). It is recommended that GeoParquet readers are compatible with both data types, and writers preferably use `Arrow::Type::BINARY` (thus limiting to row groups with content smaller than 2 GB) for larger compatibility.
 
-##### Geometry type specific encodings (based on GeoArrow)
+##### Native encodings (based on GeoArrow)
 
 Using the single-geometry type encodings (i.e., `"point"`, `"linestring"`, `"polygon"`, `"multipoint"`, `"multilinestring"`, `"multipolygon"`) may provide better performance and enable readers to leverage more features of the Parquet format to accelerate geospatial queries (e.g., row group-level min/max statistics). These encodings correspond to extension name suffix in the [GeoArrow metadata specification for extension names](https://geoarrow.org/extension-types#extension-names) to signify the memory layout used by the geometry column. GeoParquet uses the separated (struct) representation of coordinates for single-geometry type encodings because this encoding results in useful column statistics when row groups and/or files contain related features.
+
+The actual coordinates of the geometries MUST be stored as native numbers, i.e. using
+the `DOUBLE` parquet type in a (repeated) group of fields (exact repetition depending
+on the geometry type).
+
+For the `"point"` geometry type, this results in a struct of two fields for x
+and y coordinates (in case of 2D geometries):
+
+```
+// "point" geometry column as simple field with two child fields for x and y
+optional group geometry {
+  required double x;
+  required double y;
+}
+```
+
+For the other geometry types, those x and y coordinate values MUST be embedded
+in repeated groups (`LIST` logical parquet type). For example, for the
+`"multipolygon"` geometry type:
+
+```
+// "multipolygon" geometry column with multiple levels of nesting
+optional group geometry (List) {
+  // the parts of the MultiPolygon
+  repeated group list {
+    optional group element (List) {
+      // the rings of one Polygon
+      repeated group list {
+        optional group element (List) {
+          // the list of coordinates of one ring
+          repeated group list {
+            optional group element {
+              required double x;
+              required double y;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
 
 #### Coordinate axis order
 
