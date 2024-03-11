@@ -12,9 +12,9 @@ This is version 1.1.0-dev of the GeoParquet specification.  See the [JSON Schema
 
 ## Geometry columns
 
-Geometry columns MUST be encoded as [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary) or using the single-geometry type encodings based on the [GeoArrow](https://geoarrow.org/) specification. See the [encoding](#encoding) section below for more details.
+Geometry columns MUST be encoded as [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary) or using the single-geometry type encodings based on the [GeoArrow](https://geoarrow.org/) specification.
 
-WKB geometry columns MUST be stored using the `BYTE_ARRAY` parquet type. They MUST be encoded as [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary).
+See the [encoding](#encoding) section below for more details.
 
 ### Nesting
 
@@ -82,14 +82,24 @@ The optional `epoch` field allows to specify this in case the `crs` field define
 #### encoding
 
 This is the memory layout used to encode geometries in the geometry column.
+Supported values:
 
-The preferred option for maximum portability is `"WKB"`, signifying Well Known Binary. This SHOULD be the ["OpenGIS® Implementation Specification for Geographic information - Simple feature access - Part 1: Common architecture"](https://portal.ogc.org/files/?artifact_id=18241) WKB representation (using codes for 3D geometry types in the \[1001,1007\] range). This encoding is also consistent with the one defined in the ["ISO/IEC 13249-3:2016 (Information technology - Database languages - SQL multimedia and application packages - Part 3: Spatial)"](https://www.iso.org/standard/60343.html) standard.
+- `"WKB"`
+- one of `"point"`, `"linestring"`, `"polygon"`, `"multipoint"`, `"multilinestring"`, `"multipolygon"`
+
+##### WKB
+
+The preferred option for maximum portability is `"WKB"`, signifying [Well Known Binary](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary). This SHOULD be the ["OpenGIS® Implementation Specification for Geographic information - Simple feature access - Part 1: Common architecture"](https://portal.ogc.org/files/?artifact_id=18241) WKB representation (using codes for 3D geometry types in the \[1001,1007\] range). This encoding is also consistent with the one defined in the ["ISO/IEC 13249-3:2016 (Information technology - Database languages - SQL multimedia and application packages - Part 3: Spatial)"](https://www.iso.org/standard/60343.html) standard.
 
 Note that the current version of the spec only allows for a subset of WKB: 2D or 3D geometries of the standard geometry types (the Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection geometry types). This means that M values or non-linear geometry types are not yet supported.
 
-Using the single-geometry type encodings (i.e., `"point"`, `"linestring"`, `"polygon"`, `"multipoint"`, `"multilinestring"`, `"multipolygon"`) may provide better performance and enable readers to leverage more features of the Parquet format to accelerate geospatial queries (e.g., row group-level min/max statistics). These encodings correspond to extension name suffix in the [GeoArrow metadata specification for extension names](https://geoarrow.org/extension-types#extension-names) to signify the memory layout used by the geometry column. GeoParquet uses the separated (struct) representation of coordinates for single-geometry type encodings because this encoding results in useful column statistics when row groups and/or files contain related features.
+WKB geometry columns MUST be stored using the `BYTE_ARRAY` parquet type.
 
 Implementation note: when using WKB encoding with the ecosystem of Arrow libraries, Parquet types such as `BYTE_ARRAY` might not be directly accessible. Instead, the corresponding Arrow data type can be `Arrow::Type::BINARY` (for arrays that whose elements can be indexed through a 32-bit index) or `Arrow::Type::LARGE_BINARY` (64-bit index). It is recommended that GeoParquet readers are compatible with both data types, and writers preferably use `Arrow::Type::BINARY` (thus limiting to row groups with content smaller than 2 GB) for larger compatibility.
+
+##### Geometry type specific encodings (based on GeoArrow)
+
+Using the single-geometry type encodings (i.e., `"point"`, `"linestring"`, `"polygon"`, `"multipoint"`, `"multilinestring"`, `"multipolygon"`) may provide better performance and enable readers to leverage more features of the Parquet format to accelerate geospatial queries (e.g., row group-level min/max statistics). These encodings correspond to extension name suffix in the [GeoArrow metadata specification for extension names](https://geoarrow.org/extension-types#extension-names) to signify the memory layout used by the geometry column. GeoParquet uses the separated (struct) representation of coordinates for single-geometry type encodings because this encoding results in useful column statistics when row groups and/or files contain related features.
 
 #### Coordinate axis order
 
