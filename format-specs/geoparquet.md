@@ -125,12 +125,12 @@ in repeated groups (`LIST` logical parquet type). For example, for the
 optional group geometry (List) {
   // the parts of the MultiPolygon
   repeated group list {
-    optional group element (List) {
+    required group element (List) {
       // the rings of one Polygon
       repeated group list {
-        optional group element (List) {
+        required group element (List) {
           // the list of coordinates of one ring
-          repeated group list {
+          required group list {
             optional group element {
               required double x;
               required double y;
