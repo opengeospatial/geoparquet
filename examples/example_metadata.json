@@ -8,6 +8,26 @@
           180.0,
           83.6451
         ],
+        "covering": {
+          "bbox": {
+            "xmax": [
+              "bbox",
+              "xmax"
+            ],
+            "xmin": [
+              "bbox",
+              "xmin"
+            ],
+            "ymax": [
+              "bbox",
+              "ymax"
+            ],
+            "ymin": [
+              "bbox",
+              "ymin"
+            ]
+          }
+        },
         "crs": {
           "$schema": "https://proj.org/schemas/v0.6/projjson.schema.json",
           "area": "World.",

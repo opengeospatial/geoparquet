@@ -71,6 +71,50 @@
             },
             "epoch": {
               "type": "number"
+            },
+            "covering": {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "bbox": {
+                  "type": "object",
+                  "required": ["xmin", "xmax", "ymin", "ymax"],
+                  "properties": {
+                    "xmin": {
+                      "type": "array",
+                      "items": [
+                        { "type": "string" },
+                        { "const": "xmin" }
+                      ],
+                      "additionalItems": false
+                    },
+                    "xmax": {
+                      "type": "array",
+                      "items": [
+                        { "type": "string" },
+                        { "const": "xmax" }
+                      ],
+                      "additionalItems": false
+                    },
+                    "ymin": {
+                      "type": "array",
+                      "items": [
+                        { "type": "string" },
+                        { "const": "ymin" }
+                      ],
+                      "additionalItems": false
+                    },
+                    "ymax": {
+                      "type": "array",
+                      "items": [
+                        { "type": "string" },
+                        { "const": "ymax" }
+                      ],
+                      "additionalItems": false
+                    }
+                  }
+                }
+              }
             }
           }
         }

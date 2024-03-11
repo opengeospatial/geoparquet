@@ -58,6 +58,8 @@ Each geometry column in the dataset MUST be included in the `columns` field abov
 | edges          | string       | Name of the coordinate system for the edges. Must be one of `"planar"` or `"spherical"`. The default value is `"planar"`. |
 | bbox           | \[number]    | Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
 | epoch          | number       | Coordinate epoch in case of a dynamic CRS, expressed as a decimal year. |
+| covering       | object       | Object containing bounding box column names to help accelerate spatial data retrieval |
+
 
 #### crs
 
@@ -133,6 +135,38 @@ The bbox, if specified, MUST be encoded with an array representing the range of 
 For non-geographic coordinate reference systems, the items in the bbox are minimum values for each dimension followed by maximum values for each dimension. For example, given geometries that have coordinates with two dimensions, the bbox would have the form `[<xmin>, <ymin>, <xmax>, <ymax>]`. For three dimensions, the bbox would have the form `[<xmin>, <ymin>, <zmin>, <xmax>, <ymax>, <zmax>]`.
 
 The bbox values are in the same coordinate reference system as the geometry.
+
+#### covering
+
+The covering field specifies optional simplified representations of each geometry. The keys of the "covering" object MUST be a supported encoding. Currently the only supported encoding is "bbox" which specifies the names of [bounding box columns](#bounding-box-columns)
+
+Example:
+```
+"covering": {
+    "bbox": {
+        "xmin": ["bbox", "xmin"],
+        "ymin": ["bbox", "ymin"],
+        "xmax": ["bbox", "xmax"],
+        "ymax": ["bbox", "ymax"]
+    }
+}
+```
+
+##### bbox covering encoding
+
+Including a per-row bounding box can be useful for accelerating spatial queries by allowing consumers to inspect row group and page index bounding box summary statistics. Furthermore a bounding box may be used to avoid complex spatial operations by first checking for bounding box overlaps. This field captures the column name and fields containing the bounding box of the geometry for every row.
+
+The format of the `bbox` encoding is `{"xmin": ["column_name", "xmin"], "ymin": ["column_name", "ymin"], "xmax": ["column_name", "xmax"], "ymax": ["column_name", "ymax"]}`. The arrays represent Parquet schema paths for nested groups. In this example, `column_name` is a Parquet group with fields `xmin`, `ymin`, `xmax`, `ymax`. The value in `column_name` MUST exist in the Parquet file and meet the criteria in the [Bounding Box Column](#bounding-box-columns) definition. In order to constrain this value to a single bounding group field, the second item in each element MUST be `xmin`, `ymin`, etc. All values MUST use the same column name.
+
+The value specified in this field should not be confused with the top-level [`bbox`](#bbox) field which contains the single bounding box of this geometry over the whole GeoParquet file.
+
+Note: This technique to use the bounding box to improve spatial queries does not apply to geometries that cross the antimeridian. Such geometries are unsupported by this method.
+
+### Bounding Box Columns
+
+A bounding box column MUST be a Parquet group field with 4 child fields named `xmin`, `xmax`, `ymin`, and `ymax` representing the geometry's coordinate range. As with the top-level [`bbox`](#bbox) column, the values follow the GeoJSON specification (RFC 7946, section 5), which also describes how to represent the bbox for geometries that cross the antimeridian. For three dimensions the additional fields `zmin` and `zmax` MAY be present but are not required. The fields MUST be of Parquet type `FLOAT` or `DOUBLE` and all columns MUST use the same type. The repetition of a bounding box column MUST match the geometry column's [repetition](#repetition). A row MUST contain a bounding box value if and only if the row contains a geometry value. In cases where the geometry is optional and a row does not contain a geometry value, the row MUST NOT contain a bounding box value.
+
+The bounding box column MUST be at the root of the schema. The bounding box column MUST NOT be nested in a group.
 
 ### Additional information
 

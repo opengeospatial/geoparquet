@@ -8,6 +8,7 @@ You can print the metadata with:
    >>> import json, pprint, pyarrow.parquet as pq
    >>> pprint.pprint(json.loads(pq.read_schema("example.parquet").metadata[b"geo"]))
 """
+from collections import OrderedDict
 import json
 import pathlib
 
@@ -19,6 +20,14 @@ HERE = pathlib.Path(__file__).parent
 
 df = geopandas.read_file(geopandas.datasets.get_path("naturalearth_lowres"))
 df = df.to_crs("ogc:84")
+
+geometry_bbox = df.bounds.rename(
+    OrderedDict(
+        [("minx", "xmin"), ("miny", "ymin"), ("maxx", "xmax"), ("maxy", "ymax")]
+    ),
+    axis=1,
+)
+df["bbox"] = geometry_bbox.to_dict("records")
 table = pa.Table.from_pandas(df.head().to_wkb())
 
 
@@ -39,14 +48,19 @@ metadata = {
             "crs": json.loads(df.crs.to_json()),
             "edges": "planar",
             "bbox": [round(x, 4) for x in df.total_bounds],
+            "covering": {
+                "bbox": {
+                    "xmin": ["bbox", "xmin"],
+                    "ymin": ["bbox", "ymin"],
+                    "xmax": ["bbox", "xmax"],
+                    "ymax": ["bbox", "ymax"],
+                },
+            },
         },
     },
 }
 
-schema = (
-    table.schema
-    .with_metadata({"geo": json.dumps(metadata)})
-)
+schema = table.schema.with_metadata({"geo": json.dumps(metadata)})
 table = table.cast(schema)
 
 pq.write_table(table, HERE / "../examples/example.parquet")
