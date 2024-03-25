@@ -131,7 +131,7 @@ optional group geometry (List) {
         required group element (List) {
           // the list of coordinates of one ring
           required group list {
-            optional group element {
+            required group element {
               required double x;
               required double y;
             }
@@ -142,6 +142,13 @@ optional group geometry (List) {
   }
 }
 ```
+
+There MUST NOT be any null values in the child fields and the x/y coordinate
+fields. Only the outer optional "geometry" group is allowed to have nulls (i.e
+representing a missing geometry). This MAY be indicated in the Parquet schema by
+using `required` group elements, as in the example above, but this is not
+required and `optional` fields are fine as well (as long as the data itself does
+not contain any nulls).
 
 #### Coordinate axis order
 
