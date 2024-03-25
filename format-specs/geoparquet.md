@@ -12,9 +12,7 @@ This is version 1.1.0-dev of the GeoParquet specification.  See the [JSON Schema
 
 ## Geometry columns
 
-Geometry columns MUST be stored using the `BYTE_ARRAY` parquet type. They MUST be encoded as [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary).
-
-Implementation note: when using the ecosystem of Arrow libraries, Parquet types such as `BYTE_ARRAY` might not be directly accessible. Instead, the corresponding Arrow data type can be `Arrow::Type::BINARY` (for arrays that whose elements can be indexed through a 32-bit index) or `Arrow::Type::LARGE_BINARY` (64-bit index). It is recommended that GeoParquet readers are compatible with both data types, and writers preferably use `Arrow::Type::BINARY` (thus limiting to row groups with content smaller than 2 GB) for larger compatibility.
+Geometry columns MUST be encoded as [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary) or using the single-geometry type encodings based on the [GeoArrow](https://geoarrow.org/) specification.
 
 See the [encoding](#encoding) section below for more details.
 
@@ -51,7 +49,7 @@ Each geometry column in the dataset MUST be included in the `columns` field abov
 
 | Field Name     | Type         | Description |
 | -------------- | ------------ | ----------- |
-| encoding       | string       | **REQUIRED.** Name of the geometry encoding format. Currently only `"WKB"` is supported. |
+| encoding       | string       | **REQUIRED.** Name of the geometry encoding format. Currently `"WKB"`, `"point"`, `"linestring"`, `"polygon"`, `"multipoint"`, `"multilinestring"`, and `"multipolygon"` are supported. |
 | geometry_types | \[string]    | **REQUIRED.** The geometry types of all geometries, or an empty array if they are not known. |
 | crs            | object\|null | [PROJJSON](https://proj.org/specifications/projjson.html) object representing the Coordinate Reference System (CRS) of the geometry. If the field is not provided, the default CRS is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84), which means the data in this column must be stored in longitude, latitude based on the WGS84 datum. |
 | orientation    | string       | Winding order of exterior ring of polygons. If present must be `"counterclockwise"`; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order. |
@@ -85,9 +83,74 @@ The optional `epoch` field allows to specify this in case the `crs` field define
 
 #### encoding
 
-This is the binary format that the geometry is encoded in. The string `"WKB"`, signifying Well Known Binary is the only current option, but future versions of the spec may support alternative encodings. This SHOULD be the ["OpenGIS® Implementation Specification for Geographic information - Simple feature access - Part 1: Common architecture"](https://portal.ogc.org/files/?artifact_id=18241) WKB representation (using codes for 3D geometry types in the \[1001,1007\] range). This encoding is also consistent with the one defined in the ["ISO/IEC 13249-3:2016 (Information technology - Database languages - SQL multimedia and application packages - Part 3: Spatial)"](https://www.iso.org/standard/60343.html) standard.
+This is the memory layout used to encode geometries in the geometry column.
+Supported values:
+
+- `"WKB"`
+- one of `"point"`, `"linestring"`, `"polygon"`, `"multipoint"`, `"multilinestring"`, `"multipolygon"`
+
+##### WKB
+
+The preferred option for maximum portability is `"WKB"`, signifying [Well Known Binary](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary). This SHOULD be the ["OpenGIS® Implementation Specification for Geographic information - Simple feature access - Part 1: Common architecture"](https://portal.ogc.org/files/?artifact_id=18241) WKB representation (using codes for 3D geometry types in the \[1001,1007\] range). This encoding is also consistent with the one defined in the ["ISO/IEC 13249-3:2016 (Information technology - Database languages - SQL multimedia and application packages - Part 3: Spatial)"](https://www.iso.org/standard/60343.html) standard.
 
 Note that the current version of the spec only allows for a subset of WKB: 2D or 3D geometries of the standard geometry types (the Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection geometry types). This means that M values or non-linear geometry types are not yet supported.
+
+WKB geometry columns MUST be stored using the `BYTE_ARRAY` parquet type.
+
+Implementation note: when using WKB encoding with the ecosystem of Arrow libraries, Parquet types such as `BYTE_ARRAY` might not be directly accessible. Instead, the corresponding Arrow data type can be `Arrow::Type::BINARY` (for arrays that whose elements can be indexed through a 32-bit index) or `Arrow::Type::LARGE_BINARY` (64-bit index). It is recommended that GeoParquet readers are compatible with both data types, and writers preferably use `Arrow::Type::BINARY` (thus limiting to row groups with content smaller than 2 GB) for larger compatibility.
+
+##### Native encodings (based on GeoArrow)
+
+Using the single-geometry type encodings (i.e., `"point"`, `"linestring"`, `"polygon"`, `"multipoint"`, `"multilinestring"`, `"multipolygon"`) may provide better performance and enable readers to leverage more features of the Parquet format to accelerate geospatial queries (e.g., row group-level min/max statistics). These encodings correspond to extension name suffix in the [GeoArrow metadata specification for extension names](https://geoarrow.org/extension-types#extension-names) to signify the memory layout used by the geometry column. GeoParquet uses the separated (struct) representation of coordinates for single-geometry type encodings because this encoding results in useful column statistics when row groups and/or files contain related features.
+
+The actual coordinates of the geometries MUST be stored as native numbers, i.e. using
+the `DOUBLE` parquet type in a (repeated) group of fields (exact repetition depending
+on the geometry type).
+
+For the `"point"` geometry type, this results in a struct of two fields for x
+and y coordinates (in case of 2D geometries):
+
+```
+// "point" geometry column as simple field with two child fields for x and y
+optional group geometry {
+  required double x;
+  required double y;
+}
+```
+
+For the other geometry types, those x and y coordinate values MUST be embedded
+in repeated groups (`LIST` logical parquet type). For example, for the
+`"multipolygon"` geometry type:
+
+```
+// "multipolygon" geometry column with multiple levels of nesting
+optional group geometry (List) {
+  // the parts of the MultiPolygon
+  repeated group list {
+    required group element (List) {
+      // the rings of one Polygon
+      repeated group list {
+        required group element (List) {
+          // the list of coordinates of one ring
+          required group list {
+            required group element {
+              required double x;
+              required double y;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+There MUST NOT be any null values in the child fields and the x/y/z coordinate
+fields. Only the outer optional "geometry" group is allowed to have nulls (i.e
+representing a missing geometry). This MAY be indicated in the Parquet schema by
+using `required` group elements, as in the example above, but this is not
+required and `optional` fields are permitted (as long as the data itself does
+not contain any nulls).
 
 #### Coordinate axis order
 
