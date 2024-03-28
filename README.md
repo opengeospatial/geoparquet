@@ -8,7 +8,7 @@ Early contributors include developers from GeoPandas, GeoTrellis, OpenLayers, Vi
 Anyone is welcome to join the project, by building implementations, trying it out, giving feedback through issues and contributing to the spec via pull requests.
 Initial work started in the [geo-arrow-spec](https://github.com/geoarrow/geoarrow) GeoPandas repository, and that will continue on
 Arrow work in a compatible way, with this specification focused solely on Parquet. We are in the process of becoming an [OGC](https://ogc.org) official
-[Standards Working Group](https://portal.ogc.org/files/103450) and are on the path to be a full OGC standard. The releases you find in this repository do not correspond to approved versions of the standard, which is currently still in draft mode.
+[Standards Working Group](https://portal.ogc.org/files/103450) and are on the path to be a full OGC standard. The releases you find in this repository do not correspond to approved versions of the OGC standard, which is currently still in draft mode.
 
 **The latest [stable specification](https://geoparquet.org/releases/v1.0.0/) and [JSON schema](https://geoparquet.org/releases/v1.0.0/schema.json) are published at [geoparquet.org/releases/](https://geoparquet.org/releases/).**
 
