@@ -1,0 +1,16 @@
+[[ats_example1]]
+[conformance_class_example1]
+====
+[%metadata]
+label:: http://www.opengis.net/spec/name-of-standard/1.0/conf/example1
+subject:: Requirements Class "example1"
+classification:: Target Type:Web API
+====
+
+==== Example 1
+
+include::./ATS_test_example1.adoc[]
+
+==== Example 2
+
+include::./ATS_test_example2.adoc[]

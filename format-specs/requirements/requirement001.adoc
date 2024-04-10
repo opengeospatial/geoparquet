@@ -1,0 +1,6 @@
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/geometry-columns
+part:: Geometry columns SHALL be stored using the BYTE_ARRAY parquet type.
+====

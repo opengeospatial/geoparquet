@@ -1,0 +1,21 @@
+[[ats_core_http]]
+[abstract_test]
+====
+[%metadata]
+label:: /conf/core/http
+subject:: /req/req-class-a/req-name-2
+test-purpose:: Validate that the resource paths advertised through the API conform with HTTP 1.1 and, where appropriate, TLS.
+
+[.component,class=test method]
+=====
+[.component,class=step]
+--
+All compliance tests SHALL be configured to use the HTTP 1.1 protocol exclusively.
+--
+
+[.component,class=step]
+--
+For APIs which support HTTPS, all compliance tests SHALL be configured to use <<rfc2818,HTTP over TLS>> (RFC 2818) with their HTTP 1.1 protocol.
+--
+=====
+====
