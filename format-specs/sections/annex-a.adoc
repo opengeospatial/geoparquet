@@ -3,4 +3,4 @@
 
 === Conformance Class "Core"
 
-include::../abstract_tests/ATS_class_example1.adoc[]
+include::../abstract_tests/ATS_class_core.adoc[]

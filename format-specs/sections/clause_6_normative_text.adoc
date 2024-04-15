@@ -64,7 +64,7 @@ Each geometry column in the dataset MUST be included in the columns field above 
 |epoch |number |Coordinate epoch in case of a dynamic CRS, expressed as a decimal year.
 |===
 
-=== crs
+=== CRS
 
 The Coordinate Reference System (CRS) is an optional parameter for each geometry column defined in GeoParquet format.
 
@@ -82,7 +82,7 @@ The value of this key may be explicitly set to null to indicate that there is no
 
 include::/requirements/requirement005.adoc[]
 
-=== epoch
+=== Epoch
 
 In a dynamic CRS, coordinates of a point on the surface of the Earth may change with time. To be unambiguous, the coordinates must always be qualified with the epoch at which they are valid.
 
@@ -90,7 +90,7 @@ The optional epoch field allows to specify this in case the crs field defines a 
 
 include::/requirements/requirement006.adoc[]
 
-=== encoding
+=== Encoding
 
 This is the binary format that the geometry is encoded in. The string "WKB", signifying Well Known Binary is the only current option, but future versions of the Standard may support alternative encodings. This SHOULD be the https://portal.ogc.org/files/?artifact_id=18241["OpenGIS® Implementation Specification for Geographic information - Simple feature access - Part 1: Common architecture"] WKB representation (using codes for 3D geometry types in the [1001,1007] range). This encoding is also consistent with the one defined in the https://www.iso.org/standard/60343.html[ISO/IEC 13249-3:2016 (Information technology - Database languages - SQL multimedia and application packages - Part 3: Spatial)] standard.
 
@@ -115,7 +115,7 @@ In addition, the following rules are used:
 
 It is expected that this field is strictly correct. For example, if having both polygons and multipolygons, it is not sufficient to specify ["MultiPolygon"], but it is expected to specify ["Polygon", "MultiPolygon"]. Or if having 3D points, it is not sufficient to specify ["Point"], but it is expected to list ["Point Z"].
 
-=== orientation
+=== Orientation
 
 This attribute indicates the winding order of polygons. The only available value is "counterclockwise". All vertices of exterior polygon rings MUST be ordered in the counterclockwise direction and all interior rings MUST be ordered in the clockwise direction.
 
@@ -129,7 +129,7 @@ It is RECOMMENDED to always set the orientation (to counterclockwise) if edges i
 
 include::/recommendations/recommendation002.adoc[]
 
-=== edges
+=== Edges
 
 This attribute indicates how to interpret the edges of the geometries: whether the line between two points is a straight cartesian line or the shortest line on the sphere (geodesic line). Available values are:
 
@@ -140,11 +140,11 @@ If no value is set, the default value to assume is "planar".
 
 Note if edges is "spherical" then it is RECOMMENDED that orientation is always ensured to be "counterclockwise". If it is not set, it is not clear how polygons should be interpreted within spherical coordinate systems, which can lead to major analytical errors if interpreted incorrectly. In this case, software will typically interpret the rings of a polygon such that it encloses at most half of the sphere (i.e. the smallest polygon of both ways it could be interpreted). But the specification itself does not make any guarantee about this.
 
-=== bbox
+=== Bounding box
 
 Bounding boxes are used to help define the spatial extent of each geometry column. Implementations of this schema may choose to use those bounding boxes to filter partitions (files) of a partitioned dataset.
 
-The bbox, if specified, MUST be encoded with an array representing the range of values for each dimension in the geometry coordinates. For geometries in a geographic coordinate reference system, longitude and latitude values are listed for the most southwesterly coordinate followed by values for the most northeasterly coordinate. This follows the GeoJSON specification (https://tools.ietf.org/html/rfc7946#section-5[RFC 7946, section 5]), which also describes how to represent the bbox for a set of geometries that cross the antimeridian.
+The bounding box (bbox), if specified, MUST be encoded with an array representing the range of values for each dimension in the geometry coordinates. For geometries in a geographic coordinate reference system, longitude and latitude values are listed for the most southwesterly coordinate followed by values for the most northeasterly coordinate. This follows the GeoJSON specification (https://tools.ietf.org/html/rfc7946#section-5[RFC 7946, section 5]), which also describes how to represent the bbox for a set of geometries that cross the antimeridian.
 
 include::/requirements/requirement008.adoc[]
 

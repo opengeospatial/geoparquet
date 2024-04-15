@@ -14,8 +14,9 @@
 :fullname_2: Tim Schaub
 :fullname_3: Joris Van den Bossche
 :fullname_4: Kyle Barron
+:fullname_5: Javier de la Torre
 :docsubtype: Interface
-:keywords: ogcdoc, OGC document, API, openapi, html
+:keywords: ogcdoc, OGC document, geoparquet, parquet, columnar, cloud
 :submitting-organizations: Planet; CARTO
 :mn-document-class: ogc
 :mn-output-extensions: xml,html,doc,pdf
