@@ -13,6 +13,10 @@ This repository contains the content for an OGC standard.
 * `abstract_tests` - the Abstract Test Suite comprising one test for every requirement, optional
 * `UML` - UML diagrams, if applicable
 
+More information about the document template is https://github.com/opengeospatial/templates/tree/master/standard#readme[here].
+
+An authoring guide is available at https://www.metanorma.org/author/ogc/authoring-guide/[metanorma.org].
+
 == Building
 
-Run `make`.
+Run `docker run -v "$(pwd)":/metanorma -v ${HOME}/.fontist/fonts/:/config/fonts  metanorma/metanorma  metanorma compile --agree-to-terms -t ogc -x html document.adoc`.
