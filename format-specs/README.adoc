@@ -20,3 +20,7 @@ An authoring guide is available at https://www.metanorma.org/author/ogc/authorin
 == Building
 
 Run `docker run -v "$(pwd)":/metanorma -v ${HOME}/.fontist/fonts/:/config/fonts  metanorma/metanorma  metanorma compile --agree-to-terms -t ogc -x html document.adoc`.
+
+== Auto built document
+
+A daily built document is available at https://docs.ogc.org/DRAFTS/[OGC Document DRAFTS].
