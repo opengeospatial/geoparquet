@@ -4,5 +4,5 @@
 [width="90%",options="header"]
 |===
 |Date |Release |Editor | Primary clauses modified |Description
-|2016-04-28 |0.1 |G. Editor |all |initial version
+|2022-04-18 |0.1 |GeoParquet SWG |all |initial version
 |===
