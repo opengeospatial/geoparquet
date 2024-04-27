@@ -74,7 +74,9 @@
             },
             "covering": {
               "type": "object",
-              "minProperties": 1,
+              "required": [
+                "bbox"
+              ],
               "properties": {
                 "bbox": {
                   "type": "object",
@@ -83,7 +85,7 @@
                     "xmin": {
                       "type": "array",
                       "items": [
-                        { "type": "string" },
+                        { "type": "string", "minLength": 1 },
                         { "const": "xmin" }
                       ],
                       "additionalItems": false
@@ -91,7 +93,7 @@
                     "xmax": {
                       "type": "array",
                       "items": [
-                        { "type": "string" },
+                        { "type": "string", "minLength": 1 },
                         { "const": "xmax" }
                       ],
                       "additionalItems": false
@@ -99,7 +101,7 @@
                     "ymin": {
                       "type": "array",
                       "items": [
-                        { "type": "string" },
+                        { "type": "string", "minLength": 1 },
                         { "const": "ymin" }
                       ],
                       "additionalItems": false
@@ -107,7 +109,7 @@
                     "ymax": {
                       "type": "array",
                       "items": [
-                        { "type": "string" },
+                        { "type": "string", "minLength": 1 },
                         { "const": "ymax" }
                       ],
                       "additionalItems": false
