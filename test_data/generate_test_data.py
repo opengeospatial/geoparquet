@@ -46,7 +46,7 @@ def write_encoding_files(geometries_wkt, geometries_geoarrow, geometry_type):
         {"col": range(len(geometries_wkt)), "geometry": to_wkb(from_wkt(geometries_wkt))}
     )
     metadata = copy.deepcopy(metadata_template)
-    metadata["columns"]["geometry"]["geometry_type"] = [geometry_type]
+    metadata["columns"]["geometry"]["geometry_types"] = [geometry_type]
     table = table.replace_schema_metadata({"geo": json.dumps(metadata)})
     pq.write_table(table, HERE / f"data-{geometry_type.lower()}-encoding_wkb.parquet")
 
