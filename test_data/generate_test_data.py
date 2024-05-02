@@ -39,7 +39,7 @@ metadata_template = {
 def write_encoding_files(geometries_wkt, geometries_geoarrow, geometry_type):
 
     table = pa.table({"col": range(len(geometries_wkt)), "geometry": geometries_wkt})
-    write_csv(table, HERE / f"data-{geometry_type.lower()}.wkt.csv")
+    write_csv(table, HERE / f"data-{geometry_type.lower()}-wkt.csv")
 
     # WKB encoding
     table = pa.table(
