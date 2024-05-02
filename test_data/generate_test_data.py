@@ -64,6 +64,8 @@ def write_encoding_files(geometries_wkt, geometries_geoarrow, geometry_type):
 geometries_wkt = [
     "POINT (30 10)",
     "POINT EMPTY",
+    None,
+    "POINT (40 40)",
 ]
 
 point_type = pa.struct(
@@ -72,7 +74,7 @@ point_type = pa.struct(
         pa.field("y", pa.float64(), nullable=False)
     ]
 )
-geometries = pa.array([(30, 10), (float("nan"), float("nan"))], type=point_type)
+geometries = pa.array([(30, 10), (float("nan"), float("nan")), (float("nan"), float("nan")), (40, 40)], type=point_type)
 
 write_encoding_files(
     geometries_wkt, geometries, geometry_type="Point"
@@ -83,11 +85,12 @@ write_encoding_files(
 geometries_wkt = [
     "LINESTRING (30 10, 10 30, 40 40)",
     "LINESTRING EMPTY",
+    None
 ]
 
 linestring_type = pa.list_(pa.field("vertices", point_type, nullable=False))
 geometries = pa.array(
-    [[(30, 10), (10, 30), (40, 40)], []], type=linestring_type)
+    [[(30, 10), (10, 30), (40, 40)], [], []], type=linestring_type)
 
 write_encoding_files(
     geometries_wkt, geometries, geometry_type="LineString"
@@ -99,6 +102,7 @@ geometries_wkt = [
     "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))",
     "POLYGON ((35 10, 45 45, 15 40, 10 20, 35 10), (20 30, 35 35, 30 20, 20 30))",
     "POLYGON EMPTY",
+    None,
 ]
 
 polygon_type = pa.list_(
@@ -108,9 +112,10 @@ polygon_type = pa.list_(
 )
 geometries = pa.array(
     [
-        [[(30.0, 10.0), (40.0, 40.0), (20.0, 40.0), (10.0, 20.0), (30.0, 10.0)]],
-        [[(35.0, 10.0), (45.0, 45.0), (15.0, 40.0), (10.0, 20.0), (35.0, 10.0)],
-         [(20.0, 30.0), (35.0, 35.0), (30.0, 20.0), (20.0, 30.0)]],
+        [[(30, 10), (40, 40), (20, 40), (10, 20), (30, 10)]],
+        [[(35, 10), (45, 45), (15, 40), (10, 20), (35, 10)],
+         [(20, 30), (35, 35), (30, 20), (20, 30)]],
+        [],
         [],
     ],
     type=polygon_type
@@ -126,14 +131,16 @@ geometries_wkt = [
     "MULTIPOINT ((30 10))",
     "MULTIPOINT ((10 40), (40 30), (20 20), (30 10))",
     "MULTIPOINT EMPTY",
+    None,
 ]
 
 multipoint_type = pa.list_(pa.field("points", point_type, nullable=False))
 geometries = pa.array(
     [
-        [(30.0, 10.0)],
-        [(10.0, 40.0), (40.0, 30.0), (20.0, 20.0), (30.0, 10.0)],
-        []
+        [(30, 10)],
+        [(10, 40), (40, 30), (20, 20), (30, 10)],
+        [],
+        [],
     ],
     type=multipoint_type
 )
@@ -148,6 +155,7 @@ geometries_wkt = [
     "MULTILINESTRING ((30 10, 10 30, 40 40))",
     "MULTILINESTRING ((10 10, 20 20, 10 40), (40 40, 30 30, 40 20, 30 10))",
     "MULTILINESTRING EMPTY",
+    None,
 ]
 
 multilinestring_type = pa.list_(
@@ -155,9 +163,10 @@ multilinestring_type = pa.list_(
 )
 geometries = pa.array(
     [
-        [[(30.0, 10.0), (10.0, 30.0), (40.0, 40.0)]],
-        [[(10.0, 10.0), (20.0, 20.0), (10.0, 40.0)],
-         [(40.0, 40.0), (30.0, 30.0), (40.0, 20.0), (30.0, 10.0)]],
+        [[(30, 10), (10, 30), (40, 40)]],
+        [[(10, 10), (20, 20), (10, 40)],
+         [(40, 40), (30, 30), (40, 20), (30, 10)]],
+        [],
         [],
     ],
     type=multilinestring_type
@@ -174,17 +183,19 @@ geometries_wkt = [
     "MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))",
     "MULTIPOLYGON (((40 40, 20 45, 45 30, 40 40)), ((20 35, 10 30, 10 10, 30 5, 45 20, 20 35), (30 20, 20 15, 20 25, 30 20)))",
     "MULTIPOLYGON EMPTY",
+    None,
 ]
 
 multipolygon_type = pa.list_(pa.field("polygons", polygon_type, nullable=False))
 geometries = pa.array(
     [
-        [[[(30.0, 10.0), (40.0, 40.0), (20.0, 40.0), (10.0, 20.0), (30.0, 10.0)]]],
-        [[[(30.0, 20.0), (45.0, 40.0), (10.0, 40.0), (30.0, 20.0)]],
-         [[(15.0, 5.0), (40.0, 10.0), (10.0, 20.0), (5.0, 10.0), (15.0, 5.0)]]],
-        [[[(40.0, 40.0), (20.0, 45.0), (45.0, 30.0), (40.0, 40.0)]],
-         [[(20.0, 35.0), (10.0, 30.0), (10.0, 10.0), (30.0, 5.0), (45.0, 20.0), (20.0, 35.0)],
-          [(30.0, 20.0), (20.0, 15.0), (20.0, 25.0), (30.0, 20.0)]]],
+        [[[(30, 10), (40, 40), (20, 40), (10, 20), (30, 10)]]],
+        [[[(30, 20), (45, 40), (10, 40), (30, 20)]],
+         [[(15, 5), (40, 10), (10, 20), (5, 10), (15, 5)]]],
+        [[[(40, 40), (20, 45), (45, 30), (40, 40)]],
+         [[(20, 35), (10, 30), (10, 10), (30, 5), (45, 20), (20, 35)],
+          [(30, 20), (20, 15), (20, 25), (30, 20)]]],
+        [],
         [],
     ],
     type=multipolygon_type
