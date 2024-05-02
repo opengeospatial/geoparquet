@@ -28,7 +28,7 @@ metadata_template = {
     "columns": {
         "geometry": {
             "encoding": "WKB",
-            "geometry_type": [],
+            "geometry_types": [],
         },
     },
 }
