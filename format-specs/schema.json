@@ -88,7 +88,8 @@
                         { "type": "string", "minLength": 1 },
                         { "const": "xmin" }
                       ],
-                      "additionalItems": false
+                      "minItems": 2,
+                      "maxItems": 2
                     },
                     "xmax": {
                       "type": "array",
@@ -96,7 +97,8 @@
                         { "type": "string", "minLength": 1 },
                         { "const": "xmax" }
                       ],
-                      "additionalItems": false
+                      "minItems": 2,
+                      "maxItems": 2
                     },
                     "ymin": {
                       "type": "array",
@@ -104,7 +106,8 @@
                         { "type": "string", "minLength": 1 },
                         { "const": "ymin" }
                       ],
-                      "additionalItems": false
+                      "minItems": 2,
+                      "maxItems": 2
                     },
                     "ymax": {
                       "type": "array",
@@ -112,7 +115,8 @@
                         { "type": "string", "minLength": 1 },
                         { "const": "ymax" }
                       ],
-                      "additionalItems": false
+                      "minItems": 2,
+                      "maxItems": 2
                     }
                   }
                 }

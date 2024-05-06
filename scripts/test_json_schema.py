@@ -244,6 +244,26 @@ metadata["columns"]["geometry"]["covering"]["bbox"] = {
 invalid_cases["empty_column_name"] = metadata
 
 metadata = copy.deepcopy(metadata_covering_template)
+metadata["columns"]["geometry"]["covering"]["bbox"]["xmin"] = []
+invalid_cases["xmin_array_length_must_be_2_is_0"] = metadata
+
+metadata = copy.deepcopy(metadata_covering_template)
+metadata["columns"]["geometry"]["covering"]["bbox"]["ymax"] = []
+invalid_cases["ymax_array_length_must_be_2_is_0"] = metadata
+
+metadata = copy.deepcopy(metadata_covering_template)
+metadata["columns"]["geometry"]["covering"]["bbox"]["ymin"] = ["column"]
+invalid_cases["ymin_array_length_must_be_2_is_1"] = metadata
+
+metadata = copy.deepcopy(metadata_covering_template)
+metadata["columns"]["geometry"]["covering"]["bbox"]["xmax"] = ["column"]
+invalid_cases["xmax_array_length_must_be_2_is_1"] = metadata
+
+metadata = copy.deepcopy(metadata_covering_template)
+metadata["columns"]["geometry"]["covering"]["bbox"]["xmin"] = ["xmin", "xmin", "xmin"]
+invalid_cases["xmin_array_length_must_be_2_is_3"] = metadata
+
+metadata = copy.deepcopy(metadata_covering_template)
 metadata["columns"]["geometry"]["covering"].pop("bbox")
 invalid_cases["empty_geometry_bbox"] = metadata
 
