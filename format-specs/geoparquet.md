@@ -292,4 +292,4 @@ Note: EPSG:4326 and OGC:CRS84 are equivalent with respect to this specification 
 
 ## Media Type
 
-A GeoParquet file ([RFC 8259](https://tools.ietf.org/html/rfc8259)) SHOULD use [`application/vnd.apache.parquet`](https://www.iana.org/assignments/media-types/application/vnd.apache.parquet) as the [Media Type](https://en.wikipedia.org/wiki/Media_type) (previously known as the MIME Type).
+A GeoParquet file SHOULD use [`application/vnd.apache.parquet`](https://www.iana.org/assignments/media-types/application/vnd.apache.parquet) as the [Media Type](https://en.wikipedia.org/wiki/Media_type) (previously known as the MIME Type).
