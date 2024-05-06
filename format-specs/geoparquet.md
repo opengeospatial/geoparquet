@@ -292,4 +292,4 @@ Note: EPSG:4326 and OGC:CRS84 are equivalent with respect to this specification 
 
 ## File Extension
 
-It is RECOMMENDED to use `.parquet` as the file extension for a GeoParquet file. The file extension `.geoparquet` SHOULD NOT be used.
+It is RECOMMENDED to use `.parquet` as the file extension for a GeoParquet file. This provides the best interoperability with existing Parquet tools. The file extension `.geoparquet` SHOULD NOT be used.
