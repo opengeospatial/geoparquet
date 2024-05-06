@@ -289,3 +289,7 @@ The CRS is likely equivalent to OGC:CRS84 for a GeoParquet file if the `id` elem
 It is reasonable for implementations to require that one of the above `id` elements are present and skip further tests to determine if the CRS is functionally equivalent with OGC:CRS84.
 
 Note: EPSG:4326 and OGC:CRS84 are equivalent with respect to this specification because this specification specifically overrides the coordinate axis order in the `crs` to be longitude-latitude.
+
+## Media Type
+
+A GeoParquet file ([RFC 8259](https://tools.ietf.org/html/rfc8259)) SHOULD use [`application/vnd.apache.parquet`](https://www.iana.org/assignments/media-types/application/vnd.apache.parquet) as the [Media Type](https://en.wikipedia.org/wiki/Media_type) (previously known as the MIME Type).
