@@ -12,6 +12,7 @@ import json
 import pathlib
 import copy
 
+import numpy as np
 import pyarrow as pa
 import pyarrow.parquet as pq
 from pyarrow.csv import write_csv
@@ -74,7 +75,11 @@ point_type = pa.struct(
         pa.field("y", pa.float64(), nullable=False)
     ]
 )
-geometries = pa.array([(30, 10), (float("nan"), float("nan")), (float("nan"), float("nan")), (40, 40)], type=point_type)
+geometries = pa.array(
+    [(30, 10), (float("nan"), float("nan")), (float("nan"), float("nan")), (40, 40)],
+    mask=np.array([False, False, True, False]),
+    type=point_type
+)
 
 write_encoding_files(
     geometries_wkt, geometries, geometry_type="Point"
@@ -90,7 +95,10 @@ geometries_wkt = [
 
 linestring_type = pa.list_(pa.field("vertices", point_type, nullable=False))
 geometries = pa.array(
-    [[(30, 10), (10, 30), (40, 40)], [], []], type=linestring_type)
+    [[(30, 10), (10, 30), (40, 40)], [], []],
+    mask=np.array([False, False, True]),
+    type=linestring_type
+)
 
 write_encoding_files(
     geometries_wkt, geometries, geometry_type="LineString"
@@ -118,6 +126,7 @@ geometries = pa.array(
         [],
         [],
     ],
+    mask=np.array([False, False, False, True]),
     type=polygon_type
 )
 
@@ -142,6 +151,7 @@ geometries = pa.array(
         [],
         [],
     ],
+    mask=np.array([False, False, False, True]),
     type=multipoint_type
 )
 
@@ -169,6 +179,7 @@ geometries = pa.array(
         [],
         [],
     ],
+    mask=np.array([False, False, False, True]),
     type=multilinestring_type
 )
 
@@ -198,6 +209,7 @@ geometries = pa.array(
         [],
         [],
     ],
+    mask=np.array([False, False, False, False, True]),
     type=multipolygon_type
 )
 
