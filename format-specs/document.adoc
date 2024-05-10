@@ -17,7 +17,7 @@
 :fullname_5: Javier de la Torre
 :docsubtype: Interface
 :keywords: ogcdoc, OGC document, geoparquet, parquet, columnar, cloud
-:submitting-organizations: Planet; CARTO; Wherobots
+:submitting-organizations: Planet; CARTO; Wherobots; Foursquare Labs
 :mn-document-class: ogc
 :mn-output-extensions: xml,html,doc,pdf
 :local-cache-only:
