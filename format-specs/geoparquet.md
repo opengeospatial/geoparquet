@@ -289,3 +289,7 @@ The CRS is likely equivalent to OGC:CRS84 for a GeoParquet file if the `id` elem
 It is reasonable for implementations to require that one of the above `id` elements are present and skip further tests to determine if the CRS is functionally equivalent with OGC:CRS84.
 
 Note: EPSG:4326 and OGC:CRS84 are equivalent with respect to this specification because this specification specifically overrides the coordinate axis order in the `crs` to be longitude-latitude.
+
+## File Extension
+
+It is RECOMMENDED to use `.parquet` as the file extension for a GeoParquet file. This provides the best interoperability with existing Parquet tools. The file extension `.geoparquet` SHOULD NOT be used.
