@@ -10,7 +10,9 @@ Initial work started in the [geo-arrow-spec](https://github.com/geoarrow/geoarro
 Arrow work in a compatible way, with this specification focused solely on Parquet. We are in the process of becoming an [OGC](https://ogc.org) official
 [Standards Working Group](https://portal.ogc.org/files/103450) and are on the path to be a full OGC standard.
 
-**The latest [stable specification](https://geoparquet.org/releases/v1.0.0/) and [JSON schema](https://geoparquet.org/releases/v1.0.0/schema.json) are published at [geoparquet.org/releases/](https://geoparquet.org/releases/). The community has agreed on this release, but it is still pending OGC approval. We are currently working on the process to get it officially OGC approved as soon as possible. **
+**The latest [stable specification](https://geoparquet.org/releases/v1.0.0/) and [JSON schema](https://geoparquet.org/releases/v1.0.0/schema.json) are published at [geoparquet.org/releases/](https://geoparquet.org/releases/).**
+
+**The community has agreed on this release, but it is still pending OGC approval.** We are currently working on the process to get it officially OGC approved as soon as possible. The OGC candidate Standard is at [https://docs.ogc.org/DRAFTS/24-013.html](https://docs.ogc.org/DRAFTS/24-013.html). The candidate Standard remains in draft form until it is approved as a Standard by the OGC Membership. Released versions of GeoParquet will not be changed, so if changes are needed for OGC approval, it will be released with a new version number.
 
 The 'dev' versions of the spec are available in this repo:
 
