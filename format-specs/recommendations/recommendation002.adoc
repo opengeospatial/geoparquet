@@ -1,6 +1,0 @@
-[recommendation]
-====
-[%metadata]
-identifier:: /rec/core/orientation-spherical-edges
-part:: If edges is “spherical”, the orientation SHOULD always be set to counterclockwise
-====

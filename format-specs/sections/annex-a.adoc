@@ -1,6 +1,0 @@
-[appendix]
-== Conformance Class Abstract Test Suite (Normative)
-
-=== Conformance Class "Core"
-
-include::../abstract_tests/ATS_class_core.adoc[]
