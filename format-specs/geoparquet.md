@@ -293,3 +293,7 @@ Note: EPSG:4326 and OGC:CRS84 are equivalent with respect to this specification 
 ## File Extension
 
 It is RECOMMENDED to use `.parquet` as the file extension for a GeoParquet file. This provides the best interoperability with existing Parquet tools. The file extension `.geoparquet` SHOULD NOT be used.
+
+## Media Type
+
+If a [media type](https://en.wikipedia.org/wiki/Media_type) (formerly: MIME type) is used, a GeoParquet file MUST use [application/vnd.apache.parquet](https://www.iana.org/assignments/media-types/application/vnd.apache.parquet) as the media type.
