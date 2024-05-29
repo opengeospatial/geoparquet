@@ -74,7 +74,9 @@
             },
             "covering": {
               "type": "object",
-              "minProperties": 1,
+              "required": [
+                "bbox"
+              ],
               "properties": {
                 "bbox": {
                   "type": "object",
@@ -83,34 +85,38 @@
                     "xmin": {
                       "type": "array",
                       "items": [
-                        { "type": "string" },
+                        { "type": "string", "minLength": 1 },
                         { "const": "xmin" }
                       ],
-                      "additionalItems": false
+                      "minItems": 2,
+                      "maxItems": 2
                     },
                     "xmax": {
                       "type": "array",
                       "items": [
-                        { "type": "string" },
+                        { "type": "string", "minLength": 1 },
                         { "const": "xmax" }
                       ],
-                      "additionalItems": false
+                      "minItems": 2,
+                      "maxItems": 2
                     },
                     "ymin": {
                       "type": "array",
                       "items": [
-                        { "type": "string" },
+                        { "type": "string", "minLength": 1 },
                         { "const": "ymin" }
                       ],
-                      "additionalItems": false
+                      "minItems": 2,
+                      "maxItems": 2
                     },
                     "ymax": {
                       "type": "array",
                       "items": [
-                        { "type": "string" },
+                        { "type": "string", "minLength": 1 },
                         { "const": "ymax" }
                       ],
-                      "additionalItems": false
+                      "minItems": 2,
+                      "maxItems": 2
                     }
                   }
                 }
