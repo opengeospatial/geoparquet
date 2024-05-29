@@ -24,4 +24,3 @@ NOTE: For geodetic and vertical reference frames, the object will be the Earth. 
 
 [.source]
 <<ISO19111_2019>>
-
