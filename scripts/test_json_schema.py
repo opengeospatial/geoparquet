@@ -221,7 +221,6 @@ metadata_covering_template["columns"]["geometry"]["covering"] = {
     },
 }
 
-
 # Allow "any_column.xmin" etc.
 metadata = copy.deepcopy(metadata_covering_template)
 valid_cases["valid_default_bbox"] = metadata
@@ -234,6 +233,15 @@ metadata["columns"]["geometry"]["covering"]["bbox"] = {
     "ymax": ["any_column", "ymax"],
 }
 valid_cases["valid_but_not_bbox_struct_name"] = metadata
+
+metadata = copy.deepcopy(metadata_covering_template)
+metadata["columns"]["geometry"]["covering"]["bbox"] = {
+    "xmin": ["", "xmin"],
+    "ymin": ["", "ymin"],
+    "xmax": ["", "xmax"],
+    "ymax": ["", "ymax"],
+}
+invalid_cases["empty_column_name"] = metadata
 
 metadata = copy.deepcopy(metadata_covering_template)
 metadata["columns"]["geometry"]["covering"]["bbox"]["xmin"] = []
