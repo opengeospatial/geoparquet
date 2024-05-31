@@ -1,4 +1,4 @@
-= GeoParquet Standard
+# GeoParquet Standard
 
 The GeoParquet specification is detailed in this directory. For the clearest explanation of what
 is in the standard see [`geoparquet.md`](geoparquet.md). It is the 'latest' version of the specification,
@@ -19,7 +19,7 @@ officially releases GeoParquet 1.0.0, so if changes are needed for OGC approval,
 new version number. There will continue to be releases from this repository, which will technically remain
 'draft' standards until the OGC TC has officially accepted the next version.
 
-== In this directory
+## In this directory
 
 * [`geoparquet.md`](geoparquet.md) - The latest specification overview, which may run ahead of the standard.
 * [`document.adoc`](document.adoc) - The main standard document which sets the order of the other sections.
