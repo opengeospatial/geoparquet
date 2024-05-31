@@ -1,25 +1,10 @@
 # GeoParquet Standard
 
-The GeoParquet specification is detailed in this directory. For the clearest explanation of what
-is in the standard see [`geoparquet.md`](geoparquet.md). It is the 'latest' version of the specification,
-and you can see its version in the [Version and Schema](geoparquet.md#version-and-schema) section of the
-document. If it has `-dev` in the suffix then it is an unreleased version of the standard. For the stable
-versions view the `geoparquet.md` file in the git tree tagged in 
-[the releases](https://github.com/opengeospatial/geoparquet/releases), for example [v1.0.0/format-specs/geoparquet.md](https://github.com/opengeospatial/geoparquet/blob/v1.0.0/format-specs/geoparquet.md)
+The GeoParquet specification is detailed in this directory. For the clearest explanation of what is in the standard see [`geoparquet.md`](geoparquet.md). It is the 'latest' version of the specification, and you can see its version in the [Version and Schema](geoparquet.md#version-and-schema) section of the document. If it has `-dev` in the suffix then it is an unreleased version of the standard. For the stable versions view the `geoparquet.md` file in the git tree tagged in  [the releases](https://github.com/opengeospatial/geoparquet/releases), for example [v1.0.0/format-specs/geoparquet.md](https://github.com/opengeospatial/geoparquet/blob/v1.0.0/format-specs/geoparquet.md)
 
-The official OGC standard will often lag behind the markdown document, and the target version can be found
-in the Preface of the [front material document](sections/clause_0_front_material.adoc). The OGC standard
-is built from the various other documents in this directory. They are `.adoc` files, in the
-[asciidoc](https://asciidoc.org/) format. They all automatically get built into a single pdf
-and published at [docs.ogc.org/DRAFTS/24-013.html](https://docs.ogc.org/DRAFTS/24-013.html) by a cron
-job running on OGC's infrastructure. The 'official' OGC version will be proposed from that draft, and
-when accepted by the OGC Technical Committee (TC) will become the official 1.0.0 version of the
-specification.
+The official OGC standard will often lag behind the markdown document, and the target version can be found in the Preface of the [front material document](sections/clause_0_front_material.adoc). The OGC standard is built from the various other documents in this directory. They are `.adoc` files, in the [asciidoc](https://asciidoc.org/) format. They all automatically get built into a single pdf and published at [docs.ogc.org/DRAFTS/24-013.html](https://docs.ogc.org/DRAFTS/24-013.html) by a cron job running on OGC's infrastructure. The 'official' OGC version will be proposed from that draft, and when accepted by the OGC Technical Committee (TC) will become the official 1.0.0 version of the specification.
 
-[Released versions](https://github.com/opengeospatial/geoparquet/releases) of GeoParquet (from the markdown 
-file in this repository) will not be changed when OGC officially releases GeoParquet 1.0.0, so if changes
-are needed for OGC approval, then the  will be released with a new version number. There will continue to be releases from this repository, which will technically remain
-'draft' standards until the OGC TC has officially accepted the next version.
+[Released versions](https://github.com/opengeospatial/geoparquet/releases) of GeoParquet (from the markdown file in this repository) will not be changed when OGC officially releases GeoParquet 1.0.0, so if changes are needed for OGC approval, then the  will be released with a new version number. There will continue to be releases from this repository, which will technically remain 'draft' standards until the OGC TC has officially accepted the next version.
 
 ## In this directory
 
