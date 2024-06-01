@@ -30,7 +30,11 @@ More information about the document template is [here](https://github.com/openge
 
 ## Authoring the Specification
 
-An authoring guide is available at [metanorma.org](https://www.metanorma.org/author/ogc/authoring-guide/).
+The GeoParquet markdown file will naturally be a bit 'ahead' of the OGC standard defined in asciidocs. For now the way to author the spec is to just focus on pull requests to the markdown file. The 'community' release will be cut from the markdown file, and then the 'official' OGC release will follow. A volunteer will update all the asciidoc text and requirements to reflect the release, and submit to OGC for official voting.
+
+This may shift in the future, requiring PR's to the markdown to also update the asciidocs, but for now there will just be 'batch' processing of the changes.
+
+An authoring guide for the metanorma / asciidoc editing of the standard is available at [metanorma.org](https://www.metanorma.org/author/ogc/authoring-guide/).
 
 ## Building the OGC standard
 
