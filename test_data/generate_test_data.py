@@ -40,7 +40,7 @@ metadata_template = {
 # Minimum required metadata
 
 table = pa.table(
-    {"col": range(3), "geometry": to_wkb(["POINT (1 1)", "POINT (2 2)", "POINT (3 3)"])}
+    {"col": range(3), "geometry": to_wkb(from_wkt(["POINT (1 1)", "POINT (2 2)", "POINT (3 3)"]))}
 )
 metadata = copy.deepcopy(metadata_template)
 table = table.replace_schema_metadata({"geo": json.dumps(metadata)})
@@ -50,7 +50,7 @@ pq.write_table(table, HERE / "data_minimal.parquet")
 # Geometry type
 
 table = pa.table(
-    {"col": range(3), "geometry": to_wkb(["POINT (1 1)", "POINT (2 2)", "POINT (3 3)"])}
+    {"col": range(3), "geometry": to_wkb(from_wkt(["POINT (1 1)", "POINT (2 2)", "POINT (3 3)"]))}
 )
 metadata = copy.deepcopy(metadata_template)
 metadata["columns"]["geometry"]["geometry_types"] = ["Point"]
@@ -61,7 +61,7 @@ pq.write_table(table, HERE / "data_geometry_type.parquet")
 # Geometry column name
 
 table = pa.table(
-    {"col": range(3), "geom": to_wkb(["POINT (1 1)", "POINT (2 2)", "POINT (3 3)"])}
+    {"col": range(3), "geom": to_wkb(from_wkt(["POINT (1 1)", "POINT (2 2)", "POINT (3 3)"]))}
 )
 metadata = copy.deepcopy(metadata_template)
 metadata["primary_column"] = "geom"
@@ -73,7 +73,7 @@ pq.write_table(table, HERE / "data_geometry_column_name.parquet")
 # CRS - explicit null
 
 table = pa.table(
-    {"col": range(3), "geometry": to_wkb(["POINT (1 1)", "POINT (2 2)", "POINT (3 3)"])}
+    {"col": range(3), "geometry": to_wkb(from_wkt(["POINT (1 1)", "POINT (2 2)", "POINT (3 3)"]))}
 )
 metadata = copy.deepcopy(metadata_template)
 metadata["columns"]["geometry"]["crs"] = None
@@ -84,7 +84,7 @@ pq.write_table(table, HERE / "data_crs_null.parquet")
 # Orientation
 
 table = pa.table(
-    {"col": range(3), "geometry": to_wkb(["POINT (1 1)", "POINT (2 2)", "POINT (3 3)"])}
+    {"col": range(3), "geometry": to_wkb(from_wkt(["POINT (1 1)", "POINT (2 2)", "POINT (3 3)"]))}
 )
 metadata = copy.deepcopy(metadata_template)
 metadata["columns"]["geometry"]["orientation"] = "counterclockwise"
