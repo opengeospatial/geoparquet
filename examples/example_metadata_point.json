@@ -1,0 +1,14 @@
+{
+  "geo": {
+    "columns": {
+      "geometry": {
+        "encoding": "point",
+        "geometry_types": [
+          "Point"
+        ]
+      }
+    },
+    "primary_column": "geometry",
+    "version": "1.1.0-dev"
+  }
+}
