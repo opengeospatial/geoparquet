@@ -197,7 +197,7 @@ The bbox, if specified, MUST be encoded with an array representing the range of 
 
 For non-geographic coordinate reference systems, the items in the bbox are minimum values for each dimension followed by maximum values for each dimension. For example, given geometries that have coordinates with two dimensions, the bbox would have the form `[<xmin>, <ymin>, <xmax>, <ymax>]`. For three dimensions, the bbox would have the form `[<xmin>, <ymin>, <zmin>, <xmax>, <ymax>, <zmax>]`.
 
-The bbox values are in the same coordinate reference system as the geometry.
+The bbox values MUST be in the same coordinate reference system as the geometry.
 
 #### covering
 
