@@ -8,7 +8,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ## Version and schema
 
-This is version 1.1.0-dev of the GeoParquet specification.  See the [JSON Schema](schema.json) to validate metadata for this version.
+This is version 1.1.0-dev of the GeoParquet specification.  See the [JSON Schema](schema.json) to validate metadata for this version. See [Version Compatibility](#version-compatibility) for details on version compatibility guarantees.
 
 ## Geometry columns
 
@@ -289,6 +289,23 @@ The CRS is likely equivalent to OGC:CRS84 for a GeoParquet file if the `id` elem
 It is reasonable for implementations to require that one of the above `id` elements are present and skip further tests to determine if the CRS is functionally equivalent with OGC:CRS84.
 
 Note: EPSG:4326 and OGC:CRS84 are equivalent with respect to this specification because this specification specifically overrides the coordinate axis order in the `crs` to be longitude-latitude.
+
+## Version Compatibility
+
+GeoParquet version numbers follow [SemVer](https://semver.org), meaning patch releases are for bugfixes, minor releases represent backwards compatible changes, and major releases represent breaking changes. For this specification, a backwards compatible or non-breaking change means that an implementation that is only aware of the older specification MUST be able to correctly interpret data written according to the newer specification, OR recognize that it cannot correctly interpret that data. 
+
+Examples of a backwards compatible change include:
+- Adding a new field in File or Column Metadata that can be ignored without changing the interpretation of the data (e.g. an index that can improve query performance).
+- Adding a new option to an existing field.
+
+Examples of a breaking change include:
+- Adding a new field that cannot be ignored without changing the interpretation of the data.
+- Changing the default value in an existing field.
+- Changing the meaning of an existing field value.
+
+In order to support data written according future minor relases, implementations of this specification:
+- SHOULD NOT reject metadata with unknown fields.
+- SHOULD explicitly validate all field values they rely on (e.g. an implementation of the 1.0.0 specification should validate enocoding = "WKB" even though it is the only allowed value, as new options might be added).
 
 ## File Extension
 
