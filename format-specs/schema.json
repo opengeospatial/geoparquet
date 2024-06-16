@@ -36,7 +36,7 @@
             "crs": {
               "oneOf": [
                 {
-                  "$ref": "https://proj.org/en/latest/schemas/v0.7/projjson.schema.json"
+                  "$ref": "https://proj.org/schemas/v0.7/projjson.schema.json"
                 },
                 {
                   "type": "null"
