@@ -1,0 +1,7 @@
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/filemetadata
+part:: A GeoParquet file SHALL contain an appropriate value in the "version" key in the file metadata to indicate its version.
+part:: The "primary_column" key SHALL be present in the file metadata, and its value MUST be a string that matches one of the column metadata keys.
+====
