@@ -1,0 +1,8 @@
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/geoemtrytypes
+part:: Every geometry column metadata object must include a "geometry_types" list.
+part:: All geometry types that are present in the file MUST be included in the "geometry_types" metadata, if the geometry_types list is not empty.
+part:: If the geometry types are not known then the geometry_types list MUST be empty.
+====
