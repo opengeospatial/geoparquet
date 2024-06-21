@@ -18,7 +18,7 @@ See the [encoding](#encoding) section below for more details.
 
 ### Nesting
 
-Geometry columns MUST be at the root of the schema. A geometry MUST NOT be a group field or nested in a group. In practice, this means that when writing to GeoParquet from another format, geometries cannot be contained in complex or nested types such as structs, lists, arrays, or map types.
+Geometry columns MUST be at the root of the schema. In practice, this means that when writing to GeoParquet from another format, geometries cannot be contained in complex or nested types such as structs, lists, arrays, or map types.
 
 ### Repetition
 
