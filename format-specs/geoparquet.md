@@ -132,7 +132,7 @@ optional group geometry (List) {
       repeated group list {
         required group element (List) {
           // the list of coordinates of one ring
-          required group list {
+          repeated group list {
             required group element {
               required double x;
               required double y;
