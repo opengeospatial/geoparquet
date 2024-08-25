@@ -23,7 +23,15 @@
           "properties": {
             "encoding": {
               "type": "string",
-              "pattern": "^(WKB|point|linestring|polygon|multipoint|multilinestring|multipolygon)$"
+              "enum": [
+                "WKB",
+                "point",
+                "linestring",
+                "polygon",
+                "multipoint",
+                "multilinestring",
+                "multipolygon"
+              ]
             },
             "geometry_types": {
               "type": "array",
