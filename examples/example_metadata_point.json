@@ -9,6 +9,6 @@
       }
     },
     "primary_column": "geometry",
-    "version": "1.1.0-dev"
+    "version": "1.2.0-dev"
   }
 }
