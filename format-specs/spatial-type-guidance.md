@@ -14,14 +14,34 @@ GeoParquet was
 By **Spatial Type**, we are referring to a library, specification, or file format
 that intends to represent points, lines, polygons, or combinations thereof and relate
 them to a position on the surface of the earth[^1]. We will also constrain this
-definition to  Essentially, if you intend for your
-data to be on a map, that data comes from a spatial type implementation.
+definition to only include attempts to *formalize* the representation of this
+data within an existing type system or format. Essentially, if you are storing data that you
+intend to be put on a map, and you expect somebody else to interpret it in the same
+way that you did, that data comes from a spatial type implementation.
 
 [^1]: Technically this also applies if you are on the surface of another planet or
 celestial body. We'll discuss this later.
 
+## If you don't read anything else
+
+- **Capture producer intent**: Users of your Spatial Type should not have to discard
+  information when converting spatial data from elsewhere. The main thing this means
+  if your Spatial Type intends to interoperate with any other Spatial Type, you need
+  to provide a mechanism to locate a full Coordinate Reference System definition.
+- **Defer to existing standards**: Spatial data can be complicated and there is a lot
+  of prior art to draw from. Deferring to existing standards for well-worn topics like
+  Coordinate Reference System representation and serialized representation of geometry
+  increases the probability that other tools will be able to easily interact with your
+  convention.
+- **Leverage the capabilities of the format**: Every format has a unique set of
+  features and limitations. There is sometimes a tension between deferring to existing standards
+  and ensuring that users of the format can leverage all the great things that
+  can be done.
+
+## Prior art
+
 GeoParquet is far from the first attempt to formalize the representation of spatial
-data to an existing type system/storage format. A non-exhaustive list of well-established
+data to an existing type system/storage format. A non-exhaustive list of established
 Spatial Type implementations we will refer to in this document include:
 
 - [PostGIS](https://postgis.net/) (PostgreSQL)
@@ -39,9 +59,12 @@ Spatial Type implementations we will refer to in this document include:
 - [Snowflake Geospatial](https://docs.snowflake.com/en/sql-reference/data-types-geospatial) (Snowfake)
 - [Redshift Geospatial](https://docs.aws.amazon.com/redshift/latest/dg/geospatial-functions.html) (Redshift)
 - [FlatGeoBuf](http://flatgeobuf.org/) (Flatbuffers)
+- [GeoProtobuf](https://github.com/geo-grpc/api) (gRPC/Protocol buffers)
 - [cuspatial](https://docs.rapids.ai/api/cuspatial/stable/) (RAPIDS/cudf)
+- [GeoZarr](https://github.com/zarr-developers/geozarr-spec) (Zarr)
+- [Climate and Forecasting (CF) Conventions for Geometries](https://cfconventions.org/cf-conventions/cf-conventions.html#geometries)
 
-In addition to well-established examples of spatial types, several newer libraries are
+In addition to established examples of spatial types, several newer libraries are
 in the process of adding spatial type support that we will also refer to in this document:
 
 - [GeoArrow](https://geoarrow.org) (Apache Arrow)
@@ -63,4 +86,13 @@ computational geometry; however, thier scope does not include relating those geo
 to the surface of the earth[^2].
 
 [^2]: Or another celestial body. Again, details forthcoming.
+
+## Types?
+
+
+
+## Coordinate Reference Systems
+
+https://macwright.com/lonlat/
+
 
