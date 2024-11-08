@@ -169,12 +169,73 @@ integer identifier.
 
 ## Coordinate Reference Systems
 
-A Coordinate Reference System (CRS) is a "unit" for the x, y, z, and/or m[^4]
-values
+A Coordinate Reference System (CRS) is can be conceptualized as a "unit"
+for the combinations of x, y, z, and/or m values of which geometries are
+comprised. Just as a value of "5 meters" has physical meaning whereas
+the value "5" does not, geometries with a coordinate reference system have
+physical meaning.
 
-https://macwright.com/lonlat/
+Just as the value "5 meters" must be transformed to be plotted alongside
+the value "5 centimeters", so must geometries be transformed to be plotted
+alongside each other (this is the act of making a map!). This document will
+not go into the multitude of ways that have been devised
 
-[^4]: More about M values later.
+- Coordinate reference systems are important to keep alongside
+  any geometry in a Spatial Type because after discarding this information
+  their physical meaning is lost.
+- Coordinate reference systems can be serialized to a string and can be constructed
+  from a string.
+
+Producers of Spatial data converting to your Spatial Type implementation
+will fall into one of two categories:
+
+- Spatial aware producers (i.e., producers like GeoPandas that already
+  link to PROJ, a binding to PROJ, or some other coordinate transformation
+  library) will be able to choose which format they use to serialize a coordinate
+  reference system when converting to your Spatial Type implementation.
+- Naive producers (e.g., database drivers or file readers that do not and will
+  never link to a third party spatial library of any kind) will have whatever
+  sequence of characters that was stored alongside its Spatial Type implementation.
+
+Because some producers can choose, it is best to provide a reccomendation. A
+slightly opinionated current best option is
+[PROJJSON](https://proj.org/en/9.5/specifications/projjson.html), followed by
+[WKT2:2019](https://datatracker.ietf.org/doc/html/rfc7159). Both serializations
+can be converted losslessly to each other and can represent information that
+cannot be represented by earlier versions of WKT. We reccomend PROJJSON because
+accessing the contents is possible with any off-the-shelf JSON parser (whereas
+to parse WKT2 a specialized parser is required).
+
+Because some producers *cannot* choose, we also reccomend allowing those producers
+to pass on whatever sequence of characters they have available because this is
+significantly better than dropping the coordinate reference system entirely,
+writing those (potentially out-of-spec) characters to your CRS field anyway,
+or loosing a potential library that otherwise would have supported you. Another
+reason to allow this is that there may be future coordinate reference system
+representations that solve some of the problems we will list below, and mandating
+an existing specification may prevent a producer from writing a better value
+later.
+
+Similarly, there are two types of consumers:
+
+- Spatial aware producers (i.e., producers like GeoPandas that already
+  link to PROJ, a binding to PROJ, or some other coordinate transformation
+  library), which usually construct some internal "CRS" object using a string.
+- Naive consumers (e.g., database drivers or file readers that do not and will
+  never link to a third party spatial library of any kind) whose job it usually
+  is to pass on whatever information is in your Spatial Type implementation
+  to some other Spatial Type implementation.
+
+### Why can't I just use an "identifier"
+
+Multiple identifiers needed for xy + elevation
+
+### Unsolved Coordinate Reference System issues
+
+- Axis Order:
+  https://macwright.com/lonlat/
+  https://erouault.blogspot.com/2024/09/those-concepts-in-geospatial-field-that.html
+- Representing a coordinate reference system in JSON
 
 ## Geometry and Geography
 
@@ -187,8 +248,8 @@ interoperate with another Spatial Type implementation that does support them.
 
 [^5]: It is also not a good idea to blindly label a Geometry as a Geography;
 however, this comes up much less frequently since Spatial Type implementations
-that include Geography as an option are well aware of the problems
-associated with this.
+that include Geography as an option are usually well aware of the problems
+associated with this and provide explicit mechanisms to perform this conversion.
 
 Some Spatial Type implementations have two data types: Geometry and Geography.
 Both Geometry and Geography type implementations interpret coordinate values
@@ -232,7 +293,10 @@ include:
 The main inconsistency between definitions is whether or not the existing implementations
 use spherical formulas to simplify/accellerate calculations or whether strict ellipsoidal calculations are used. The definitions provided by vendors are not even explicit on this
 point in some cases, and we do not reccomend attempting to separate these cases until
-the language defining these cases is made explicit in some upstream standard.
+the language defining these cases is made explicit in some upstream standard. It is worth
+noting that because this distinction only affects the interpretation between explicitly
+defined x and y values and because most data sets define x and y values relatively close
+together, the ambiguity of this distinction does not frequently cause problems.
 
 Note that some Spatial Type implementations that include geography only support exactly
 one coordinate reference system (BigQuery and Snowflake only allow longitude/latitude on
@@ -244,14 +308,21 @@ of the tradeoffs associated with using one or the other) can be found
 
 [^6]: Or Celestial body. Just saying.
 
-### PROJJSON
+### Outliers
 
+Two Spatial Type implementations handle Geography types in unique ways.
 
-## Storing Geometries
+- GeoParquet and GeoArrow do not define a separate type for Geography and Geometry.
+  Instead, they include an `"edges"` parameter alongside `"crs"` that can take on
+  values of `"planar"` (corresponding exactly to Geometry as defined above) and
+  `"spherical"` (corresponding exactly to Geography as defined above).
+- R's sf package interprets all spatial data in a geographic coordinate system as
+  a Geography (which can be controlled by a global flag). For more information,
+  see the [Spherical geometry in sf using s2geometry](https://r-spatial.github.io/sf/articles/sf7.html) article in the sf documentation.
 
+## Storing geometries
 
-
-
-
-
-
+- serialized type options
+- types that leverage the host format
+- unsolved issues (empties)
+- M values
