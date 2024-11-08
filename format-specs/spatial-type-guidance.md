@@ -21,9 +21,20 @@ intend to be put on a map, and you expect somebody else to interpret it in the s
 way that you did, that data comes from a spatial type implementation.
 
 [^1]: Technically this also applies if you are on the surface of another planet or
-celestial body. We'll discuss this later.
+celestial body, and also applies if you are above or below the surface. We'll
+discuss this later.
 
 ## If you don't read anything else
+
+The simplest possible spatial type implementation that can interoperate with most existing
+Spatial Type implementations without loosing information is a
+"Geometry" [and/or "Geography"](#geometry-and-geography) type, parameterized with `crs`
+([Coordinate Reference System](#coordinate-reference-systems)) as a string, with values
+encoded as [Well-known binary](#well-known-binary) (if your format has a native way
+to store an array of bytes) or [Well-known text](#well-known-text) (otherwise).
+
+In general, the motivation behind the suggestions in this document are to ensure that
+new Spatial Type implementations:
 
 - **Capture producer intent**: Users of your Spatial Type should not have to discard
   information when converting spatial data from elsewhere. The main thing this means
@@ -37,12 +48,18 @@ celestial body. We'll discuss this later.
   increases the probability that other tools will be able to easily interact with your
   convention. For example, [GeoParquet](https://geoparquet.org) stores the coordinate
   reference system as [PROJJSON](#projjson).
-  and stores geometries as [well-known binary](#well-known-binary).
+  and stores geometries as [well-known binary](#well-known-binary). It can be tempting
+  to improve on existing spatial standards because many of them have limitations; however,
+  such an improvement whose definition lives in a non-spatial format is more likely to
+  cause confusion and/or misinterpretation than deferring to an existing standard.
 - **Leverage the capabilities of the format**: Every format has a unique set of
   features and limitations and there is sometimes a tension between deferring to existing
   standards and ensuring that users of the format can leverage existing tools that work with
   the format. For example, [GeoJSON](https://geojson.org) encodes geometries as JavaScript
-  objects instead of a previously existing
+  objects instead of a text or binary-based format.
+
+For more details and ways to ensure that the type definition is precise and unambiguous,
+keep reading!
 
 ## Prior art
 
@@ -109,8 +126,8 @@ to interpret some sequence of integers.
 Most modern type systems allow types to have parameters (e.g., Arrow/Parquet/DuckDB
 decimals can be parameterized with a precision and scale at the type level instead
 of storing those values alongside each element); however, many older type systems
-(e.g., PostgreSQL, SQLite) only have the opportunity to store a type name or identifier.
-This requires that all information required to interpret a type lives with each element
+(e.g., PostgreSQL) only have the opportunity to store a type name or identifier.
+This requires that all information required to interpret a value lives with each element
 (which, depending on the type, can involve a lot of repetition).
 
 If the format allows, spatial data types should be parameterized with a Coordinate
@@ -132,8 +149,11 @@ for PostgreSQL, PostGIS, uses two mechanisms to make the CRS of a column known:
 - It stores a CRS identifier (an integer) with every element that refers to a
   `spatial_ref_sys` table that contains an extended string definition of that CRS.
 - It keeps a record of all
-  [geometry columns as a VIEW](https://postgis.net/docs/using_postgis_dbmanagement.html#geometry_columns) and includes CRS identifier (an integer) that refers to the
-  `spatial_ref_sys` table.
+  [geometry columns as a VIEW](https://postgis.net/docs/using_postgis_dbmanagement.html#geometry_columns)
+  and includes CRS identifier (an integer) that refers to the `spatial_ref_sys` table.
+
+(These mechanisms are also formalized in the
+[OGC Simple Feature Access – Part 2: SQL Option](https://www.ogc.org/publications/standard/sfs/))
 
 For clients reading a table directly, it is possible to look up the type-level CRS
 by querying the `geometry_columns` and `spatial_ref_sys` tables; however, for clients
@@ -149,17 +169,89 @@ integer identifier.
 
 ## Coordinate Reference Systems
 
-
+A Coordinate Reference System (CRS) is a "unit" for the x, y, z, and/or m[^4]
+values
 
 https://macwright.com/lonlat/
 
+[^4]: More about M values later.
 
+## Geometry and Geography
+
+Before getting into the differences between Geometry and Geography, the
+important takeaway is that elements of a Geography type cannot be
+blindly labeled as Geometry without the potential for severely misinterpreting
+those elements[^5]. Your Spatial Type implementation does not have to support
+Geographies (many do not), but you should be careful not to silently
+interoperate with another Spatial Type implementation that does support them.
+
+[^5]: It is also not a good idea to blindly label a Geometry as a Geography;
+however, this comes up much less frequently since Spatial Type implementations
+that include Geography as an option are well aware of the problems
+associated with this.
+
+Some Spatial Type implementations have two data types: Geometry and Geography.
+Both Geometry and Geography type implementations interpret coordinate values
+(i.e., any combination of x, y, z, and/or m values) identically; however the
+two types differ with respect to how adjascent coordinates should be connected
+(i.e., edges). Among other things, this affects how area, length, and distance
+between elements are defined. A precise definition of the edge interpretation
+of all Geometry types of which we are aware can found in the widely adopted
+["OpenGIS Implementation Specification for Geographic information - Simple feature access - Part 1: Common architecture"](https://www.opengeospatial.org/standards/sfa):
+
+> **simple feature** feature with all geometric attributes described piecewise
+> by straight line or planar interpolation between sets of points (Section 4.19).
+
+In contrast, Geography data types are newer and have slightly more variation
+among implementations. Broadly, all of them define adjascent coordinates in
+a line or polygon to be connected as a **geodesic**, or the shortest path
+between them over the "surface of the Earth"[^6]. Some selected definitions
+include:
+
+> Conversely, the operations on the `GEOGRAPHY` data type treat the coordinates
+> inside objects as spherical coordinates on a spheroid.
+> ([Amazon Redshift](https://docs.aws.amazon.com/redshift/latest/dg/geospatial-overview.html))
+
+> The `GEOGRAPHY` data type, which models Earth as though it were a perfect sphere...
+> Line segments are interpreted as geodesic arcs on the Earth’s surface.
+> ([Snowflake](https://docs.snowflake.com/en/sql-reference/data-types-geospatial))
+
+> An edge is a spherical geodesic between two endpoints. (That is, edges are
+> the shortest path on the surface of a sphere.)
+> ([BigQuery](https://cloud.google.com/bigquery/docs/geospatial-data#coordinate_systems_and_edges))
+
+> `geography` is a spatial data type used to represent a feature in geodetic
+> coordinate systems. Geodetic coordinate systems model the earth using an ellipsoid.
+> ([PostGIS](https://postgis.net/docs/geography.html))
+
+> This type represents data in a round-earth coordinate system. The SQL Server
+> `geography` data type stores ellipsoidal (round-earth) data, such as GPS
+> latitude and longitude coordinates.
+> ([Microsoft SQL Server](https://learn.microsoft.com/en-us/sql/t-sql/spatial-geography/spatial-types-geography))
+
+The main inconsistency between definitions is whether or not the existing implementations
+use spherical formulas to simplify/accellerate calculations or whether strict ellipsoidal calculations are used. The definitions provided by vendors are not even explicit on this
+point in some cases, and we do not reccomend attempting to separate these cases until
+the language defining these cases is made explicit in some upstream standard.
+
+Note that some Spatial Type implementations that include geography only support exactly
+one coordinate reference system (BigQuery and Snowflake only allow longitude/latitude on
+the WGS84 ellipsoid).
+
+An excellent read on why databases implement Geography types (including a discussion
+of the tradeoffs associated with using one or the other) can be found
+[in the PostGIS documentation](http://postgis.net/workshops/postgis-intro/geography.html).
+
+[^6]: Or Celestial body. Just saying.
 
 ### PROJJSON
 
 
-## Geometries
+## Storing Geometries
 
-## WKB
+
+
+
+
 
 
