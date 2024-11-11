@@ -13,7 +13,7 @@ GeoParquet was
 
 By **Spatial Type**, we are referring to a library, specification, or file format
 that intends to represent points, lines, polygons, or combinations thereof and relate
-them to a position on the surface of the earth[^1]. We will also constrain this
+them to a position on the surface of the Earth[^1]. We will also constrain this
 definition to only include attempts to *formalize* the representation of this
 data within an existing type system or format that is otherwise *not* a dedicated
 spatial type. Essentially, if you are storing data in a non-spatial format that you
@@ -37,7 +37,7 @@ In general, the motivation behind the suggestions in this document are to ensure
 new Spatial Type implementations:
 
 - **Capture producer intent**: Users of your Spatial Type should not have to discard
-  information when converting spatial data from elsewhere. The main thing this means
+  information when converting spatial data from elsewhere. That means
   if your Spatial Type intends to interoperate with any other Spatial Type, you need
   to provide a mechanism to locate a full Coordinate Reference System definition.
   For example, [GeoPandas](https://geopandas.org) stores a coordinate reference system
@@ -66,7 +66,7 @@ keep reading!
 GeoParquet is far from the first attempt to formalize the representation of spatial
 data to an existing type system/storage format. A non-exhaustive list of established
 Spatial Type implementations (in no particular order) we will refer to in this document
-include:
+includes:
 
 - [PostGIS](https://postgis.net/) (PostgreSQL)
 - [GeoParquet](https://geoparquet.org) (Parquet)
@@ -107,7 +107,7 @@ the purposes of this document include:
 
 These libraries are used by Geospatial type implementations to handle the details of
 computational geometry; however, thier scope does not include relating those geometries
-to the surface of the earth[^2].
+to the surface of the Earth[^2].
 
 [^2]: Or another celestial body. Again, details forthcoming.
 
@@ -169,7 +169,7 @@ integer identifier.
 
 ## Coordinate Reference Systems
 
-A Coordinate Reference System (CRS) is can be conceptualized as a "unit"
+A Coordinate Reference System (CRS) can be conceptualized as a "unit"
 for the combinations of x, y, z, and/or m values of which geometries are
 comprised. Just as a value of "5 meters" has physical meaning whereas
 the value "5" does not, geometries with a coordinate reference system have
@@ -200,7 +200,7 @@ will fall into one of two categories:
 Because some producers can choose, it is best to provide a reccomendation. A
 slightly opinionated current best option is
 [PROJJSON](https://proj.org/en/9.5/specifications/projjson.html), followed by
-[WKT2:2019](https://datatracker.ietf.org/doc/html/rfc7159). Both serializations
+[WKT2:2019](https://www.ogc.org/publications/standard/wkt-crs/). Both serializations
 can be converted losslessly to each other and can represent information that
 cannot be represented by earlier versions of WKT. We reccomend PROJJSON because
 accessing the contents is possible with any off-the-shelf JSON parser (whereas
@@ -292,7 +292,7 @@ include:
 
 The main inconsistency between definitions is whether or not the existing implementations
 use spherical formulas to simplify/accellerate calculations or whether strict ellipsoidal calculations are used. The definitions provided by vendors are not even explicit on this
-point in some cases, and we do not reccomend attempting to separate these cases until
+point in some cases, and we do not recommend attempting to separate these cases until
 the language defining these cases is made explicit in some upstream standard. It is worth
 noting that because this distinction only affects the interpretation between explicitly
 defined x and y values and because most data sets define x and y values relatively close
