@@ -5,9 +5,10 @@ that attempts to combine principles from both well established existing geospati
 and cutting edge data engineering components like [Apache Parquet](https://parquet.apache.org),
 [Apache Arrow](https://arrow.apache.org), [Apache Iceberg](https://iceberg.apache.org).
 These components are used by major data warehouse vendors like
-[BigQuery](https://cloud.google.com/bigquery),
-[Snowflake](https://snowflake.com), [Databricks](https://databricks.com). Broadly,
-GeoParquet was
+[BigQuery](https://cloud.google.com/bigquery), [Snowflake](https://snowflake.com),
+and [Databricks](https://databricks.com). Broadly, GeoParquet originated from a desire
+to provide a cloud-native vector geospatial data format that was capable of performing
+at scale.
 
 ## Spatial Types?
 
@@ -58,9 +59,6 @@ new Spatial Type implementations:
   the format. For example, [GeoJSON](https://geojson.org) encodes geometries as JavaScript
   objects instead of a text or binary-based format.
 
-For more details and ways to ensure that the type definition is precise and unambiguous,
-keep reading!
-
 ## Prior art
 
 GeoParquet is far from the first attempt to formalize the representation of spatial
@@ -106,7 +104,7 @@ the purposes of this document include:
 - [Boost Geometry](https://www.boost.org/doc/libs/1_86_0/libs/geometry/doc/html/index.html)
 
 These libraries are used by Geospatial type implementations to handle the details of
-computational geometry; however, thier scope does not include relating those geometries
+computational geometry; however, their scope does not include relating those geometries
 to the surface of the Earth[^2].
 
 [^2]: Or another celestial body. Again, details forthcoming.
@@ -257,7 +255,7 @@ Both Geometry and Geography type implementations interpret coordinate values
 two types differ with respect to how adjascent coordinates should be connected
 (i.e., edges). Among other things, this affects how area, length, and distance
 between elements are defined. A precise definition of the edge interpretation
-of all Geometry types of which we are aware can found in the widely adopted
+of all Geometry types of which we are aware can be found in the widely adopted
 ["OpenGIS Implementation Specification for Geographic information - Simple feature access - Part 1: Common architecture"](https://www.opengeospatial.org/standards/sfa):
 
 > **simple feature** feature with all geometric attributes described piecewise
@@ -291,8 +289,9 @@ include:
 > ([Microsoft SQL Server](https://learn.microsoft.com/en-us/sql/t-sql/spatial-geography/spatial-types-geography))
 
 The main inconsistency between definitions is whether or not the existing implementations
-use spherical formulas to simplify/accellerate calculations or whether strict ellipsoidal calculations are used. The definitions provided by vendors are not even explicit on this
-point in some cases, and we do not recommend attempting to separate these cases until
+use spherical formulas to simplify/accellerate calculations or whether strict ellipsoidal
+calculations are used. The definitions provided by vendors are not even explicit on this
+point in some cases, and we do not reccomend attempting to separate these cases until
 the language defining these cases is made explicit in some upstream standard. It is worth
 noting that because this distinction only affects the interpretation between explicitly
 defined x and y values and because most data sets define x and y values relatively close
