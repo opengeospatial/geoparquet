@@ -27,14 +27,14 @@ discuss this later.
 
 ## If you don't read anything else
 
-The simplest possible spatial type implementation that can interoperate with most existing
+The simplest possible Spatial Type representation that can interoperate with most existing
 Spatial Type implementations without loosing information is a
 "Geometry" [and/or "Geography"](#geometry-and-geography) type, parameterized with `crs`
 ([Coordinate Reference System](#coordinate-reference-systems)) as a string, with values
 encoded as [Well-known binary](#well-known-binary) (if your format has a native way
 to store an array of bytes) or [Well-known text](#well-known-text) (otherwise).
 
-In general, the motivation behind the suggestions in this document are to ensure that
+The suggestions in this document are intended to ensure that
 new Spatial Type implementations:
 
 - **Capture producer intent**: Users of your Spatial Type should not have to discard
@@ -42,7 +42,7 @@ new Spatial Type implementations:
   if your Spatial Type intends to interoperate with any other Spatial Type, you need
   to provide a mechanism to locate a full Coordinate Reference System definition.
   For example, [GeoPandas](https://geopandas.org) stores a coordinate reference system
-  at the type level of each array of geometries.
+  for each column of geometries.
 - **Defer to existing standards**: Spatial data can be complicated and there is a lot
   of prior art to draw from. Deferring to existing standards for well-worn topics like
   Coordinate Reference System representation and serialized representation of geometry
@@ -162,7 +162,7 @@ once the context of the original database connection is lost, there is no mechan
 to obtain the full CRS definition to pass on to another Spatial Type[^3].
 
 [^3]: To mitigate this problem, PostGIS does use generally consistent identifiers
-for common CRSes such that it is usually possible to guess the CRS based on the
+for common CRS values such that it is usually possible to guess the CRS based on the
 integer identifier.
 
 ## Coordinate Reference Systems
@@ -174,7 +174,7 @@ the value "5" does not, geometries with a coordinate reference system have
 physical meaning.
 
 Just as the value "5 meters" must be transformed to be plotted alongside
-the value "5 centimeters", so must geometries be transformed to be plotted
+the value "5 centimeters", geometries must be transformed to be plotted
 alongside each other (this is the act of making a map!). This document will
 not go into the multitude of ways that have been devised
 
@@ -187,7 +187,7 @@ not go into the multitude of ways that have been devised
 Producers of Spatial data converting to your Spatial Type implementation
 will fall into one of two categories:
 
-- Spatial aware producers (i.e., producers like GeoPandas that already
+- CRS aware producers (i.e., producers like GeoPandas that already
   link to PROJ, a binding to PROJ, or some other coordinate transformation
   library) will be able to choose which format they use to serialize a coordinate
   reference system when converting to your Spatial Type implementation.
@@ -195,7 +195,7 @@ will fall into one of two categories:
   never link to a third party spatial library of any kind) will have whatever
   sequence of characters that was stored alongside its Spatial Type implementation.
 
-Because some producers can choose, it is best to provide a reccomendation. A
+Because some producers can choose, it is best to provide a recommendation. A
 slightly opinionated current best option is
 [PROJJSON](https://proj.org/en/9.5/specifications/projjson.html), followed by
 [WKT2:2019](https://www.ogc.org/publications/standard/wkt-crs/). Both serializations
@@ -208,7 +208,7 @@ Because some producers *cannot* choose, we also reccomend allowing those produce
 to pass on whatever sequence of characters they have available because this is
 significantly better than dropping the coordinate reference system entirely,
 writing those (potentially out-of-spec) characters to your CRS field anyway,
-or loosing a potential library that otherwise would have supported you. Another
+or losing a potential library that otherwise would have supported you. Another
 reason to allow this is that there may be future coordinate reference system
 representations that solve some of the problems we will list below, and mandating
 an existing specification may prevent a producer from writing a better value
@@ -216,7 +216,7 @@ later.
 
 Similarly, there are two types of consumers:
 
-- Spatial aware producers (i.e., producers like GeoPandas that already
+- CRS aware producers (i.e., producers like GeoPandas that already
   link to PROJ, a binding to PROJ, or some other coordinate transformation
   library), which usually construct some internal "CRS" object using a string.
 - Naive consumers (e.g., database drivers or file readers that do not and will
@@ -252,7 +252,7 @@ associated with this and provide explicit mechanisms to perform this conversion.
 Some Spatial Type implementations have two data types: Geometry and Geography.
 Both Geometry and Geography type implementations interpret coordinate values
 (i.e., any combination of x, y, z, and/or m values) identically; however the
-two types differ with respect to how adjascent coordinates should be connected
+two types differ with respect to how adjacent coordinates should be connected
 (i.e., edges). Among other things, this affects how area, length, and distance
 between elements are defined. A precise definition of the edge interpretation
 of all Geometry types of which we are aware can be found in the widely adopted
@@ -262,7 +262,7 @@ of all Geometry types of which we are aware can be found in the widely adopted
 > by straight line or planar interpolation between sets of points (Section 4.19).
 
 In contrast, Geography data types are newer and have slightly more variation
-among implementations. Broadly, all of them define adjascent coordinates in
+among implementations. Broadly, all of them define adjacent coordinates in
 a line or polygon to be connected as a **geodesic**, or the shortest path
 between them over the "surface of the Earth"[^6]. Some selected definitions
 include:
