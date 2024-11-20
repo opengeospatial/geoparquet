@@ -17,9 +17,9 @@ that intends to represent points, lines, polygons, or combinations thereof and r
 them to a position on the surface of the Earth[^1]. We will also constrain this
 definition to only include attempts to *formalize* the representation of this
 data within an existing type system or format that is otherwise *not* a dedicated
-spatial type. Essentially, if you are storing data in a non-spatial format that you
+Spatial Type. Essentially, if you are storing data in a non-spatial format that you
 intend to be put on a map, and you expect somebody else to interpret it in the same
-way that you did, that data comes from a spatial type implementation.
+way that you did, that data comes from a Spatial Type implementation.
 
 [^1]: Technically this also applies if you are on the surface of another planet or
 celestial body, and also applies if you are above or below the surface. We'll
@@ -94,7 +94,7 @@ in the process of adding spatial type support that we will also refer to in this
 - [Ibis Spatial](https://ibis-project.org/reference/expression-geospatial) (Ibis)
 - [Substrait](https://github.com/substrait-io/substrait/blob/67f93b654e4cc60340a214ba90fe15c5e9de941b/extensions/functions_geometry.yaml)
 
-Some examples of projects that are not considered Geospatial type implementations for
+Some examples of projects that are not considered Spatial Type implementations for
 the purposes of this document include:
 
 - [Shapely](https://github.com/shapely/shapely)
@@ -103,7 +103,7 @@ the purposes of this document include:
 - [s2geometry](http://s2geometry.io)
 - [Boost Geometry](https://www.boost.org/doc/libs/1_86_0/libs/geometry/doc/html/index.html)
 
-These libraries are used by Geospatial type implementations to handle the details of
+These libraries are used by Spatial Type implementations to handle the details of
 computational geometry; however, their scope does not include relating those geometries
 to the surface of the Earth[^2].
 
