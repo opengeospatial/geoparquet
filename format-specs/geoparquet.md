@@ -216,7 +216,7 @@ do not contain edges (i.e., the column only contains points or empty geometries)
 For columns that contain edges, the error introduced by ignoring the original
 edge interpretation is similar to the error introduced by applying a coordinate
 transformation to vertices (which is usually small but may be large or create
-invalid geometries, particularly if vertices are not closely spaced). Ignroing
+invalid geometries, particularly if vertices are not closely spaced). Ignoring
 the original edge interpretation will silently introduce invalid and/or
 misinterpreted geometries for any edge that crosses the antimeridian (i.e.,
 longitude 180/-180) when translating from `"spherical"` or `"geodesic"` edges
