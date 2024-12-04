@@ -181,13 +181,51 @@ It is RECOMMENDED to always set the orientation (to counterclockwise) if `edges`
 
 #### edges
 
-This attribute indicates how to interpret the edges of the geometries: whether the line between two points is a straight cartesian line or the shortest line on the sphere (geodesic line). Available values are:
-- `"planar"`: use a flat cartesian coordinate system.
-- `"spherical"`: use a spherical coordinate system and radius derived from the spheroid defined by the coordinate reference system.
+This attribute describes describing the interpretation of edges between explicitly
+defined vertices.
+
+- `"planar"`: edges will be interpreted following the language of
+  [Simple features access](https://www.opengeospatial.org/standards/sfa):
+
+  > **simple feature** feature with all geometric attributes described piecewise
+  > by straight line or planar interpolation between sets of points (Section 4.19).
+
+- `"spherical"`: Edges follow the shortest distance between vertices approximated
+  as the shortest distance between the vertices on a perfect sphere. This edge
+  interpretation is used by
+  [BigQuery Geography](https://cloud.google.com/bigquery/docs/geospatial-data#coordinate_systems_and_edges),
+  and [Snowflake Geography](https://docs.snowflake.com/en/sql-reference/data-types-geospatial).
+  A common library for interpreting edges in this way is
+  [Google's s2geometry](https://github.com/google/s2geometry).
+- `"geodesic"`: Edges follow the shortest distance between vertices on the
+  ellipsoid defined by the `crs` key. This edge interpretation is used by
+  [Microsoft SQL Server Geography](https://learn.microsoft.com/en-us/sql/t-sql/spatial-geography/spatial-types-geography),
+  [Amazon Redshift Geography](https://docs.aws.amazon.com/redshift/latest/dg/geospatial-overview.html),
+  and [PostGIS](https://postgis.net/docs/geography.html). A common library for
+  interpreting edges in this way is
+  [GeographicLib](https://github.com/geographiclib/geographiclib).
 
 If no value is set, the default value to assume is `"planar"`.
 
 Note if `edges` is `"spherical"` then it is RECOMMENDED that `orientation` is always ensured to be `"counterclockwise"`. If it is not set, it is not clear how polygons should be interpreted within spherical coordinate systems, which can lead to major analytical errors if interpreted incorrectly. In this case, software will typically interpret the rings of a polygon such that it encloses at most half of the sphere (i.e. the smallest polygon of both ways it could be interpreted). But the specification itself does not make any guarantee about this.
+
+If an implementation only has support for a single edge interpretation (e.g.,
+a library with only planar edge support), an column with a different edge type
+may be imported without loosing information if the geometries in the column
+do not contain edges (i.e., the column only contains points or empty geometries).
+For columns that contain edges, the error introduced by ignoring the original
+edge interpretation is similar to the error introduced by applying a coordinate
+transformation to vertices (which is usually small but may be large or create
+invalid geometries, particularly if vertices are not closely spaced). Ignroing
+the original edge interpretation will silently introduce invalid and/or
+misinterpreted geometries for any edge that crosses the antimeridian (i.e.,
+longitude 180/-180) when translating from `"spherical"` or `"geodesic"` edges
+to planar edges.
+
+Implementations may implicitly import columns with an unsupported edge type if the
+columns do not contain edges. Implementations may otherwise import columns with an
+unsupported edge type with an explicit opt-in from a user or if accompanied
+by a prominent warning.
 
 #### bbox
 
