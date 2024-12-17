@@ -1,0 +1,6 @@
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/columnmetadata
+part:: Each geometry column in the dataset SHALL have an entry in the "columns" object, and the key of the object MUST have the same name as the geometry column in the dataset.
+====
