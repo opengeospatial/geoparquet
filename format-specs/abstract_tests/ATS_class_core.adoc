@@ -3,7 +3,7 @@
 ====
 [%metadata]
 identifier:: /conf/core
-subject:: <<rc_table-core>>
+target:: /req/core
 classification:: Target Type:Apache Parquet file
 conformance-test:: /conf/core/geometry-columns
 conformance-test:: /conf/core/nesting
