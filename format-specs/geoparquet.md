@@ -53,7 +53,7 @@ Each geometry column in the dataset MUST be included in the `columns` field abov
 | geometry_types | \[string]    | **REQUIRED.** The geometry types of all geometries, or an empty array if they are not known. |
 | crs            | object\|null | [PROJJSON](https://proj.org/specifications/projjson.html) object representing the Coordinate Reference System (CRS) of the geometry. If the field is not provided, the default CRS is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84), which means the data in this column must be stored in longitude, latitude based on the WGS84 datum. |
 | orientation    | string       | Winding order of exterior ring of polygons. If present must be `"counterclockwise"`; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order. |
-| edges          | string       | Name of the coordinate system for the edges. Must be one of `"planar"` or `"spherical"`. The default value is `"planar"`. |
+| edges          | string       | Name of the coordinate system for the edges. Must be one of `"planar"`, `"spherical"`, `"vincenty"`, `"thomas"`, `"andoyer"` or `"karney"`. The default value is `"planar"`. |
 | bbox           | \[number]    | Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
 | epoch          | number       | Coordinate epoch in case of a dynamic CRS, expressed as a decimal year. |
 | covering       | object       | Object containing bounding box column names to help accelerate spatial data retrieval |
@@ -177,7 +177,8 @@ If no value is set, no assertions are made about winding order or consistency of
 
 Writers are encouraged but not required to set `orientation="counterclockwise"` for portability of the data within the broader ecosystem.
 
-It is RECOMMENDED to always set the orientation (to counterclockwise) if `edges` is `"spherical"` (see below).
+It is RECOMMENDED to always set the orientation (to counterclockwise) if `edges` any value
+other than `"planar"` (see below).
 
 #### edges
 
@@ -190,24 +191,32 @@ defined vertices.
   > **simple feature** feature with all geometric attributes described piecewise
   > by straight line or planar interpolation between sets of points (Section 4.19).
 
-- `"spherical"`: Edges follow the shortest distance between vertices approximated
-  as the shortest distance between the vertices on a perfect sphere. This edge
-  interpretation is used by
+- `"spherical"`: Edges in the longitude-latitude dimensions follow the
+  shortest distance between vertices approximated as the shortest distance
+  between the vertices on a perfect sphere. This edge interpretation is used by
   [BigQuery Geography](https://cloud.google.com/bigquery/docs/geospatial-data#coordinate_systems_and_edges),
   and [Snowflake Geography](https://docs.snowflake.com/en/sql-reference/data-types-geospatial).
   A common library for interpreting edges in this way is
-  [Google's s2geometry](https://github.com/google/s2geometry).
-- `"geodesic"`: Edges follow the shortest distance between vertices on the
-  ellipsoid defined by the `crs` key. This edge interpretation is used by
-  [Microsoft SQL Server Geography](https://learn.microsoft.com/en-us/sql/t-sql/spatial-geography/spatial-types-geography),
-  [Amazon Redshift Geography](https://docs.aws.amazon.com/redshift/latest/dg/geospatial-overview.html),
-  and [PostGIS](https://postgis.net/docs/geography.html). A common library for
-  interpreting edges in this way is
-  [GeographicLib](https://github.com/geographiclib/geographiclib).
+  [Google's s2geometry](https://github.com/google/s2geometry); a common formula
+  for calculating distances along this trajectory is the
+  [Haversine Formula](https://en.wikipedia.org/wiki/Haversine_formula).
+- `"vincenty"`: Edges in the longitude-latitude dimensions follow a path calculated
+  using [Vincenty's formula](https://en.wikipedia.org/wiki/Vincenty%27s_formulae).
+- `"thomas"`:  Edges in the longitude-latitude dimensions follow a path calculated by
+  the fomula in Thomas, Paul D. Spheroidal geodesics, reference systems, & local geometry.
+  US Naval Oceanographic Office, 1970.
+- `"andoyer"`: Edges in the longitude-latitude dimensions follow a path calculated by
+  the fomula in Thomas, Paul D. Mathematical models for navigation systems. US Naval
+  Oceanographic Office, 1965.
+- `"karney"`: Edges in the longitude-latitude dimensions follow a path calculated by
+  the fomula in
+  [Karney, Charles FF. "Algorithms for geodesics." Journal of Geodesy 87 (2013): 43-55](https://link.springer.com/content/pdf/10.1007/s00190-012-0578-z.pdf)
+  and [GeographicLib](https://geographiclib.sourceforge.io/) (which is also available
+  via modern versions of PROJ).
 
 If no value is set, the default value to assume is `"planar"`.
 
-Note if `edges` is `"spherical"` then it is RECOMMENDED that `orientation` is always ensured to be `"counterclockwise"`. If it is not set, it is not clear how polygons should be interpreted within spherical coordinate systems, which can lead to major analytical errors if interpreted incorrectly. In this case, software will typically interpret the rings of a polygon such that it encloses at most half of the sphere (i.e. the smallest polygon of both ways it could be interpreted). But the specification itself does not make any guarantee about this.
+Note if `edges` is non-planar then it is RECOMMENDED that `orientation` is always ensured to be `"counterclockwise"`. If it is not set, it is not clear how polygons should be interpreted within spherical coordinate systems, which can lead to major analytical errors if interpreted incorrectly. In this case, software will typically interpret the rings of a polygon such that it encloses at most half of the sphere (i.e. the smallest polygon of both ways it could be interpreted). But the specification itself does not make any guarantee about this.
 
 If an implementation only has support for a single edge interpretation (e.g.,
 a library with only planar edge support), a column with a different edge type
@@ -219,13 +228,16 @@ transformation to vertices (which is usually small but may be large or create
 invalid geometries, particularly if vertices are not closely spaced). Ignoring
 the original edge interpretation will silently introduce invalid and/or
 misinterpreted geometries for any edge that crosses the antimeridian (i.e.,
-longitude 180/-180) when translating from `"spherical"` or `"geodesic"` edges
-to planar edges.
+longitude 180/-180) when translating from non-planar edges to planar edges.
 
 Implementations may implicitly import columns with an unsupported edge type if the
 columns do not contain edges. Implementations may otherwise import columns with an
 unsupported edge type with an explicit opt-in from a user or if accompanied
 by a prominent warning.
+
+Implementations of `spherical`, `vincenty`, `thomas`, and `andoyer` edge interpretations
+are available via
+[Boost::geometry](https://www.boost.org/doc/libs/1_87_0/libs/geometry/doc/html/index.html).
 
 #### bbox
 
