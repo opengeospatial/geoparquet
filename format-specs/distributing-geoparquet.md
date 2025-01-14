@@ -16,7 +16,7 @@ And if you're building a tool or library then consider these as good defaults.
  * Spatially order the data within the file.
  * Set the maximum row group size between 100,000 and 200,000 per row.
  * If the data is larger than ~2 gigabytes consider spatially partitioning the files.
- * Use [https://stacspec.org/en] STAC metadata to describe the data.
+ * Use [STAC Metadata](https://stacspec.org/) metadata to describe the data.
 
 
 ### Compression
@@ -140,15 +140,54 @@ spatially partitioned, row group size is 25,000.
 
 ## Examples in common tools
 
-TODO: This section should discuss what each tool does by default, and show any additional options needed to follow
-the recommendations above. Likely will make sense to discuss spatial partitioning in a separate section, since right
-now no tools do it out of the box.
+This section will discuss what each tool does by default, and show any additional options
+needed to follow the recommendations above. STAC metadata and spatial partitioning will
+have their own sections, since there are fewer tools that can do it, but most any of
+the other tools can be used to prep the data.
 
 ### GDAL/OGR
+
+Out of the box:
+
+```
+ogr2ogr out.parquet in.geojson
+```
+
+Out of the box GDAL/OGR defaults to snappy compression, with max row group size of 65536.
+Version 3.9 and later will write out the bbox column by default. And there is a built-in
+option to spatially order the data that works by creating a temporary GeoPackage file and
+using its r-tree spatial index. It defaults to false since it can be an intensive operation,
+and GDAL is usually translating from formats that already have spatial indexes.
+
+### GDAL/OGR with recommended settings
+
+These examples are done with the `ogr2ogr command-line tool, but the layer creation options
+will be the same calling from C or Python.
+
+Without spatial ordering (use when source data already has spatial index (GeoPackage, FlatGeobuf, Shapefile, PostGIS, etc))
+```
+ogr2ogr out.parquet -lco "COMPRESSION=ZSTD" -lco "MAX_ROW_GROUP_SIZE=100000" in.fgb
+```
+
+With spatial ordering (use when source data does not have spatial index):
+```
+ogr2ogr out.parquet -lco SORT_BY_BBOX=YES  "COMPRESSION=ZSTD" in.geojson
+```
 
 ### GeoPandas (Python)
 
 ### DuckDB
+
+Out of the box:
+```
+COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet');
+```
+
+DuckDB will automatically write GeoParquet as long as the [spatial extension](https://duckdb.org/docs/extensions/spatial/overview.html) is enabled. The default compression is snappy, and the row group size is ?, and the bbox column is written by default.
+
+```
+COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', COMPRESSION 'zstd');
+```
 
 ### Sedona
 
