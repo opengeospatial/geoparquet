@@ -14,7 +14,7 @@ And if you're building a tool or library then consider these as good defaults.
  * Use zstd for compression.
  * Be sure to include the [bbox covering](https://github.com/opengeospatial/geoparquet/blob/v1.1.0/format-specs/geoparquet.md#bbox-covering-encoding), and use GeoParquet version 1.1.
  * Spatially order the data within the file.
- * Set the maximum row group size between 100,000 and 200,000 per row.
+ * Set the maximum row group size between 50,000 and 150,000 per row.
  * If the data is larger than ~2 gigabytes consider spatially partitioning the files.
  * Use [STAC Metadata](https://stacspec.org/) metadata to describe the data.
 
@@ -71,14 +71,16 @@ reader will not be able to 'skip' over large chunks of data, and if it's too sma
 which can really slow things down if there are a lot of files.
 
 Unfortunately there's no single 'best' size for row groups, and it will depend on the size of the data and the access patterns.
-And the community is still learning what works best, so there's no single recommendation - hopefully we'll learn more and update
-this section in the future. But right now most of the larger global datasets are being distributed with row group sizes of 100,000 to 200,000 rows, so that's what we recommend as a starting point.
+And the community is still learning what works best, so there's no solid recommendations at this point - hopefully we'll learn
+more and update this section in the future. But right now most of the larger global datasets are being distributed with
+row group sizes of 50,000 to 200,000 rows, so that's what we recommend as a starting point.
 
-Most geospatial tools give you the ability to set the maximum number of rows per row group, but other tools may let you set
+Most geospatial tools give you the ability to set the maximum number of rows per row group, but some tools may let you set
 the byte size for the row group. The core thing that really matters is the byte size for the row group, as that will be
 the amount of data that needs to be read (and moved over the network in cloud-native geo access patterns). So if your data
 rows are large then you'll want to set a smaller row group size, and if your rows are small it could make sense to go to the
-larger end of the spectrum.
+larger end of the spectrum. If you can set the byte size for row groups a common recommendation is to aim for 128mb - 256mb
+per row group.
 
 ### Spatial Partitioning
 
@@ -180,13 +182,39 @@ ogr2ogr out.parquet -lco SORT_BY_BBOX=YES  "COMPRESSION=ZSTD" in.geojson
 
 Out of the box:
 ```
+load spatial;
 COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet');
 ```
 
-DuckDB will automatically write GeoParquet as long as the [spatial extension](https://duckdb.org/docs/extensions/spatial/overview.html) is enabled. The default compression is snappy, and the row group size is ?, and the bbox column is written by default.
+DuckDB will automatically write GeoParquet as long as it's version 1.1 and above, the [spatial extension](https://duckdb.org/docs/extensions/spatial/overview.html)
+is enabled and the table has geometries The default compression is snappy, and the max row group size is 122,880, and the bbox column is always written out. You can control the [compression](https://duckdb.org/docs/sql/statements/copy.html#parquet-options) and [row group size](https://duckdb.org/docs/data/parquet/tips.html#selecting-a-row_group_size):
 
 ```
-COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', COMPRESSION 'zstd');
+COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', COMPRESSION 'zstd', ROW_GROUP_SIZE '100000');
+```
+
+Interestingly you can also set the row group size in bytes, which would likely be a better way to handle geospatial data since the
+row size can vary so much.
+
+```
+COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', COMPRESSION 'zstd', ROW_GROUP_SIZE_BYTES '128mb');
+
+```
+
+DuckDB also has functionality to spatially order your data, with the `[ST_Hilbert](https://duckdb.org/docs/extensions/spatial/functions#st_hilbert)`
+function. It is strongly recommended to pass in the bounds of your entire dataset to the function call or the hilbert curve
+won't be built right. The following call will dynamically get the bounds of your dataset, and pass that into the ST_Hilbert function.
+
+```
+copy (SELECT *
+  FROM geo_table
+  ORDER BY ST_Hilbert(
+      geom,
+      (
+          SELECT ST_Extent(ST_Extent_Agg(COLUMNS(geom)))::BOX_2D
+          FROM fsq
+      )
+  )) TO 'out.parquet' (FORMAT 'parquet', COMPRESSION 'zstd');
 ```
 
 ### Sedona
