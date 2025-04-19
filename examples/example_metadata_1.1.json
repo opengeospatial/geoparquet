@@ -29,16 +29,12 @@
           }
         },
         "crs": {
-          "$schema": "https://proj.org/schemas/v0.6/projjson.schema.json",
+          "$schema": "https://proj.org/schemas/v0.7/projjson.schema.json",
           "area": "World.",
-          "bbox": {
-            "east_longitude": 180,
-            "north_latitude": 90,
-            "south_latitude": -90,
-            "west_longitude": -180
-          },
+          "bbox": [-180, -90, 180, 90],
           "coordinate_system": {
-            "axis": [
+            "type": "ellipsoidal",
+            "axes": [
               {
                 "abbreviation": "Lon",
                 "direction": "east",
@@ -51,8 +47,7 @@
                 "name": "Geodetic latitude",
                 "unit": "degree"
               }
-            ],
-            "subtype": "ellipsoidal"
+            ]
           },
           "datum_ensemble": {
             "accuracy": "2.0",
@@ -135,6 +130,6 @@
       }
     },
     "primary_column": "geometry",
-    "version": "1.2.0-dev"
+    "version": "1.1.0"
   }
 }
