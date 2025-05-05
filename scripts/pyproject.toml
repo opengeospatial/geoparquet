@@ -4,16 +4,17 @@ version = "0.1.0"
 description = ""
 authors = []
 license = "MIT"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 
 dependencies = [
     "black",
     "click",
-    "geopandas",
+    "geopandas >= 1.0.0",
     "isort",
     "jsonschema",
     "pandas",
-    "pyarrow",
+    "pyarrow >= 20.0.0",
+    "numpy >= 2.0.0",
     "pytest",
-    "shapely",
+    "shapely >= 2.1.0",
 ]
