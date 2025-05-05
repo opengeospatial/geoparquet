@@ -7,13 +7,13 @@ license = "MIT"
 requires-python = ">=3.9"
 
 dependencies = [
-    black,
-    click,
-    geopandas,
-    isort,
-    jsonschema,
-    pandas,
-    pyarrow,
-    pytest,
-    shapely,
+    "black",
+    "click",
+    "geopandas",
+    "isort",
+    "jsonschema",
+    "pandas",
+    "pyarrow",
+    "pytest",
+    "shapely",
 ]
