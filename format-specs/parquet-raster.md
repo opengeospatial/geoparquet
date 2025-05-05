@@ -14,7 +14,7 @@ Each raster column must also have a corresponding `Geometry` or `Geography` type
 
 ## Raster Representation
 
-The raster data model is largely inspired by the WKB raster encoding of PostGIS but extracts the raster metadata out of the binary encoding.
+The raster data model is largely inspired by the WKB raster encoding of PostGIS but extracts the raster metadata out of the binary encoding. It always uses the little-endian byte order for the raster data.
 
 ### Raster value
 
@@ -22,7 +22,6 @@ A raster value is composed by the following components:
 
 | Field        | Parquet Physical Type | Parquet Logical Type | Description                                                             |
 |--------------|-----------------------|----------------------|-------------------------------------------------------------------------|
-| `endianness` | `boolean`             |                      | **REQUIRED.** True: little endian; False: big endian                    |
 | `crs`        | `BYTE_ARRAY`          | UTF8                 | **OPTIONAL.** The coordinate reference system of the raster             |
 | `scale_x`    | `DOUBLE`              |                      | **REQUIRED.** The scale factor of the raster in X direction             |
 | `scale_y`    | `DOUBLE`              |                      | **REQUIRED.** The scale factor of the raster in Y direction             |
@@ -38,6 +37,16 @@ A raster is one or more grids of cells. All the grids should have `width` rows a
 
 The geo-referencing information is represented by the parameters of an affine transformation (`ip_x`, `ip_y`, `scale_x`, `scale_y`, `skew_x`, `skew_y`). This specification only supports affine transformation as geo-referencing transformation, other transformations such as polynomial transformation are not supported.
 
+The affine transformation is defined as follows:
+
+```
+world_x = ip_x + (col + 0.5) * scale_x + (row + 0.5) * skew_x
+world_y = ip_y + (col + 0.5) * skew_y + (row + 0.5) * scale_y
+```
+
+col = the column number (pixel index) from the left (0 is the first/leftmost column)
+row = the row number (pixel index) from the top (0 is the first/topmost row)
+
 The grid coordinates of a raster is always anchored at the center of grid cells. The translation factor of the affine transformation `ip_x` and `ip_y` also designates the world coordinate of the center of the upper left grid cell.
 
 This specification supports persisting raster band values in two different ways specified by the `isOffline` flag in the band data encoding. The two options are:
@@ -47,15 +56,16 @@ This specification supports persisting raster band values in two different ways 
 
 ### Band data encoding
 
-| Name             | Type          | Meaning                                                                                                                                                                                                                                                                                                                      |
-|------------------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `isOffline`      | 1 bit          | If true, data is found on external storage, through the path specified in `RASTERDATA`.                                                                                                                                                                                                                                      |
-| `hasNodataValue` | 1 bit          | If true, the stored nodata value is a true nodata value. Otherwise, the nodata value should be ignored.                                                                                                                                                                                                                      |
-| `isNodataValue`  | 1 bit          | If true, all values of the band are expected to be nodata values. This is a dirty flag; to set it properly, the function `st_bandisnodata` must be called with `TRUE` as the last argument.                                                                                                                                  |
-| `isGZIPPed`      | 1 bit          | If true, the data is compressed using GZIP before being passed to the Parquet compression process.                                                                                                                                                                                                                            |
-| `pixtype`        | 4 bits         | Pixel type: <br>0: 1-bit boolean<br>1: 2-bit unsigned integer<br>2: 4-bit unsigned integer<br>3: 8-bit signed integer<br>4: 8-bit unsigned integer<br>5: 16-bit signed integer<br>6: 16-bit unsigned signed integer<br>7: 32-bit signed integer<br>8: 32-bit unsigned signed integer<br>10: 32-bit float<br>11: 64-bit float |
-| `nodata`         | 1 to 8 bytes (depending on `pixtype` [1]) | Nodata value.                                                                                                                                                                                                                                                                                                                |
-| `data`           | byte_array   | Raster band pixel data (see below).                                                                                                                                                                                                                                                                                          |
+| Name              | Type                                      | Meaning                                                                                                                                                                                                                                                                                                        |
+|-------------------|-------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `isOffline`       | 1 bit                                     | If true, data is found on external storage, through the path specified in `RASTERDATA`.                                                                                                                                                                                                                        |
+| `hasNodataValue`  | 1 bit                                     | If true, the stored nodata value is a true nodata value. Otherwise, the nodata value should be ignored.                                                                                                                                                                                                        |
+| `isAllNodata`     | 1 bit                                     | If true, all values of the band are expected to be nodata values. This is a dirty flag; to set it properly, the function `st_bandisnodata` must be called with `TRUE` as the last argument.                                                                                                                    |
+| `isGZIPPed`       | 1 bit                                     | If true, the data is compressed using GZIP before being passed to the Parquet compression process.                                                                                                                                                                                                             |
+| `pixtype`         | 4 bits                                    | Pixel type: <br>0: 1-bit boolean<br>1: 2-bit unsigned integer<br>2: 4-bit unsigned integer<br>3: 8-bit signed integer<br>4: 8-bit unsigned integer<br>5: 16-bit signed integer<br>6: 16-bit unsigned integer<br>7: 32-bit signed integer<br>8: 32-bit unsigned integer<br>10: 32-bit float<br>11: 64-bit float |
+| `nodata`          | 1 to 8 bytes (depending on `pixtype` [1]) | Nodata value.                                                                                                                                                                                                                                                                                                  |
+| `length`          | int64                                     | Length of the `data` byte_array in bytes.                                                                                                                                                                                                                                                                      |
+| `data`            | byte_array                                | Raster band pixel data (see below).                                                                                                                                                                                                                                                                            |
 
 ### In-DB pixel data encoding
 
@@ -69,10 +79,11 @@ This encoding is used when `isOffline` flag is false.
 
 This encoding is used when `isOffline` flag is true.
 
-| Name         | Type      | Meaning                                                                 |
-|--------------|-----------|-------------------------------------------------------------------------|
-| `bandNumber` | int8       | 0-based band number to use from the set available in the external file. |
-| `url`        | string     | The URI of the out-db raster file (e.g., GeoTIFF files)                 |
+| Name         | Type   | Meaning                                                                 |
+|--------------|--------|-------------------------------------------------------------------------|
+| `bandNumber` | int8   | 0-based band number to use from the set available in the external file. |
+| `length`     | int16  | Length of the `url` string in bytes.                                    |
+| `url`        | string | The URI of the out-db raster file (e.g., GeoTIFF files).                |
 
 The allowed URI schemes are:
 * `file://`: Local file system
@@ -89,11 +100,11 @@ CRS is represented as a string value. Writer and reader implementations are
 responsible for serializing and deserializing the CRS, respectively.
 
 As a convention to maximize the interoperability, custom CRS values can be
-specified by a string of the format `type:identifier`, where `type` is one of
+specified by a string of the format `type:value`, where `type` is one of
 the following values:
 
-* `srid`: [Spatial reference identifier](https://en.wikipedia.org/wiki/Spatial_reference_system#Identifier), `identifier` is the SRID itself.
-* `projjson`: [PROJJSON](https://proj.org/en/stable/specifications/projjson.html), `identifier` is the name of a table property or a file property where the projjson string is stored.
+* `srid`: [Spatial reference identifier](https://en.wikipedia.org/wiki/Spatial_reference_system#Identifier), `value` is the SRID itself.
+* `projjson`: [PROJJSON](https://proj.org/en/stable/specifications/projjson.html), `value` is the PROJJSON string.
 
 
 ## Metadata
@@ -115,7 +126,7 @@ At this level, additional implementation-specific fields (e.g. library name) MAY
 
 ### Column metadata
 
-Each raster column in the dataset MUST be included in the `columns` field above with the following content, keyed by the column name:
+Each raster column in the dataset, although annotated with Parquet `strcut` type, MUST be included in the `columns` field above with the following content, keyed by the column name:
 
 | Field Name | Type         | Description                                                                              |
 |------------| ------------ |------------------------------------------------------------------------------------------|
