@@ -18,11 +18,6 @@ jobs:
 
       - uses: astral-sh/setup-uv@v5
 
-      - name: Install scripts dependencies
-        run: |
-          cd scripts
-          poetry install
-
       - name: Run scripts
         run: |
           cd scripts
