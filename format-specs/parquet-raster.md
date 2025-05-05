@@ -1,4 +1,4 @@
-# Parquet Raster Specification
+# [Work in Progress] Parquet Raster Specification
 
 ## Overview
 
