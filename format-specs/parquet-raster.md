@@ -126,7 +126,7 @@ At this level, additional implementation-specific fields (e.g. library name) MAY
 
 ### Column metadata
 
-Each raster column in the dataset, although annotated with Parquet `strcut` type, MUST be included in the `columns` field above with the following content, keyed by the column name:
+Each raster column in the dataset, although annotated with Parquet `struct` type, MUST be included in the `columns` field above with the following content, keyed by the column name:
 
 | Field Name | Type         | Description                                                                              |
 |------------| ------------ |------------------------------------------------------------------------------------------|
