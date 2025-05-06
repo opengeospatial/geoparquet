@@ -2,36 +2,28 @@
 
 ## Usage
 
-The scripts in this directory use [Poetry](https://github.com/python-poetry/poetry) for describing dependencies and keeping a consistent lockfile. This lockfile is useful because it ensures every contributor is able to use the exact same dependencies.
+The scripts in this directory use [uv](https://docs.astral.sh/uv/) for describing dependencies and keeping a consistent lockfile. This lockfile is useful because it ensures every contributor is able to use the exact same dependencies.
 
-To install Poetry, follow the Poetry [installation guide](https://python-poetry.org/docs/#installation).
+To install uv, follow the [installation guide](https://docs.astral.sh/uv/getting-started/installation/).
 
 To install from the lockfile:
 
 ```
-poetry install
+uv sync
 ```
 
-To update the lockfile (such as when you add a new dependency):
+To run a script, prefix it with `uv run`. For example:
 
 ```
-poetry update
+uv run python generate_example.py
 ```
-
-To run a script, prefix it with `poetry run`. For example:
-
-```
-poetry run python generate_example.py
-```
-
-Using `poetry run` ensures that you're running the python script using _this_ local environment, not your global environment.
 
 ### Tests
 
 To run the tests, change into the `scripts` directory and run the following:
 
 ```
-poetry run pytest test_json_schema.py -v
+uv run pytest test_json_schema.py -v
 ```
 
 ### example.parquet
@@ -41,24 +33,14 @@ The `example.parquet` file in the `examples` directory is generated with the `ge
 To update the `../examples/example.parquet` file, run this from the `scripts` directory:
 
 ```
-poetry run python generate_example.py
+uv run python generate_example.py
 ```
 
 ### nz-building-outlines to Parquet
 
 ```bash
-poetry run python write_nz_building_outline.py \
+uv run python write_nz_building_outline.py \
     --input nz-building-outlines.gpkg \
     --output nz-building-outlines.parquet \
     --compression SNAPPY
-```
-
-#### Recompile pygeos
-
-Poetry doesn't currently have a way to force installing a package from source.
-To make the script run faster, you can reinstall pygeos manually in the
-virtualenv:
-
-```
-poetry run pip install -U --force-reinstall pygeos --no-binary pygeos
 ```
