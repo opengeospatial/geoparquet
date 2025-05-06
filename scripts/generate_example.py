@@ -13,13 +13,14 @@ from collections import OrderedDict
 import json
 import pathlib
 
+import pandas as pd
 import geopandas
 import pyarrow as pa
 import pyarrow.parquet as pq
 
 HERE = pathlib.Path(__file__).parent
 
-df = geopandas.read_file(HERE.parent / "examples" / "example.csv")
+df = pd.read_csv(HERE.parent / "examples" / "example.csv")
 df = geopandas.GeoDataFrame(
     df, geometry=geopandas.GeoSeries.from_wkt(df.geometry, crs="OGC:CRS84")
 )
