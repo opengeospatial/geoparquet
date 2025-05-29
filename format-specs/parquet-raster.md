@@ -1,5 +1,7 @@
 # [Work in Progress] Parquet Raster Specification
 
+*This spec should currently be considered of 'alpha' quality - there is much more to work out. We'd love early implementations and feedback, but please don't expect anywhere near the robustness of the main GeoParquet specification. You can track progress and contribute with the [raster tag in issues](https://github.com/opengeospatial/geoparquet/issues).
+
 ## Overview
 
 The [Apache Parquet](https://parquet.apache.org/) provides a standardized open-source columnar storage format and it also natively supports geo types (i.e., Geometry and Geography types). The Parquet Raster specification defines how geo-referenced raster imagery data (abbr., raster) should be stored in parquet format, including the representation of raster and the required additional metadata.
