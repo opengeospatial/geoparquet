@@ -166,28 +166,34 @@ and GDAL is usually translating from formats that already have spatial indexes.
 These examples are done with the `ogr2ogr command-line tool, but the layer creation options
 will be the same calling from C or Python.
 
-Without spatial ordering (use when source data already has spatial index (GeoPackage, FlatGeobuf, Shapefile, PostGIS, etc))
+You can easily control the compression and the max row group size, and the following command is sufficient
+if your source data is already spatially ordered in a file format with a spatial index (like FlatGeobuf or GeoPackage)L
 ```
 ogr2ogr out.parquet -lco "COMPRESSION=ZSTD" -lco "MAX_ROW_GROUP_SIZE=100000" in.fgb
 ```
 
-With spatial ordering (use when source data does not have spatial index):
+If you want to be sure that the output is spatially ordered then you can add `SORT_BY_BBOX=YES`, like in the following example:
 ```
-ogr2ogr out.parquet -lco SORT_BY_BBOX=YES  "COMPRESSION=ZSTD" in.geojson
+ogr2ogr out.parquet -lco SORT_BY_BBOX=YES -lco "COMPRESSION=ZSTD" in.geojson
 ```
 
-### GeoPandas (Python)
+This operation writes the data to a GeoPackage as an interim step, so it can take additional storage and computation, especially
+with large files, so it's not enabled by default.
 
 ### DuckDB
 
 Out of the box:
 ```
-load spatial;
+LOAD spatial;
 COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet');
 ```
 
 DuckDB will automatically write GeoParquet as long as it's version 1.1 and above, the [spatial extension](https://duckdb.org/docs/extensions/spatial/overview.html)
-is enabled and the table has geometries The default compression is snappy, and the max row group size is 122,880, and the bbox column is always written out. You can control the [compression](https://duckdb.org/docs/sql/statements/copy.html#parquet-options) and [row group size](https://duckdb.org/docs/data/parquet/tips.html#selecting-a-row_group_size):
+is enabled and the table has geometries The default compression is snappy, and the max row group size is 122,880. The bbox column is not added by default, and it is not spatially ordered by default.
+
+#### DuckDB with recommended settings
+
+You can control the [compression](https://duckdb.org/docs/sql/statements/copy.html#parquet-options) and [row group size](https://duckdb.org/docs/data/parquet/tips.html#selecting-a-row_group_size):
 
 ```
 COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', COMPRESSION 'zstd', ROW_GROUP_SIZE '100000');
@@ -201,24 +207,53 @@ COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', COMPRESSION '
 
 ```
 
+But you can only use that when [`SET preserve_insertion_order = false;`](https://duckdb.org/docs/stable/guides/performance/how_to_tune_workloads#the-preserve_insertion_order-option) is enabled, which can help when working with large files, but it's not
+clear if it can mess up spatial ordering.
+
 DuckDB also has functionality to spatially order your data, with the `[ST_Hilbert](https://duckdb.org/docs/extensions/spatial/functions#st_hilbert)`
 function. It is strongly recommended to pass in the bounds of your entire dataset to the function call or the hilbert curve
 won't be built right. The following call will dynamically get the bounds of your dataset, and pass that into the ST_Hilbert function.
 
 ```
-copy (SELECT *
-  FROM geo_table
-  ORDER BY ST_Hilbert(
-      geom,
-      (
-          SELECT ST_Extent(ST_Extent_Agg(COLUMNS(geom)))::BOX_2D
-          FROM fsq
-      )
-  )) TO 'out.parquet' (FORMAT 'parquet', COMPRESSION 'zstd');
+COPY (
+    WITH bbox AS (
+        SELECT ST_Extent(ST_Extent_Agg(geometry))::BOX_2D AS b
+        FROM   geo_table
+    )
+    SELECT   t.*
+    FROM     geo_table AS t
+            CROSS JOIN bbox
+    ORDER BY ST_Hilbert(t.geometry, bbox.b)
+) TO 'out.parquet' (FORMAT 'parquet', COMPRESSION 'zstd', ROW_GROUP_SIZE '100000');
 ```
+
+One note with DuckDB is that it doesn't (yet) handle reprojection, and also does not maintain CRS information if you read data into
+it and then write it out, so watch out for that if you're using it for distribution of GeoParquet data. You can add the CRS info
+back in with tools like GDAL and QGIS - it just loses the metadata.
 
 ### Sedona
 
-### GPQ (Go)
+### Additional Tools
 
-TODO: add more tools.
+We hope to get more discussion of additional tools that follow the same format as DuckDB and OGR/GDAL, especially Sedona, GPQ, GeoPandas, QGIS and Esri. But we'll aim to add those later as their own PR's - contributions are very welcome. There is also a project currently called [geoparquet-tools](https://github.com/cholmes/geoparquet-tools) that wraps DuckDB in Python and aims to provide all the
+best practices out of the box, along with options to spatially partition.
+
+## Spatial Partitioning
+
+Most tools don't yet provide any way to do automatic spatial partitioning across files, when you have larger datasets.
+DuckDB has a lot of powerful options that can enable spatial partitioning across files. For some pointers see
+[this gist using kdtree](https://gist.github.com/jwass/8e9b6c16902a05ae66b9688f1a5bb4ff) and
+[this blog post](https://dewey.dunnington.ca/post/2024/partitioning-strategies-for-bigger-than-memory-spatial-data/) that
+discusses the kdtree, along with some other options (r-tree, s2 cells).
+
+The solution that is currently one of the most 'out of the box' option is Sedona, with its
+[Spatial RDD's](https://sedona.apache.org/latest/tutorial/rdd/). The following code takes you through using it to write out partitions by kdtree.
+
+
+## STAC Metadata
+
+None of the tools to write GeoParquet currently write out STAC Metadata, but that makes sense, as they don't write out other
+metadata formats either. To write STAC metadata you can write it by hand if you've just got one or two GeoParquet files. If you've
+got more then the best option is to use something like [rustac](https://github.com/stac-utils/rustac) or
+[pystac](https://pystac.readthedocs.io/en/stable/) to do it a bit more programmatically. You should be able to populate some
+of the STAC fields like bbox from the GeoParquet files directly.
