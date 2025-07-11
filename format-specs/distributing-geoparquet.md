@@ -231,7 +231,21 @@ One note with DuckDB is that it doesn't (yet) handle reprojection, and also does
 it and then write it out, so watch out for that if you're using it for distribution of GeoParquet data. You can add the CRS info
 back in with tools like GDAL and QGIS - it just loses the metadata.
 
-### Sedona
+### Additional Tools
+
+We hope to get more discussion of additional tools that follow the same format as DuckDB and OGR/GDAL, especially Sedona, GPQ, GeoPandas, QGIS and Esri. But we'll aim to add those later as their own PR's - contributions are very welcome. There is also a project currently called [geoparquet-tools](https://github.com/cholmes/geoparquet-tools) that wraps DuckDB in Python and aims to provide all the
+best practices out of the box, along with options to spatially partition.
+
+## Spatial Partitioning
+
+Most tools don't yet provide any way to do automatic spatial partitioning across files, when you have larger datasets.
+DuckDB has a lot of powerful options that can enable spatial partitioning across files. For some pointers see
+[this gist using kdtree](https://gist.github.com/jwass/8e9b6c16902a05ae66b9688f1a5bb4ff) and
+[this blog post](https://dewey.dunnington.ca/post/2024/partitioning-strategies-for-bigger-than-memory-spatial-data/) that
+discusses the kdtree, along with some other options (r-tree, s2 cells).
+
+The solution that is currently one of the most 'out of the box' option is Sedona, with its
+[Spatial RDD's](https://sedona.apache.org/latest/tutorial/rdd/). The following code takes you through using it to write out partitions by kdtree.
 
 ```python
 import glob
@@ -297,22 +311,7 @@ df_partitioned.write.format("geoparquet").mode("overwrite").save(
 # The output files have funny names because Spark writes them this way
 files = glob.glob("buildings_partitioned/*.parquet")
 len(files)
-### Additional Tools
-
-We hope to get more discussion of additional tools that follow the same format as DuckDB and OGR/GDAL, especially Sedona, GPQ, GeoPandas, QGIS and Esri. But we'll aim to add those later as their own PR's - contributions are very welcome. There is also a project currently called [geoparquet-tools](https://github.com/cholmes/geoparquet-tools) that wraps DuckDB in Python and aims to provide all the
-best practices out of the box, along with options to spatially partition.
-
-## Spatial Partitioning
-
-Most tools don't yet provide any way to do automatic spatial partitioning across files, when you have larger datasets.
-DuckDB has a lot of powerful options that can enable spatial partitioning across files. For some pointers see
-[this gist using kdtree](https://gist.github.com/jwass/8e9b6c16902a05ae66b9688f1a5bb4ff) and
-[this blog post](https://dewey.dunnington.ca/post/2024/partitioning-strategies-for-bigger-than-memory-spatial-data/) that
-discusses the kdtree, along with some other options (r-tree, s2 cells).
-
-The solution that is currently one of the most 'out of the box' option is Sedona, with its
-[Spatial RDD's](https://sedona.apache.org/latest/tutorial/rdd/). The following code takes you through using it to write out partitions by kdtree.
-
+```
 
 ## STAC Metadata
 
