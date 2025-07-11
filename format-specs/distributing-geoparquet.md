@@ -233,8 +233,11 @@ back in with tools like GDAL and QGIS - it just loses the metadata.
 
 ### Additional Tools
 
-We hope to get more discussion of additional tools that follow the same format as DuckDB and OGR/GDAL, especially Sedona, GPQ, GeoPandas, QGIS and Esri. But we'll aim to add those later as their own PR's - contributions are very welcome. There is also a project currently called [geoparquet-tools](https://github.com/cholmes/geoparquet-tools) that wraps DuckDB in Python and aims to provide all the
-best practices out of the box, along with options to spatially partition.
+We hope to get more discussion of additional tools that follow the same format as DuckDB and OGR/GDAL, especially Sedona, GPQ,
+GeoPandas, QGIS and Esri. But we'll aim to add those later as their own PR's - contributions are very welcome. There is also a project
+currently called [geoparquet-tools](https://github.com/cholmes/geoparquet-tools) that wraps DuckDB in Python and aims to provide all the
+best practices out of the box, along with options to spatially partition. It is still immature (not released to pip, and needs to be
+renamed for that), but can be built from source and the code may be useful to others.
 
 ## STAC Metadata
 
@@ -247,10 +250,13 @@ of the STAC fields like bbox from the GeoParquet files directly.
 ## Spatial Partitioning
 
 Most tools don't yet provide any way to do automatic spatial partitioning across files, when you have larger datasets.
-DuckDB has a lot of powerful options that can enable spatial partitioning across files. For some pointers see
+Many people are finding success using DuckDB, since it's a very flexible tool for manipulating data. For some pointers see
 [this gist using kdtree](https://gist.github.com/jwass/8e9b6c16902a05ae66b9688f1a5bb4ff) and
 [this blog post](https://dewey.dunnington.ca/post/2024/partitioning-strategies-for-bigger-than-memory-spatial-data/) that
 discusses the kdtree, along with some other options (r-tree, s2 cells).
+
+The [geoparquet-tools](https://github.com/cholmes/geoparquet-tools) python tool provides a way to add columns that can be partitioned
+on, and then to perform the partitions. Right now it just supports [admin partitions](https://medium.com/radiant-earth-insights/the-admin-partitioned-geoparquet-distribution-59f0ca1c6d96) but [h3 is in a PR](https://github.com/cholmes/geoparquet-tools/pull/3).
 
 The solution that is currently one of the most 'out of the box' option is Sedona, with its
 [Spatial RDD's](https://sedona.apache.org/latest/tutorial/rdd/). The following code takes you through using it to write out partitions by kdtree.
