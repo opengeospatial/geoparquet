@@ -233,6 +233,70 @@ back in with tools like GDAL and QGIS - it just loses the metadata.
 
 ### Sedona
 
+```python
+import glob
+
+from sedona.spark import SedonaContext, GridType
+from sedona.utils.structured_adapter import StructuredAdapter
+from sedona.sql.st_functions import ST_GeoHash
+
+# Configuring this line to do the right thing can be tricky
+# https://sedona.apache.org/latest/setup/install-python/?h=python#prepare-sedona-spark-jar
+config = (
+    SedonaContext.builder()
+    .config("spark.executor.memory", "6G")
+    .config("spark.driver.memory", "6G")
+    .getOrCreate()
+)
+
+sedona = SedonaContext.create(config)
+
+# Read from GeoParquet or some other datasource + do any spatial ops/transformations
+# using Sedona pyspark or SQL
+df = sedona.read.format("geoparquet").load(
+    "/Users/dewey/gh/geoarrow-data/microsoft-buildings/files/microsoft-buildings_point_geo.parquet"
+)
+
+# Create the partitioning. KDBTREE provides a nice balance providing
+# tight (but well-separated) partitions with approximately equal numbers of
+# features in each file. Note that num_partitions is only a suggestion
+# (actual value may differ)
+rdd = StructuredAdapter.toSpatialRdd(df, "geometry")
+rdd.analyze()
+
+# We call the WithoutDuplicates() variant to ensure that we don't introduce
+# duplicate features (i.e., each feature is assigned a single partition instead of
+# each feature being assigned to every partition it intersects). For points the
+# behaviour of spatialPartitioning() and spatialPartitioningWithoutDuplicates()
+# is identical.
+rdd.spatialPartitioningWithoutDuplicates(GridType.KDBTREE, num_partitions=8)
+
+# Get the grids for this partitioning (you can reuse this partitioning
+# by passing it to some other spatialPartitioningWithoutDuplicates() to
+# ensure a different write has identical partition extents)
+rdd.getPartitioner().getGrids()
+
+df_partitioned = StructuredAdapter.toSpatialPartitionedDf(rdd, sedona)
+
+# Optional: sort within partitions for tighter rowgroup bounding boxes within files
+df_partitioned = (
+    df_partitioned.withColumn("geohash", ST_GeoHash(df_partitioned.geometry, 12))
+    .sortWithinPartitions("geohash")
+    .drop("geohash")
+)
+
+# Write in parallel directly from each executor node. This scales nicely to
+# (much) bigger-than-memory data, particularly if done with a configured cluster
+# (e.g., Databricks, Glue, Wherobots).
+# There are several options for geoparquet writing:
+# https://sedona.apache.org/latest/tutorial/files/geoparquet-sedona-spark/
+df_partitioned.write.format("geoparquet").mode("overwrite").save(
+    "buildings_partitioned"
+)
+
+# The output files have funny names because Spark writes them this way
+files = glob.glob("buildings_partitioned/*.parquet")
+len(files)
 ### Additional Tools
 
 We hope to get more discussion of additional tools that follow the same format as DuckDB and OGR/GDAL, especially Sedona, GPQ, GeoPandas, QGIS and Esri. But we'll aim to add those later as their own PR's - contributions are very welcome. There is also a project currently called [geoparquet-tools](https://github.com/cholmes/geoparquet-tools) that wraps DuckDB in Python and aims to provide all the
