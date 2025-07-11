@@ -236,6 +236,14 @@ back in with tools like GDAL and QGIS - it just loses the metadata.
 We hope to get more discussion of additional tools that follow the same format as DuckDB and OGR/GDAL, especially Sedona, GPQ, GeoPandas, QGIS and Esri. But we'll aim to add those later as their own PR's - contributions are very welcome. There is also a project currently called [geoparquet-tools](https://github.com/cholmes/geoparquet-tools) that wraps DuckDB in Python and aims to provide all the
 best practices out of the box, along with options to spatially partition.
 
+## STAC Metadata
+
+None of the tools to write GeoParquet currently write out STAC Metadata, but that makes sense, as they don't write out other
+metadata formats either. To write STAC metadata you can write it by hand if you've just got one or two GeoParquet files. If you've
+got more then the best option is to use something like [rustac](https://github.com/stac-utils/rustac) or
+[pystac](https://pystac.readthedocs.io/en/stable/) to do it a bit more programmatically. You should be able to populate some
+of the STAC fields like bbox from the GeoParquet files directly.
+
 ## Spatial Partitioning
 
 Most tools don't yet provide any way to do automatic spatial partitioning across files, when you have larger datasets.
@@ -278,18 +286,10 @@ df = sedona.read.format("geoparquet").load(
 rdd = StructuredAdapter.toSpatialRdd(df, "geometry")
 rdd.analyze()
 
-# We call the WithoutDuplicates() variant to ensure that we don't introduce
-# duplicate features (i.e., each feature is assigned a single partition instead of
-# each feature being assigned to every partition it intersects). For points the
-# behaviour of spatialPartitioning() and spatialPartitioningWithoutDuplicates()
-# is identical.
+# UseWithoutDuplicates() variant to ensure that we don't introduce
+# duplicate features
 rdd.spatialPartitioningWithoutDuplicates(GridType.KDBTREE, num_partitions=8)
-
-# Get the grids for this partitioning (you can reuse this partitioning
-# by passing it to some other spatialPartitioningWithoutDuplicates() to
-# ensure a different write has identical partition extents)
 rdd.getPartitioner().getGrids()
-
 df_partitioned = StructuredAdapter.toSpatialPartitionedDf(rdd, sedona)
 
 # Optional: sort within partitions for tighter rowgroup bounding boxes within files
@@ -299,9 +299,7 @@ df_partitioned = (
     .drop("geohash")
 )
 
-# Write in parallel directly from each executor node. This scales nicely to
-# (much) bigger-than-memory data, particularly if done with a configured cluster
-# (e.g., Databricks, Glue, Wherobots).
+# Write in parallel directly from each executor node.
 # There are several options for geoparquet writing:
 # https://sedona.apache.org/latest/tutorial/files/geoparquet-sedona-spark/
 df_partitioned.write.format("geoparquet").mode("overwrite").save(
@@ -312,11 +310,3 @@ df_partitioned.write.format("geoparquet").mode("overwrite").save(
 files = glob.glob("buildings_partitioned/*.parquet")
 len(files)
 ```
-
-## STAC Metadata
-
-None of the tools to write GeoParquet currently write out STAC Metadata, but that makes sense, as they don't write out other
-metadata formats either. To write STAC metadata you can write it by hand if you've just got one or two GeoParquet files. If you've
-got more then the best option is to use something like [rustac](https://github.com/stac-utils/rustac) or
-[pystac](https://pystac.readthedocs.io/en/stable/) to do it a bit more programmatically. You should be able to populate some
-of the STAC fields like bbox from the GeoParquet files directly.
