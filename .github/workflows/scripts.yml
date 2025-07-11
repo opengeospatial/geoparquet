@@ -11,27 +11,19 @@ jobs:
   test-json-metadata:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
         with:
-          python-version: 3.8
+          python-version: '3.x'
 
-      - name: Install and configure Poetry
-        uses: snok/install-poetry@v1
-
-      - name: Install scripts dependencies
-        run: |
-          cd scripts
-          poetry install
+      - uses: astral-sh/setup-uv@v5
 
       - name: Run scripts
         run: |
           cd scripts
-          poetry run pytest test_json_schema.py -v
-          poetry run python generate_example.py
-          poetry run python update_example_schemas.py
+          uv run pytest test_json_schema.py -v
+          uv run python generate_example.py
+          uv run python update_example_schemas.py
           cd ../examples
           # Assert that the version number and file metadata are up to date
           # Allow for differences in example.parquet

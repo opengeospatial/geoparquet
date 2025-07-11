@@ -4,9 +4,9 @@
       "geometry": {
         "bbox": [
           -180.0,
-          -90.0,
+          -18.288,
           180.0,
-          83.6451
+          83.2332
         ],
         "covering": {
           "bbox": {
@@ -29,7 +29,7 @@
           }
         },
         "crs": {
-          "$schema": "https://proj.org/schemas/v0.6/projjson.schema.json",
+          "$schema": "https://proj.org/schemas/v0.7/projjson.schema.json",
           "area": "World.",
           "bbox": {
             "east_longitude": 180,
@@ -114,6 +114,13 @@
                   "code": 1309
                 },
                 "name": "World Geodetic System 1984 (G2139)"
+              },
+              {
+                "id": {
+                  "authority": "EPSG",
+                  "code": 1383
+                },
+                "name": "World Geodetic System 1984 (G2296)"
               }
             ],
             "name": "World Geodetic System 1984 ensemble"

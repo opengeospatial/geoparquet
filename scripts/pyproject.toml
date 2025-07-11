@@ -1,24 +1,20 @@
-[tool.poetry]
+[project]
 name = "geoparquet-scripts"
 version = "0.1.0"
 description = ""
 authors = []
 license = "MIT"
+requires-python = ">=3.10"
 
-[tool.poetry.dependencies]
-python = "^3.8"
-pyarrow = "^12.0.0"
-geopandas = "^0.13.2"
-shapely = "^2"
-pandas = "^2"
-click = "^8.1.2"
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.2.0"
-black = "^22.10.0"
-jsonschema = "^4.17.3"
-isort = "^5.10.1"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+dependencies = [
+    "black",
+    "click",
+    "geopandas >= 1.0.0",
+    "isort",
+    "jsonschema",
+    "pandas",
+    "pyarrow >= 20.0.0",
+    "numpy >= 2.0.0",
+    "pytest",
+    "shapely >= 2.1.0",
+]
