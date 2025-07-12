@@ -11,7 +11,7 @@ Later sections will go deep into the reasoning and nuances behind these options,
 just looking to be sure you get the basics right then this section may be sufficient.
 And if you're building a tool or library then consider these as good defaults.
 
- * Use zstd for compression.
+ * Use zstd for compression, and set the compression level to 15.
  * Be sure to include the [bbox covering](https://github.com/opengeospatial/geoparquet/blob/v1.1.0/format-specs/geoparquet.md#bbox-covering-encoding), and use GeoParquet version 1.1.
  * Spatially order the data within the file.
  * Set the maximum row group size between 50,000 and 150,000 per row.
@@ -172,9 +172,16 @@ These examples are done with the `ogr2ogr command-line tool, but the layer creat
 will be the same calling from C or Python.
 
 You can easily control the compression and the max row group size, and the following command is sufficient
-if your source data is already spatially ordered in a file format with a spatial index (like FlatGeobuf or GeoPackage)L
+if your source data is already spatially ordered in a file format with a spatial index (like FlatGeobuf or GeoPackage):
 ```
 ogr2ogr out.parquet -lco "COMPRESSION=ZSTD" -lco "MAX_ROW_GROUP_SIZE=100000" in.fgb
+```
+
+GDAL 3.12 and above introduces `COMPRESSION_LEVEL` as a [parquet layer creation option](https://gdal.org/en/latest/drivers/vector/parquet.html#layer-creation-options). So if you're working with that then you should definitely use it (along with the new
+[gdal CLI](https://gdal.org/en/latest/programs/index.html#general), which is used here.
+
+```
+gdal vector convert vegetation.fgb vegetation.parquet --lco compression=zstd --lco compression_level=15
 ```
 
 If you want to be sure that the output is spatially ordered then you can add `SORT_BY_BBOX=YES`, like in the following example:
@@ -198,10 +205,10 @@ is enabled and the table has geometries The default compression is snappy, and t
 
 #### DuckDB with recommended settings
 
-You can control the [compression](https://duckdb.org/docs/sql/statements/copy.html#parquet-options) and [row group size](https://duckdb.org/docs/data/parquet/tips.html#selecting-a-row_group_size):
+You can control the [compression](https://duckdb.org/docs/sql/statements/copy.html#parquet-options), compression level and [row group size](https://duckdb.org/docs/data/parquet/tips.html#selecting-a-row_group_size):
 
 ```
-COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', COMPRESSION 'zstd', ROW_GROUP_SIZE '100000');
+COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', COMPRESSION 'zstd', COMPRESSION_LEVEL 15, ROW_GROUP_SIZE '100000');
 ```
 
 Interestingly you can also set the row group size in bytes, which would likely be a better way to handle geospatial data since the
