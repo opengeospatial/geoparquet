@@ -24,13 +24,18 @@ And if you're building a tool or library then consider these as good defaults.
 Parquet has built in compression, enabling users to directly use files that are similar in size to the zipped versions
 of other formats. The cool thing is you can easily change the compression algorithm, and new ones continue to be added.
 The default for most Parquet libraries is `snappy`, which excels at speed and gets good compression. More recently the
-`zstd` library has been added to the Parquet ecosystem, and it achieves a better compression ration with similar speeds
-to snappy. At this point most all Parquet libraries support `zstd`, and since better compression makes for faster downloads
-and streaming it's the current recommendation.
+`zstd` library has been added to the Parquet ecosystem, and it achieves a better compression ratio with similar speeds
+to snappy. So it is recommended to use `zstd`, since at this point most all Parquet libraries support `zstd`, because
+better compression makes for faster downloads.
 
-One interesting option is `brotli`, which often compresses 20-30% smaller than `zstd` but is slower. It is reaching wider
-adoption, so if you want to have the smallest possible files then it's worth considering. But for many access patterns
-it will be slower overall than `zstd`. There is an option to do 'uncompressed' files, but this is not recommended.
+`zstd` does have a nice ability to control compression, with options ranging up to 22. The cool thing is that
+decompression times are pretty constant with `zstd`, so if you're distributing data then it makes a lot of sense to spend
+a bit more time up to do a higher compression level. Then downloads will go faster, but it won't take clients longer
+to decompress. Many tools default to one of the lowest compression levels, indeed the core Apache Arrow library that
+many tools use defaults to 1. So our recommendation is generally to increase the compression level, particularly if you're
+making data for distribution. But don't bother to go all the way to 22 - the consensus seems to be that the levels 17 and
+above take _way_ longer, but the size gains are less than one percent. There is more research needed on this topic, but
+the current recommendation is to aim for something between 11 and 16.
 
 ### bbox covering
 
