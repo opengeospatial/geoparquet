@@ -50,7 +50,7 @@ GeoParquet 1.1 to ensure all tools know they can use the bbox column.
 The other new feature is the Native geometry encodings, based on GeoArrow. Using these will enable the same types of speed
 ups as the bbox covering, but will store the data more efficiently. Parquet readers will be able to use the min/max statistics
 directly from the geometry column, instead of needing the bbox column. For points this will be a big win, since the bbox
-for a point adds a good bit of overhead. But we do not yet recommend using the native encodings, since the tool support
+for a point adds some overhead. But we do not yet recommend using the native encodings, since the tool support
 isn't yet extensive enough to be sure that most clients will understand them. But as the ecosystem matures this will
 be a great option.
 
