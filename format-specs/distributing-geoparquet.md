@@ -200,7 +200,8 @@ LOAD spatial;
 COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet');
 ```
 
-DuckDB will automatically write GeoParquet as long as it's version 1.1 and above, the [spatial extension](https://duckdb.org/docs/extensions/spatial/overview.html)
+DuckDB will automatically write GeoParquet metadata for any output that contains a geometry column.
+See the [spatial extension](https://duckdb.org/docs/stable/core_extensions/spatial/overview.html)
 is enabled and the table has geometries The default compression is snappy, and the max row group size is 122,880. The bbox column is not added by default, and it is not spatially ordered by default.
 
 #### DuckDB with recommended settings
