@@ -72,8 +72,8 @@ queries (when using bbox covering or native arrow types). Most tools that provid
 A row group in Parquet is 'a logical horizontal partitioning of the data into rows', and there's some good explanation
 in [this article](https://medium.com/data-engineering-with-dremio/all-about-parquet-part-03-parquet-file-structure-pages-row-groups-and-columns-d7c7e54a8311). It ends up being important to
 get this right, since it will impact the performance of spatial queries. If the row group size is too big then the GeoParquet
-reader will not be able to 'skip' over large chunks of data, and if it's too small then the file metadata can get quite large,
-which can really slow things down if there are a lot of files.
+reader will not be able to 'skip' over large chunks of data and if it's too small then the file metadata can get large,
+which can slow things down if there are a lot of files.
 
 Unfortunately there's no single 'best' size for row groups, and it will depend on the size of the data and the access patterns.
 And the community is still learning what works best, so there's no solid recommendations at this point - hopefully we'll learn
