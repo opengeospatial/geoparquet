@@ -118,8 +118,8 @@ STAC Items linked to from the collection, with each item describing the bounding
 
 ## Exemplar Datasets
 
-At the time of writing there are a couple datasets that are fully following the recommendations above. They are provided
-here as reference, and as a way to see what it looks like when all the recommendations are followed.
+At the time of writing there are several datasets that are fully following the recommendations above. They are provided
+here as reference and as a way to see what it looks like when all the recommendations are followed.
 
 ### Overture
 
