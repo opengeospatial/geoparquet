@@ -64,7 +64,7 @@ all the spatial data for an area in chunks, or if data for the whole are appears
 <img alt="non-indexed load" height="300" src="https://miro.medium.com/v2/resize:fit:1400/format:webp/1*yugDd1ZjLG4lEwUZucRdmA.gif"> vs <img alt="indexed load" height="300" src="https://miro.medium.com/v2/resize:fit:1400/format:webp/1*-4wyoKgwFXpUnkLeziv5KA.gif"/>
 
 GeoParquet itself does not have a specific spatial index like other formats (R-tree in GeoPackage, Packed Hilbert R-tree in
-FlatGeobuf). Instead data can be indexed in any way, and then Parquet's Row Group statistics will be used to speed up spatial
+FlatGeobuf). Instead data can be ordered in any way, and then Parquet's Row Group statistics will be used to speed up spatial
 queries (when using bbox covering or native arrow types). Most tools that provide GeoParquet writers have some ability to apply a spatial index, the examples below will show how to do this for a few common tools.
 
 ### Row Group Size
