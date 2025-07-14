@@ -25,7 +25,7 @@ Parquet has built in compression, enabling users to directly use files that are 
 of other formats. You can easily change the compression algorithm, and new ones continue to be added.
 The default for most Parquet libraries is `snappy`, which excels at speed and gets good compression. More recently the
 `zstd` library has been added to the Parquet ecosystem, and it achieves a better compression ratio with similar speeds
-to snappy. So it is recommended to use `zstd`, since at this point most all Parquet libraries support `zstd`, because
+to snappy. So it is recommended to use `zstd`, since at this point most all Parquet libraries support `zstd` and because
 better compression makes for faster downloads.
 
 `zstd` does have a nice ability to control compression, with options ranging up to 22. The cool thing is that
