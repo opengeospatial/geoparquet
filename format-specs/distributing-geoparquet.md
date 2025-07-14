@@ -76,8 +76,8 @@ reader will not be able to 'skip' over large chunks of data and if it's too smal
 which can slow things down if there are a lot of files.
 
 Unfortunately there's no single 'best' size for row groups, and it will depend on the size of the data and the access patterns.
-And the community is still learning what works best, so there's no solid recommendations at this point - hopefully we'll learn
-more and update this section in the future. But right now most of the larger global datasets are being distributed with
+The community is still learning what works best, so there are no solid recommendations at this point - hopefully we'll learn
+more and update this section in the future. As of this writing there are several larger global datasets that are being distributed with
 row group sizes of 50,000 to 200,000 rows, so that's what we recommend as a starting point.
 
 Most geospatial tools give you the ability to set the maximum number of rows per row group, but some tools may let you set
