@@ -89,7 +89,7 @@ per row group.
 
 ### Spatial Partitioning
 
-One of the coolest features of Parquet is the ability to partition a large dataset into multiple files, as most every reader
+One of the useful features of Parquet is the ability to partition a large dataset into multiple files, as most readers
 can be pointed at a folder of files and it will read them as a single dataset. The reader will use the row group statistics
 to quickly figure out if a given file needs to be read, and multiple files can be read in parallel. So with spatial data,
 where most every query contains a spatial filter, partioning the data spatially can greatly accelerate the performance.
