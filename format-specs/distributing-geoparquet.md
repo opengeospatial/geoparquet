@@ -103,7 +103,7 @@ gigabytes. If it's smaller than that then the additional overhead of splitting i
 [great discussion](https://github.com/opengeospatial/geoparquet/discussions/251) on the topic, and an nice
 [blog post](https://dewey.dunnington.ca/post/2024/partitioning-strategies-for-bigger-than-memory-spatial-data/) with some
 further experimentation. The leading approach at the moment is to use a K-dimensional tree (KD-tree), which will enable
-nice balancing of the file sizes, but sorts based on S2, GeoHash or R-tree can all work. And partitioning [based on admin
+balancing of the file sizes and spatial separation; however, sorts based on S2, GeoHash or R-tree can all work. Partitioning [based on admin
 boundaries](https://medium.com/radiant-earth-insights/the-admin-partitioned-geoparquet-distribution-59f0ca1c6d96) is another
 approach that works, used in the [Google-Microsoft-OSM Buildings - combined by VIDA](https://source.coop/repositories/vida/google-microsoft-osm-open-buildings/description)
 dataset.
