@@ -84,7 +84,7 @@ Most geospatial tools give you the ability to set the maximum number of rows per
 the byte size for the row group. The core thing that really matters is the byte size for the row group, as that will be
 the amount of data that needs to be read (and moved over the network in cloud-native geo access patterns). So if your data
 rows are large then you'll want to set a smaller row group size, and if your rows are small it could make sense to go to the
-larger end of the spectrum. If you can set the byte size for row groups a common recommendation is to aim for 128mb - 256mb
+larger end of the spectrum. If you can set the byte size for row groups a common recommendation is to aim for 128MB - 256MB
 per row group.
 
 ### Spatial Partitioning
