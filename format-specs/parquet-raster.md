@@ -105,7 +105,7 @@ As a convention to maximize the interoperability, custom CRS values can be
 specified by a string of the format `type:value`, where `type` is one of
 the following values:
 
-* `srid`: [Spatial reference identifier](https://en.wikipedia.org/wiki/Spatial_reference_system#Identifier), `value` is the SRID itself.
+* `srid`: [Spatial reference identifier](https://spatialreference.org/projjson_index.json), `value` must be a valid code name from the EPSG authority.
 * `projjson`: [PROJJSON](https://proj.org/en/stable/specifications/projjson.html), `value` is the PROJJSON string.
 
 
