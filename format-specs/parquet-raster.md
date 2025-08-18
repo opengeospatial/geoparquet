@@ -101,12 +101,14 @@ The allowed URI schemes are:
 CRS is represented as a string value. Writer and reader implementations are
 responsible for serializing and deserializing the CRS, respectively.
 
-As a convention to maximize the interoperability, custom CRS values can be
-specified by a string of the format `type:value`, where `type` is one of
-the following values:
+To maximize interoperability, a CRS value SHOULD be specified using the format `authority_name:code`. This string (case-sensitive) must reference a CRS identifier from the [Spatial reference identifier](https://spatialreference.org/projjson_index.json) catalog.
 
-* `srid`: [Spatial reference identifier](https://en.wikipedia.org/wiki/Spatial_reference_system#Identifier), `value` is the SRID itself.
-* `projjson`: [PROJJSON](https://proj.org/en/stable/specifications/projjson.html), `value` is the PROJJSON string.
+While a custom CRS can be specified using a full [PROJJSON](https://proj.org/en/stable/specifications/projjson.html)
+string stored in this field, this approach is DISCOURAGED for performance reasons.
+Instead, it is RECOMMENDED to use a well-known CRS identifier whenever possible.
+
+If no CRS value is provided, the default is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84), which
+represents longitude, latitude coordinates based on the WGS84 datum.
 
 
 ## Metadata
