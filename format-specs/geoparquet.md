@@ -2,7 +2,7 @@
 
 ## Overview
 
-The [Apache Parquet](https://parquet.apache.org/) provides a standardized open-source columnar storage format. The GeoParquet specification originally defined how geospatial data should be stored in Parquet format, including the representation of geometries and the required additional metadata. As of version 2.11, released in March 2025, the Parquet format specifies [geospatial types and statistics](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md). The 2.0 version of the GeoParquet specification provides guidance for geospatial tools to implement Parquet Geometry and Geography types, along with some optional types not covered in the core Parquet specification. 
+The [Apache Parquet](https://parquet.apache.org/) provides a standardized open-source columnar storage format. The GeoParquet specification originally defined how geospatial data should be stored in Parquet format, including the representation of geometries and the required additional metadata. As of version 2.11, released in March 2025, the Parquet format specifies [geospatial types and statistics](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md). The 2.0 version of the GeoParquet specification provides guidance for geospatial tools to implement Parquet Geometry and Geography types, along with some optional types not covered in the core Parquet specification.
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt).
 
@@ -71,7 +71,7 @@ See below for additional details about representing or identifying OGC:CRS84.
 The value of this key may be explicitly set to `null` to indicate that there is no CRS assigned to this column (CRS is undefined or unknown).
 
 The `crs` field of GeoParquet MUST reflect the crs of the Parquet `crs` property on the GEOMETRY or GEOGRAPHY logical type. If the `srid`
-option is used in Parquet then it MUST reference a CRS identifier from the [Spatial reference identifier](https://spatialreference.org/projjson_index.json) catalog. The GeoParquet `crs` field MUST have the same projjson that is in the corresponding spatial reference identifier catalog. 
+option is used in Parquet then it MUST reference a CRS identifier from the [Spatial reference identifier](https://spatialreference.org/projjson_index.json) catalog. The GeoParquet `crs` field MUST have the same projjson that is in the corresponding spatial reference identifier catalog.
 
 #### epoch
 

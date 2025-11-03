@@ -6,7 +6,7 @@ default_language_version:
   python: python3
 
 # Optionally both commit and push
-default_stages: [commit]
+default_stages: [pre-commit]
 
 # Regex for files to exclude
 # Don't lint the generated JSON metadata files
@@ -14,7 +14,7 @@ exclude: "examples/.*json"
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
