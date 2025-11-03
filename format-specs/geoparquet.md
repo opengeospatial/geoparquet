@@ -2,19 +2,17 @@
 
 ## Overview
 
-The [Apache Parquet](https://parquet.apache.org/) provides a standardized open-source columnar storage format. The GeoParquet specification defines how geospatial data should be stored in parquet format, including the representation of geometries and the required additional metadata.
+The [Apache Parquet](https://parquet.apache.org/) provides a standardized open-source columnar storage format. The GeoParquet specification originally defined how geospatial data should be stored in Parquet format, including the representation of geometries and the required additional metadata. As of version 2.11, released in March 2025, the Parquet format specifies [geospatial types and statistics](https://github.com/apache/parquet-format/blob/master/Geospatial.md). The 2.0 version of the GeoParquet specification provides guidance for geospatial tools to implement Parquet Geometry and Geography types, along with some optional types not covered in the core Parquet specification. 
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt).
 
 ## Version and schema
 
-This is version 1.2.0-dev of the GeoParquet specification.  See the [JSON Schema](schema.json) to validate metadata for this version. See [Version Compatibility](#version-compatibility) for details on version compatibility guarantees.
+This is version 2.0-dev of the GeoParquet specification.  See the [JSON Schema](schema.json) to validate metadata for this version. See [Version Compatibility](#version-compatibility) for details on version compatibility guarantees.
 
 ## Geometry columns
 
-Geometry columns MUST be encoded as [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary) or using the single-geometry type encodings based on the [GeoArrow](https://geoarrow.org/) specification.
-
-See the [encoding](#encoding) section below for more details.
+Geometry columns MUST be encoded as either [`GEOMETRY`](https://github.com/apache/parquet-format/blob/master/LogicalTypes.md#geometry) or [`GEOGRAPHY`](https://github.com/apache/parquet-format/blob/master/LogicalTypes.md#geography) logical types in Parquet, which both annotate a BYTE_ARRAY that encodes geospatial features in the [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary) format.
 
 ### Nesting
 
@@ -49,15 +47,14 @@ Each geometry column in the dataset MUST be included in the `columns` field abov
 
 | Field Name     | Type         | Description |
 | -------------- | ------------ | ----------- |
-| encoding       | string       | **REQUIRED.** Name of the geometry encoding format. Currently `"WKB"`, `"point"`, `"linestring"`, `"polygon"`, `"multipoint"`, `"multilinestring"`, and `"multipolygon"` are supported. |
+| encoding       | string       | **REQUIRED.** Name of the geometry encoding format. Only `"WKB"` is supported. |
 | geometry_types | \[string]    | **REQUIRED.** The geometry types of all geometries, or an empty array if they are not known. |
 | crs            | object\|null | [PROJJSON](https://proj.org/specifications/projjson.html) object representing the Coordinate Reference System (CRS) of the geometry. If the field is not provided, the default CRS is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84), which means the data in this column must be stored in longitude, latitude based on the WGS84 datum. |
 | orientation    | string       | Winding order of exterior ring of polygons. If present must be `"counterclockwise"`; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order. |
-| edges          | string       | Name of the coordinate system for the edges. Must be one of `"planar"` or `"spherical"`. The default value is `"planar"`. |
+| edges          | string       | Name of the coordinate system for the edges. Must be one of `"planar"` or `"non-planar"`. The default value is `"planar"`. |
+| algorithm      | string       | Describes the edge interpolation algorithm for non-planar edge interpolation. Must be one of `SPHERICAL`, `VINCENTY`, `THOMAS`, `ANDOYER`, `KARNEY`. The default value is `SPHERICAL`
 | bbox           | \[number]    | Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
 | epoch          | number       | Coordinate epoch in case of a dynamic CRS, expressed as a decimal year. |
-| covering       | object       | Object containing bounding box column names to help accelerate spatial data retrieval |
-
 
 #### crs
 
@@ -69,11 +66,12 @@ If the `crs` key does not exist, all coordinates in the geometries MUST use long
 
 [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84) is equivalent to the well-known [EPSG:4326](https://epsg.org/crs_4326/WGS-84.html) but changes the axis from latitude-longitude to longitude-latitude.
 
-Due to the large number of CRSes available and the difficulty of implementing all of them, we expect that a number of implementations will start without support for the optional `crs` field. Users are recommended to store their data in longitude, latitude (OGC:CRS84 or not including the `crs` field) for it to work with the widest number of tools. Data that are more appropriately represented in particular projections may use an alternate coordinate reference system. We expect many tools will support alternate CRSes, but encourage users to check to ensure their chosen tool supports their chosen CRS.
-
 See below for additional details about representing or identifying OGC:CRS84.
 
 The value of this key may be explicitly set to `null` to indicate that there is no CRS assigned to this column (CRS is undefined or unknown).
+
+The `crs` field of GeoParquet MUST reflect the crs of the Parquet `crs` property on the GEOMETRY or GEOGRAPHY logical type. If the `srid`
+option is used in Parquet then it MUST reference a CRS identifier from the [Spatial reference identifier](https://spatialreference.org/projjson_index.json) catalog. The GeoParquet `crs` field MUST have the same projjson that is in the corresponding spatial reference identifier catalog. 
 
 #### epoch
 
@@ -83,78 +81,13 @@ The optional `epoch` field allows to specify this in case the `crs` field define
 
 #### encoding
 
-This is the memory layout used to encode geometries in the geometry column.
-Supported values:
+This is the memory layout used to encode geometries in the geometry column. The only supported value is `"WKB"`. This SHOULD be the ["OpenGIS® Implementation Specification for Geographic information - Simple feature access - Part 1: Common architecture"](https://portal.ogc.org/files/?artifact_id=18241) WKB representation. The [Parquet Geospatial Definitions](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md) provide full details on implementing the encoding and the Parquet logical types.
 
-- `"WKB"`
-- one of `"point"`, `"linestring"`, `"polygon"`, `"multipoint"`, `"multilinestring"`, `"multipolygon"`
-
-##### WKB
-
-The preferred option for maximum portability is `"WKB"`, signifying [Well Known Binary](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary). This SHOULD be the ["OpenGIS® Implementation Specification for Geographic information - Simple feature access - Part 1: Common architecture"](https://portal.ogc.org/files/?artifact_id=18241) WKB representation (using codes for 3D geometry types in the \[1001,1007\] range). This encoding is also consistent with the one defined in the ["ISO/IEC 13249-3:2016 (Information technology - Database languages - SQL multimedia and application packages - Part 3: Spatial)"](https://www.iso.org/standard/60343.html) standard.
-
-Note that the current version of the spec only allows for a subset of WKB: 2D or 3D geometries of the standard geometry types (the Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection geometry types). This means that M values or non-linear geometry types are not yet supported.
-
-WKB geometry columns MUST be stored using the `BYTE_ARRAY` parquet type.
-
-Implementation note: when using WKB encoding with the ecosystem of Arrow libraries, Parquet types such as `BYTE_ARRAY` might not be directly accessible. Instead, the corresponding Arrow data type can be `Arrow::Type::BINARY` (for arrays that whose elements can be indexed through a 32-bit index) or `Arrow::Type::LARGE_BINARY` (64-bit index). It is recommended that GeoParquet readers are compatible with both data types, and writers preferably use `Arrow::Type::BINARY` (thus limiting to row groups with content smaller than 2 GB) for larger compatibility.
-
-##### Native encodings (based on GeoArrow)
-
-Using the single-geometry type encodings (i.e., `"point"`, `"linestring"`, `"polygon"`, `"multipoint"`, `"multilinestring"`, `"multipolygon"`) may provide better performance and enable readers to leverage more features of the Parquet format to accelerate geospatial queries (e.g., row group-level min/max statistics). These encodings correspond to extension name suffix in the [GeoArrow metadata specification for extension names](https://geoarrow.org/extension-types#extension-names) to signify the memory layout used by the geometry column. GeoParquet uses the separated (struct) representation of coordinates for single-geometry type encodings because this encoding results in useful column statistics when row groups and/or files contain related features.
-
-The actual coordinates of the geometries MUST be stored as native numbers, i.e. using
-the `DOUBLE` parquet type in a (repeated) group of fields (exact repetition depending
-on the geometry type).
-
-For the `"point"` geometry type, this results in a struct of two fields for x
-and y coordinates (in case of 2D geometries):
-
-```
-// "point" geometry column as simple field with two child fields for x and y
-optional group geometry {
-  required double x;
-  required double y;
-}
-```
-
-For the other geometry types, those x and y coordinate values MUST be embedded
-in repeated groups (`LIST` logical parquet type). For example, for the
-`"multipolygon"` geometry type:
-
-```
-// "multipolygon" geometry column with multiple levels of nesting
-optional group geometry (List) {
-  // the parts of the MultiPolygon
-  repeated group list {
-    required group element (List) {
-      // the rings of one Polygon
-      repeated group list {
-        required group element (List) {
-          // the list of coordinates of one ring
-          repeated group list {
-            required group element {
-              required double x;
-              required double y;
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-There MUST NOT be any null values in the child fields and the x/y/z coordinate
-fields. Only the outer optional "geometry" group is allowed to have nulls (i.e
-representing a missing geometry). This MAY be indicated in the Parquet schema by
-using `required` group elements, as in the example above, but this is not
-required and `optional` fields are permitted (as long as the data itself does
-not contain any nulls).
+WKB geometry columns MUST be stored using the `BYTE_ARRAY` parquet type, with either a `GEOMETRY` or `GEOGRAPHY` logical type, as specified by the Parquet format.
 
 #### Coordinate axis order
 
-The axis order of the coordinates in WKB stored in a GeoParquet follows the de facto standard for axis order in WKB and is therefore always (x, y) where x is easting or longitude and y is northing or latitude. This ordering explicitly overrides the axis order as specified in the CRS. This follows the precedent of [GeoPackage](https://geopackage.org), see the [note in their spec](https://www.geopackage.org/spec130/#gpb_spec).
+The axis order of the coordinates in WKB stored in a GeoParquet follows the de facto standard for axis order in WKB and is therefore always (x, y) where x is easting or longitude and y is northing or latitude. This ordering explicitly overrides the axis order as specified in the CRS. This is aligned with [Parquet Coordinat Axis Order](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md#coordinate-axis-order).
 
 #### geometry_types
 
@@ -169,6 +102,8 @@ In addition, the following rules are used:
 
 It is expected that this field is strictly correct. For example, if having both polygons and multipolygons, it is not sufficient to specify `["MultiPolygon"]`, but it is expected to specify `["Polygon", "MultiPolygon"]`. Or if having 3D points, it is not sufficient to specify `["Point"]`, but it is expected to list `["Point Z"]`.
 
+These MUST match the corresponding [Geospatial Types](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md#geospatial-types) in the Parquet format.
+
 #### orientation
 
 This attribute indicates the winding order of polygons. The only available value is `"counterclockwise"`. All vertices of exterior polygon rings MUST be ordered in the counterclockwise direction and all interior rings MUST be ordered in the clockwise direction.
@@ -177,13 +112,13 @@ If no value is set, no assertions are made about winding order or consistency of
 
 Writers are encouraged but not required to set `orientation="counterclockwise"` for portability of the data within the broader ecosystem.
 
-It is RECOMMENDED to always set the orientation (to counterclockwise) if `edges` is `"spherical"` (see below).
+It is RECOMMENDED to always set the orientation (to counterclockwise) if `edges` is `"non-planar"` (see below).
 
 #### edges
 
 This attribute indicates how to interpret the edges of the geometries: whether the line between two points is a straight cartesian line or the shortest line on the sphere (geodesic line). Available values are:
 - `"planar"`: use a flat cartesian coordinate system.
-- `"spherical"`: use a spherical coordinate system and radius derived from the spheroid defined by the coordinate reference system.
+- `"non-planar"`: use a spherical coordinate system and radius derived from the spheroid defined by the coordinate reference system. The `algorithm` field further specifies how the edge interpolation is done.
 
 If no value is set, the default value to assume is `"planar"`.
 
@@ -198,38 +133,6 @@ The bbox, if specified, MUST be encoded with an array representing the range of 
 For non-geographic coordinate reference systems, the items in the bbox are minimum values for each dimension followed by maximum values for each dimension. For example, given geometries that have coordinates with two dimensions, the bbox would have the form `[<xmin>, <ymin>, <xmax>, <ymax>]`. For three dimensions, the bbox would have the form `[<xmin>, <ymin>, <zmin>, <xmax>, <ymax>, <zmax>]`.
 
 The bbox values MUST be in the same coordinate reference system as the geometry.
-
-#### covering
-
-The covering field specifies optional simplified representations of each geometry. The keys of the "covering" object MUST be a supported encoding. Currently the only supported encoding is "bbox" which specifies the names of [bounding box columns](#bounding-box-columns)
-
-Example:
-```
-"covering": {
-    "bbox": {
-        "xmin": ["bbox", "xmin"],
-        "ymin": ["bbox", "ymin"],
-        "xmax": ["bbox", "xmax"],
-        "ymax": ["bbox", "ymax"]
-    }
-}
-```
-
-##### bbox covering encoding
-
-Including a per-row bounding box can be useful for accelerating spatial queries by allowing consumers to inspect row group and page index bounding box summary statistics. Furthermore a bounding box may be used to avoid complex spatial operations by first checking for bounding box overlaps. This field captures the column name and fields containing the bounding box of the geometry for every row.
-
-The format of the `bbox` encoding is `{"xmin": ["column_name", "xmin"], "ymin": ["column_name", "ymin"], "xmax": ["column_name", "xmax"], "ymax": ["column_name", "ymax"]}`. The arrays represent Parquet schema paths for nested groups. In this example, `column_name` is a Parquet group with fields `xmin`, `ymin`, `xmax`, `ymax`. The value in `column_name` MUST exist in the Parquet file and meet the criteria in the [Bounding Box Column](#bounding-box-columns) definition. In order to constrain this value to a single bounding group field, the second item in each element MUST be `xmin`, `ymin`, etc. All values MUST use the same column name.
-
-The value specified in this field should not be confused with the top-level [`bbox`](#bbox) field which contains the single bounding box of this geometry over the whole GeoParquet file.
-
-Note: This technique to use the bounding box to improve spatial queries does not apply to geometries that cross the antimeridian. Such geometries are unsupported by this method.
-
-### Bounding Box Columns
-
-A bounding box column MUST be a Parquet group field with 4 or 6 child fields representing the geometry's coordinate range. For two-dimensional data, the child fields MUST be named `xmin`, `ymin`, `xmax`, and `ymax` and MUST be ordered in this same way. As with the top-level [`bbox`](#bbox) column, the values follow the GeoJSON specification (RFC 7946, section 5), which also describes how to represent the bbox for geometries that cross the antimeridian. For three dimensions the additional fields `zmin` and `zmax` MAY be present but are not required. If `zmin` is present then `zmax` MUST be present and vice versa. If `zmin` and `zmax` are present, the ordering of the child fields MUST be `xmin`, `ymin`, `zmin`, `xmax`, `ymax`, `zmax`. The fields MUST be of Parquet type `FLOAT` or `DOUBLE` and all columns MUST use the same type. The repetition of a bounding box column MUST match the geometry column's [repetition](#repetition). A row MUST contain a bounding box value if and only if the row contains a geometry value. In cases where the geometry is optional and a row does not contain a geometry value, the row MUST NOT contain a bounding box value.
-
-The bounding box column MUST be at the root of the schema. The bounding box column MUST NOT be nested in a group.
 
 ### Additional information
 
