@@ -2,7 +2,7 @@
 
 ## Overview
 
-The [Apache Parquet](https://parquet.apache.org/) provides a standardized open-source columnar storage format. The GeoParquet specification originally defined how geospatial data should be stored in Parquet format, including the representation of geometries and the required additional metadata. As of version 2.11, released in March 2025, the Parquet format specifies [geospatial types and statistics](https://github.com/apache/parquet-format/blob/master/Geospatial.md). The 2.0 version of the GeoParquet specification provides guidance for geospatial tools to implement Parquet Geometry and Geography types, along with some optional types not covered in the core Parquet specification. 
+The [Apache Parquet](https://parquet.apache.org/) provides a standardized open-source columnar storage format. The GeoParquet specification originally defined how geospatial data should be stored in Parquet format, including the representation of geometries and the required additional metadata. As of version 2.11, released in March 2025, the Parquet format specifies [geospatial types and statistics](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md). The 2.0 version of the GeoParquet specification provides guidance for geospatial tools to implement Parquet Geometry and Geography types, along with some optional types not covered in the core Parquet specification. 
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt).
 
@@ -12,7 +12,7 @@ This is version 2.0-dev of the GeoParquet specification.  See the [JSON Schema](
 
 ## Geometry columns
 
-Geometry columns MUST be encoded as either [`GEOMETRY`](https://github.com/apache/parquet-format/blob/master/LogicalTypes.md#geometry) or [`GEOGRAPHY`](https://github.com/apache/parquet-format/blob/master/LogicalTypes.md#geography) logical types in Parquet, which both annotate a BYTE_ARRAY that encodes geospatial features in the [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary) format.
+Geometry columns MUST be encoded as either [`GEOMETRY`](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/LogicalTypes.md#geometry) or [`GEOGRAPHY`](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/LogicalTypes.md#geography) logical types in Parquet, which both annotate a BYTE_ARRAY that encodes geospatial features in the [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary) format.
 
 ### Nesting
 
@@ -29,7 +29,7 @@ GeoParquet files include additional metadata at two levels:
 1. File metadata indicating things like the version of this specification used
 2. Column metadata with additional metadata for each geometry column
 
-A GeoParquet file MUST include a `geo` key in the Parquet metadata (see [`FileMetaData::key_value_metadata`](https://github.com/apache/parquet-format#metadata)).  The value of this key MUST be a JSON-encoded UTF-8 string representing the file and column metadata that validates against the [GeoParquet metadata schema](schema.json). The file and column metadata fields are described below.
+A GeoParquet file MUST include a `geo` key in the Parquet metadata (see [`FileMetaData::key_value_metadata`](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/README.md#metadata).  The value of this key MUST be a JSON-encoded UTF-8 string representing the file and column metadata that validates against the [GeoParquet metadata schema](schema.json). The file and column metadata fields are described below.
 
 ## File metadata
 
