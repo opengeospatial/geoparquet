@@ -51,8 +51,8 @@ Each geometry column in the dataset MUST be included in the `columns` field abov
 | geometry_types | \[string]    | **REQUIRED.** The geometry types of all geometries, or an empty array if they are not known. |
 | crs            | object\|null | [PROJJSON](https://proj.org/specifications/projjson.html) object representing the Coordinate Reference System (CRS) of the geometry. If the field is not provided, the default CRS is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84), which means the data in this column must be stored in longitude, latitude based on the WGS84 datum. |
 | orientation    | string       | Winding order of exterior ring of polygons. If present must be `"counterclockwise"`; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order. |
-| edges          | string       | Name of the coordinate system for the edges. Must be one of `"planar"` or `"non-planar"`. The default value is `"planar"`. |
-| algorithm      | string       | Describes the edge interpolation algorithm for non-planar edge interpolation. Must be one of `SPHERICAL`, `VINCENTY`, `THOMAS`, `ANDOYER`, `KARNEY`. The default value is `SPHERICAL`
+| edges          | string       | Name of the coordinate system for the edges. Must be one of `"planar"` or `"spherical"`. The default value is `"planar"`. |
+| algorithm      | string       | Describes the edge interpolation algorithm for non-planar edge interpolation. Must be one of `spherical`, `vincenty`, `thomas`, `andoyer`, `karney`. The default value is `spherical`.
 | bbox           | \[number]    | Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
 | epoch          | number       | Coordinate epoch in case of a dynamic CRS, expressed as a decimal year. |
 
@@ -70,8 +70,17 @@ See below for additional details about representing or identifying OGC:CRS84.
 
 The value of this key may be explicitly set to `null` to indicate that there is no CRS assigned to this column (CRS is undefined or unknown).
 
-The `crs` field of GeoParquet MUST reflect the crs of the Parquet `crs` property on the GEOMETRY or GEOGRAPHY logical type. If the `srid`
-option is used in Parquet then it MUST reference a CRS identifier from the [Spatial reference identifier](https://spatialreference.org/projjson_index.json) catalog. The GeoParquet `crs` field MUST have the same projjson that is in the corresponding spatial reference identifier catalog.
+The `crs` field of GeoParquet MUST reflect the crs of the Parquet `crs` property on the GEOMETRY or GEOGRAPHY logical type.
+
+##### `crs` Parquet property
+
+The Parquet Geospatial definitions have a [crs customization](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md#crs-customization) section
+that gives a ton of latitude for how to specify the crs.
+
+This latitude is narrowed for the GeoParquet 2.0 specification, and to comply with
+GeoParquet 2.0 if there is a non-default crs then the crs field in the Parquet geometry or geography type MUST be an in-line projjson representation of the crs. This is allowed by the Parquet specification, though it is not explicitly articulated.
+
+Readers of geospatial Parquet data SHOULD try to parse other crs representations in the Parquet metadata.
 
 #### epoch
 
@@ -118,11 +127,23 @@ It is RECOMMENDED to always set the orientation (to counterclockwise) if `edges`
 
 This attribute indicates how to interpret the edges of the geometries: whether the line between two points is a straight cartesian line or the shortest line on the sphere (geodesic line). Available values are:
 - `"planar"`: use a flat cartesian coordinate system.
-- `"non-planar"`: use a spherical coordinate system and radius derived from the spheroid defined by the coordinate reference system. The `algorithm` field further specifies how the edge interpolation is done.
+- `"spherical"`: use a spherical coordinate system and radius derived from the spheroid defined by the coordinate reference system. The `algorithm` field further specifies how the edge interpolation is done.
 
 If no value is set, the default value to assume is `"planar"`.
 
 Note if `edges` is `"spherical"` then it is RECOMMENDED that `orientation` is always ensured to be `"counterclockwise"`. If it is not set, it is not clear how polygons should be interpreted within spherical coordinate systems, which can lead to major analytical errors if interpreted incorrectly. In this case, software will typically interpret the rings of a polygon such that it encloses at most half of the sphere (i.e. the smallest polygon of both ways it could be interpreted). But the specification itself does not make any guarantee about this.
+
+#### algorithm
+
+This is the algorithm used for edge interpolation. Its values are defined in the
+[Edge Interpolation Algorithm](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md#edge-interpolation-algorithm
+) section of the Parquet Geospatial Definitions. They are listed here for reference:
+
+* `spherical`: edges are interpolated as geodesics on a sphere.
+* `vincenty`: [https://en.wikipedia.org/wiki/Vincenty%27s_formulae](https://en.wikipedia.org/wiki/Vincenty%27s_formulae)
+* `thomas`: Thomas, Paul D. Spheroidal geodesics, reference systems, & local geometry. US Naval Oceanographic Office, 1970.
+* `andoyer`: Thomas, Paul D. Mathematical models for navigation systems. US Naval Oceanographic Office, 1965.
+* `karney`: [Karney, Charles FF. "Algorithms for geodesics." Journal of Geodesy 87 (2013): 43-55](https://link.springer.com/content/pdf/10.1007/s00190-012-0578-z.pdf), and [GeographicLib](https://geographiclib.sourceforge.io/)
 
 #### bbox
 
