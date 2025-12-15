@@ -121,7 +121,7 @@ If no value is set, no assertions are made about winding order or consistency of
 
 Writers are encouraged but not required to set `orientation="counterclockwise"` for portability of the data within the broader ecosystem.
 
-It is RECOMMENDED to always set the orientation (to counterclockwise) if `edges` is `"non-planar"` (see below).
+It is RECOMMENDED to always set the orientation (to counterclockwise) if `edges` is `"spherical"` (see below).
 
 #### edges
 
