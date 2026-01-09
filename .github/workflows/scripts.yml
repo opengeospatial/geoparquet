@@ -18,6 +18,11 @@ jobs:
 
       - uses: astral-sh/setup-uv@v5
 
+      - name: Install geospatial dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libproj-dev libgdal-dev
+
       - name: Run scripts
         run: |
           cd scripts
