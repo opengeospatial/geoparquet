@@ -104,7 +104,9 @@ This field captures the geometry types of the geometries in the column, when kno
 
 In addition, the following rules are used:
 
-- In case of 3D geometries, a `" Z"` suffix gets added (e.g. `["Point Z"]`).
+- In case of 3D geometries (XYZ), a `" Z"` suffix gets added (e.g. `["Point Z"]`).
+- In case of measured geometries (XYM), a `" M"` suffix gets added (e.g. `["Point M"]`).
+- In case of 3D measured geometries (XYZM), a `" ZM"` suffix gets added (e.g. `["Point ZM"]`).
 - A list of multiple values indicates that multiple geometry types are present (e.g. `["Polygon", "MultiPolygon"]`).
 - An empty array explicitly signals that the geometry types are not known.
 - The geometry types in the list must be unique (e.g. `["Point", "Point"]` is not valid).
@@ -151,7 +153,11 @@ Bounding boxes are used to help define the spatial extent of each geometry colum
 
 The bbox, if specified, MUST be encoded with an array representing the range of values for each dimension in the geometry coordinates. For geometries in a geographic coordinate reference system, longitude and latitude values are listed for the most southwesterly coordinate followed by values for the most northeasterly coordinate. This follows the GeoJSON specification ([RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5)), which also describes how to represent the bbox for a set of geometries that cross the antimeridian.
 
-For non-geographic coordinate reference systems, the items in the bbox are minimum values for each dimension followed by maximum values for each dimension. For example, given geometries that have coordinates with two dimensions, the bbox would have the form `[<xmin>, <ymin>, <xmax>, <ymax>]`. For three dimensions, the bbox would have the form `[<xmin>, <ymin>, <zmin>, <xmax>, <ymax>, <zmax>]`.
+For non-geographic coordinate reference systems, the items in the bbox are minimum values for each dimension followed by maximum values for each dimension. For example:
+- XY (two dimensions): `[<xmin>, <ymin>, <xmax>, <ymax>]`
+- XYZ (three dimensions): `[<xmin>, <ymin>, <zmin>, <xmax>, <ymax>, <zmax>]`
+- XYM (two dimensions with measure): `[<xmin>, <ymin>, <mmin>, <xmax>, <ymax>, <mmax>]`
+- XYZM (three dimensions with measure): `[<xmin>, <ymin>, <zmin>, <mmin>, <xmax>, <ymax>, <zmax>, <mmax>]`
 
 The bbox values MUST be in the same coordinate reference system as the geometry.
 
