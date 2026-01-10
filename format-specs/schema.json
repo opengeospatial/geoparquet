@@ -30,7 +30,7 @@
               "uniqueItems": true,
               "items": {
                 "type": "string",
-                "pattern": "^(GeometryCollection|(Multi)?(Point|LineString|Polygon))( Z)?$"
+                "pattern": "^(GeometryCollection|(Multi)?(Point|LineString|Polygon))( Z| M| ZM)?$"
               }
             },
             "crs": {
@@ -45,11 +45,11 @@
             },
             "edges": {
               "type": "string",
-              "enum": ["planar", "non-planar"]
+              "enum": ["planar", "spherical"]
             },
             "algorithm": {
               "type": "string",
-              "enum": ["SPHERICAL", "VINCENTY", "THOMAS", "ANDOYER", "KARNEY"]
+              "enum": ["spherical", "vincenty", "thomas", "andoyer", "karney"]
             },
             "orientation": {
               "type": "string",
@@ -67,9 +67,14 @@
                   "maxItems": 4
                 },
                 {
-                  "description": "3D bbox consisting of (xmin, ymin, zmin, xmax, ymax, zmax)",
+                  "description": "3D bbox consisting of (xmin, ymin, zmin, xmax, ymax, zmax) or 2D+M bbox (xmin, ymin, mmin, xmax, ymax, mmax)",
                   "minItems": 6,
                   "maxItems": 6
+                },
+                {
+                  "description": "3D+M bbox consisting of (xmin, ymin, zmin, mmin, xmax, ymax, zmax, mmax)",
+                  "minItems": 8,
+                  "maxItems": 8
                 }
               ]
             },
