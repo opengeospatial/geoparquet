@@ -9,13 +9,14 @@ You can print the metadata with:
    >>> pprint.pprint(json.loads(pq.read_schema("example.parquet").metadata[b"geo"]))
 """
 
-from collections import OrderedDict
 import json
 import pathlib
 
 import pandas as pd
+import geoarrow.pyarrow as ga
 import geopandas
 import pyarrow as pa
+import math
 import pyarrow.parquet as pq
 
 HERE = pathlib.Path(__file__).parent
@@ -25,15 +26,7 @@ df = geopandas.GeoDataFrame(
     df, geometry=geopandas.GeoSeries.from_wkt(df.geometry, crs="OGC:CRS84")
 )
 
-geometry_bbox = df.bounds.rename(
-    OrderedDict(
-        [("minx", "xmin"), ("miny", "ymin"), ("maxx", "xmax"), ("maxy", "ymax")]
-    ),
-    axis=1,
-)
-df["bbox"] = geometry_bbox.to_dict("records")
-table = pa.Table.from_pandas(df.head().to_wkb())
-
+table = pa.table(df.to_arrow())
 
 def get_version() -> str:
     """Read the version const from the schema.json file"""
@@ -51,12 +44,25 @@ metadata = {
             "geometry_types": ["Polygon", "MultiPolygon"],
             "crs": json.loads(df.crs.to_json()),
             "edges": "planar",
-            "bbox": [round(x, 4) for x in df.total_bounds],
+            # If rounding, ensure the minimum values are rounded down and the
+            # maximum values are rounded up such that the bbox actually covers
+            # all features.
+            "bbox": [
+                math.floor(df.total_bounds[0] * 10000) / 10000,
+                math.floor(df.total_bounds[1] * 10000) / 10000,
+                math.ceil(df.total_bounds[2] * 10000) / 10000,
+                math.ceil(df.total_bounds[3] * 10000) / 10000,
+            ],
         },
     },
 }
 
-schema = table.schema.with_metadata({"geo": json.dumps(metadata)})
-table = table.cast(schema)
-
+table = table.replace_schema_metadata({"geo": json.dumps(metadata)})
 pq.write_table(table, HERE / "../examples/example.parquet")
+
+print("Output Parquet Schema ---")
+print(pq.ParquetFile(HERE / "../examples/example.parquet").schema)
+
+print("Output Parquet Key/Value Metadata ---")
+tab_check = pq.read_table(HERE / "../examples/example.parquet")
+print(tab_check.schema.metadata)
