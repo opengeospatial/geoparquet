@@ -44,15 +44,7 @@ metadata = {
             "geometry_types": ["Polygon", "MultiPolygon"],
             "crs": json.loads(df.crs.to_json()),
             "edges": "planar",
-            # If rounding, ensure the minimum values are rounded down and the
-            # maximum values are rounded up such that the bbox actually covers
-            # all features.
-            "bbox": [
-                math.floor(df.total_bounds[0] * 10000) / 10000,
-                math.floor(df.total_bounds[1] * 10000) / 10000,
-                math.ceil(df.total_bounds[2] * 10000) / 10000,
-                math.ceil(df.total_bounds[3] * 10000) / 10000,
-            ],
+            "bbox": list(df.total_bounds),
         },
     },
 }
