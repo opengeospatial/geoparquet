@@ -77,7 +77,7 @@ The `crs` field of GeoParquet MUST reflect the crs of the Parquet `crs` property
 The Parquet Geospatial definitions have a [crs customization](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md#crs-customization) section
 that gives flexibility for how to specify the crs.
 
-This latitude is narrowed for the GeoParquet 2.0 specification, and to comply with
+The GeoParquet 2.0 specification gives less flexibility. To comply with
 GeoParquet 2.0 if there is a non-default crs then the crs field in the Parquet geometry or geography type MUST be an in-line projjson representation of the crs. This is allowed by the Parquet specification, though it is not explicitly articulated.
 
 Readers of geospatial Parquet data SHOULD try to parse other crs representations in the Parquet metadata.
