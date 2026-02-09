@@ -157,8 +157,9 @@ The bbox, if specified, MUST be encoded with an array representing the range of 
 For non-geographic coordinate reference systems, the items in the bbox are minimum values for each dimension followed by maximum values for each dimension. For example:
 - XY (two dimensions): `[<xmin>, <ymin>, <xmax>, <ymax>]`
 - XYZ (three dimensions): `[<xmin>, <ymin>, <zmin>, <xmax>, <ymax>, <zmax>]`
-- XYM (two dimensions with measure): `[<xmin>, <ymin>, <mmin>, <xmax>, <ymax>, <mmax>]`
 - XYZM (three dimensions with measure): `[<xmin>, <ymin>, <zmin>, <mmin>, <xmax>, <ymax>, <zmax>, <mmax>]`
+
+It is not currently possible to specify M bounds without Z bounds using a GeoParquet metadata bbox: in this case, producers may produce an XY bounding box and omit M bounds. M bounds are typically encoded in Parquet statistics for consumers that benefit from this information.
 
 The bbox values MUST be in the same coordinate reference system as the geometry.
 
