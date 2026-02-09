@@ -51,8 +51,7 @@ Each geometry column in the dataset MUST be included in the `columns` field abov
 | geometry_types | \[string]    | **REQUIRED.** The geometry types of all geometries, or an empty array if they are not known. |
 | crs            | object\|null | [PROJJSON](https://proj.org/specifications/projjson.html) object representing the Coordinate Reference System (CRS) of the geometry. If the field is not provided, the default CRS is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84), which means the data in this column must be stored in longitude, latitude based on the WGS84 datum. |
 | orientation    | string       | Winding order of exterior ring of polygons. If present must be `"counterclockwise"`; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order. |
-| edges          | string       | Name of the coordinate system for the edges. Must be one of `"planar"` or `"spherical"`. The default value is `"planar"`. |
-| algorithm      | string       | Describes the edge interpolation algorithm for non-planar edge interpolation. Must be one of `spherical`, `vincenty`, `thomas`, `andoyer`, `karney`. The default value is `spherical`.
+| edges          | string       | Describes how to interpret the edges of the geometries. Must be one of `planar`, `spherical`, `vincenty`, `thomas`, `andoyer`, `karney`. The default value is `planar`.
 | bbox           | \[number]    | Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
 | epoch          | number       | Coordinate epoch in case of a dynamic CRS, expressed as a decimal year. |
 
@@ -129,12 +128,35 @@ It is RECOMMENDED to always set the orientation (to counterclockwise) if `edges`
 #### edges
 
 This attribute indicates how to interpret the edges of the geometries: whether the line between two points is a straight cartesian line or the shortest line on the sphere (geodesic line). Available values are:
-- `"planar"`: use a flat cartesian coordinate system.
-- `"spherical"`: use a spherical coordinate system and radius derived from the spheroid defined by the coordinate reference system. The `algorithm` field further specifies how the edge interpolation is done.
+ - `"planar"`: use a flat cartesian coordinate system.
+ - `"spherical"`: Edges in the longitude-latitude dimensions follow the
+    shortest distance between vertices approximated as the shortest distance
+    between the vertices on a perfect sphere. This edge interpretation is used by
+    [BigQuery Geography](https://cloud.google.com/bigquery/docs/geospatial-data#coordinate_systems_and_edges),
+    and [Snowflake Geography](https://docs.snowflake.com/en/sql-reference/data-types-geospatial).
+    A common library for interpreting edges in this way is
+    [Google's s2geometry](https://github.com/google/s2geometry); a common formula
+    for calculating distances along this trajectory is the
+    [Haversine Formula](https://en.wikipedia.org/wiki/Haversine_formula).
+  - `"vincenty"`: Edges in the longitude-latitude dimensions follow a path calculated
+    using [Vincenty's formula](https://en.wikipedia.org/wiki/Vincenty%27s_formulae) and
+    the ellipsoid specified by the `"crs"`.
+  - `"thomas"`:  Edges in the longitude-latitude dimensions follow a path calculated by
+    the fomula in Thomas, Paul D. Spheroidal geodesics, reference systems, & local geometry.
+    US Naval Oceanographic Office, 1970 using the ellipsoid specified by the `"crs"`.
+  - `"andoyer"`: Edges in the longitude-latitude dimensions follow a path calculated by
+    the fomula in Thomas, Paul D. Mathematical models for navigation systems. US Naval
+    Oceanographic Office, 1965 using the ellipsoid specified by the `"crs"`.
+  - `"karney"`: Edges in the longitude-latitude dimensions follow a path calculated by
+    the fomula in
+    [Karney, Charles FF. "Algorithms for geodesics." Journal of Geodesy 87 (2013): 43-55](https://link.springer.com/content/pdf/10.1007/s00190-012-0578-z.pdf)
+    and [GeographicLib](https://geographiclib.sourceforge.io/)
+    using the ellipsoid specified by the `"crs"`. GeographicLib available via modern
+    versions of PROJ.
 
 If no value is set, the default value to assume is `"planar"`.
 
-Note if `edges` is `"spherical"` then it is RECOMMENDED that `orientation` is always ensured to be `"counterclockwise"`. If it is not set, it is not clear how polygons should be interpreted within spherical coordinate systems, which can lead to major analytical errors if interpreted incorrectly. In this case, software will typically interpret the rings of a polygon such that it encloses at most half of the sphere (i.e. the smallest polygon of both ways it could be interpreted). But the specification itself does not make any guarantee about this.
+Note if `edges` is not `"planar"` then it is RECOMMENDED that `orientation` is always ensured to be `"counterclockwise"`. If it is not set, it is not clear how polygons should be interpreted within spherical coordinate systems, which can lead to major analytical errors if interpreted incorrectly. In this case, software will typically interpret the rings of a polygon such that it encloses at most half of the sphere (i.e. the smallest polygon of both ways it could be interpreted). But the specification itself does not make any guarantee about this.
 
 #### algorithm
 
