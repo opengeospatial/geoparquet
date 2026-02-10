@@ -151,7 +151,7 @@ This attribute indicates how to interpret the edges of the geometries: whether t
     the fomula in
     [Karney, Charles FF. "Algorithms for geodesics." Journal of Geodesy 87 (2013): 43-55](https://link.springer.com/content/pdf/10.1007/s00190-012-0578-z.pdf)
     and [GeographicLib](https://geographiclib.sourceforge.io/)
-    using the ellipsoid specified by the `"crs"`. GeographicLib available via modern
+    using the ellipsoid specified by the `"crs"`. GeographicLib is available via modern
     versions of PROJ.
 
 If no value is set, the default value to assume is `"planar"`.
