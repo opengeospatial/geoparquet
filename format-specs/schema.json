@@ -7,7 +7,7 @@
   "properties": {
     "version": {
       "type": "string",
-      "const": "1.2.0-dev"
+      "const": "2.0-dev"
     },
     "primary_column": {
       "type": "string",
@@ -23,22 +23,14 @@
           "properties": {
             "encoding": {
               "type": "string",
-              "enum": [
-                "WKB",
-                "point",
-                "linestring",
-                "polygon",
-                "multipoint",
-                "multilinestring",
-                "multipolygon"
-              ]
+              "const": "WKB"
             },
             "geometry_types": {
               "type": "array",
               "uniqueItems": true,
               "items": {
                 "type": "string",
-                "pattern": "^(GeometryCollection|(Multi)?(Point|LineString|Polygon))( Z)?$"
+                "pattern": "^(GeometryCollection|(Multi)?(Point|LineString|Polygon))( Z| M| ZM)?$"
               }
             },
             "crs": {
@@ -54,6 +46,10 @@
             "edges": {
               "type": "string",
               "enum": ["planar", "spherical"]
+            },
+            "algorithm": {
+              "type": "string",
+              "enum": ["spherical", "vincenty", "thomas", "andoyer", "karney"]
             },
             "orientation": {
               "type": "string",
@@ -71,64 +67,19 @@
                   "maxItems": 4
                 },
                 {
-                  "description": "3D bbox consisting of (xmin, ymin, zmin, xmax, ymax, zmax)",
+                  "description": "3D bbox consisting of (xmin, ymin, zmin, xmax, ymax, zmax) or 2D+M bbox (xmin, ymin, mmin, xmax, ymax, mmax)",
                   "minItems": 6,
                   "maxItems": 6
+                },
+                {
+                  "description": "3D+M bbox consisting of (xmin, ymin, zmin, mmin, xmax, ymax, zmax, mmax)",
+                  "minItems": 8,
+                  "maxItems": 8
                 }
               ]
             },
             "epoch": {
               "type": "number"
-            },
-            "covering": {
-              "type": "object",
-              "required": [
-                "bbox"
-              ],
-              "properties": {
-                "bbox": {
-                  "type": "object",
-                  "required": ["xmin", "xmax", "ymin", "ymax"],
-                  "properties": {
-                    "xmin": {
-                      "type": "array",
-                      "items": [
-                        { "type": "string", "minLength": 1 },
-                        { "const": "xmin" }
-                      ],
-                      "minItems": 2,
-                      "maxItems": 2
-                    },
-                    "xmax": {
-                      "type": "array",
-                      "items": [
-                        { "type": "string", "minLength": 1 },
-                        { "const": "xmax" }
-                      ],
-                      "minItems": 2,
-                      "maxItems": 2
-                    },
-                    "ymin": {
-                      "type": "array",
-                      "items": [
-                        { "type": "string", "minLength": 1 },
-                        { "const": "ymin" }
-                      ],
-                      "minItems": 2,
-                      "maxItems": 2
-                    },
-                    "ymax": {
-                      "type": "array",
-                      "items": [
-                        { "type": "string", "minLength": 1 },
-                        { "const": "ymax" }
-                      ],
-                      "minItems": 2,
-                      "maxItems": 2
-                    }
-                  }
-                }
-              }
             }
           }
         }

@@ -14,9 +14,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.12'
 
       - uses: astral-sh/setup-uv@v5
+
+      - name: Install geospatial dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libproj-dev libgdal-dev
 
       - name: Run scripts
         run: |
