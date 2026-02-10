@@ -158,18 +158,6 @@ If no value is set, the default value to assume is `"planar"`.
 
 Note if `edges` is not `"planar"` then it is RECOMMENDED that `orientation` is always ensured to be `"counterclockwise"`. If it is not set, it is not clear how polygons should be interpreted within spherical coordinate systems, which can lead to major analytical errors if interpreted incorrectly. In this case, software will typically interpret the rings of a polygon such that it encloses at most half of the sphere (i.e. the smallest polygon of both ways it could be interpreted). But the specification itself does not make any guarantee about this.
 
-#### algorithm
-
-This is the algorithm used for edge interpolation. Its values are defined in the
-[Edge Interpolation Algorithm](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md#edge-interpolation-algorithm
-) section of the Parquet Geospatial Definitions. They are listed here for reference:
-
-* `spherical`: edges are interpolated as geodesics on a sphere.
-* `vincenty`: [https://en.wikipedia.org/wiki/Vincenty%27s_formulae](https://en.wikipedia.org/wiki/Vincenty%27s_formulae)
-* `thomas`: Thomas, Paul D. Spheroidal geodesics, reference systems, & local geometry. US Naval Oceanographic Office, 1970.
-* `andoyer`: Thomas, Paul D. Mathematical models for navigation systems. US Naval Oceanographic Office, 1965.
-* `karney`: [Karney, Charles FF. "Algorithms for geodesics." Journal of Geodesy 87 (2013): 43-55](https://link.springer.com/content/pdf/10.1007/s00190-012-0578-z.pdf), and [GeographicLib](https://geographiclib.sourceforge.io/)
-
 #### bbox
 
 Bounding boxes are used to help define the spatial extent of each geometry column. Implementations of this schema may choose to use those bounding boxes to filter partitions (files) of a partitioned dataset.
