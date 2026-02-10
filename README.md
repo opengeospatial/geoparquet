@@ -20,6 +20,8 @@ The 'dev' versions of the spec are available in this repo:
 - [JSON Schema](format-specs/schema.json)
 - [Examples](examples/)
 
+The current dev version is 2.0, which is based on [Parquet Geospatial Logical Types](https://github.com/apache/parquet-format/blob/master/Geospatial.md). The Parquet format now includes core `geometry` and `geography` types and the GeoParquet 2.0 spec provides guidance for geospatial tools to the types, along with some optional metadata not covered in the core Parquet specification.
+
 ## Validating GeoParquet
 
 There are two tools that validate the metadata and the actual data. It is recommended to use one of them to ensure any GeoParquet you produce or are given is completely valid according to the specification:
