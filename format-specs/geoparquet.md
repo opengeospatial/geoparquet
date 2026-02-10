@@ -2,7 +2,7 @@
 
 ## Overview
 
-The [Apache Parquet](https://parquet.apache.org/) provides a standardized open-source columnar storage format. The GeoParquet specification originally defined how geospatial data should be stored in Parquet format, including the representation of geometries and the required additional metadata. As of Parquet version 2.11, released in March 2025, the Parquet format specifies [geospatial types and statistics](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md). The 2.0 version of the GeoParquet specification provides guidance for geospatial tools to implement Parquet Geometry and Geography types, along with some optional types not covered in the core Parquet specification.
+The [Apache Parquet](https://parquet.apache.org/) provides a standardized open-source columnar storage format. The GeoParquet specification originally defined how geospatial data should be stored in Parquet format, including the representation of geometries and the required additional metadata. As of Parquet version 2.11, released in March 2025, the Parquet format specifies [geospatial types and statistics](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md). The 2.0 version of the GeoParquet specification provides guidance for geospatial tools to implement Parquet Geometry and Geography types, along with some optional metadata not covered in the core Parquet specification.
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt).
 
