@@ -7,18 +7,31 @@ Test cases are generated on the fly, but if you want to have them written
 as .json files to inspect, run `python test_json_schema.py`
 
 """
+
 import copy
 import json
 import pathlib
-
-from jsonschema.validators import Draft7Validator
+import urllib.request
 
 import pytest
-
+from jsonschema.validators import Draft7Validator
+from referencing import Registry, Resource
 
 HERE = pathlib.Path(__file__).parent
 SCHEMA_SRC = HERE / ".." / "format-specs" / "schema.json"
 SCHEMA = json.loads(SCHEMA_SRC.read_text())
+
+
+def retrieve_remote_schema(uri: str) -> Resource:
+    """Retrieve a remote schema and return it as a Resource."""
+    with urllib.request.urlopen(uri) as response:
+        contents = json.load(response)
+    return Resource.from_contents(contents)
+
+
+# Create a registry that can retrieve the projjson schema referenced in schema.json
+PROJJSON_URI = "https://proj.org/schemas/v0.7/projjson.schema.json"
+REGISTRY = Registry(retrieve=retrieve_remote_schema)
 
 
 # # Define test cases
@@ -37,12 +50,7 @@ def get_version() -> str:
 metadata_template = {
     "version": get_version(),
     "primary_column": "geometry",
-    "columns": {
-        "geometry": {
-            "encoding": "WKB",
-            "geometry_types": []
-        }
-    },
+    "columns": {"geometry": {"encoding": "WKB", "geometry_types": []}},
 }
 
 
@@ -263,11 +271,10 @@ valid_cases["bbox_8_element"] = metadata
 
 # # Tests
 
-@pytest.mark.parametrize(
-    "metadata", valid_cases.values(), ids=valid_cases.keys()
-)
+
+@pytest.mark.parametrize("metadata", valid_cases.values(), ids=valid_cases.keys())
 def test_valid_schema(request, metadata):
-    errors = Draft7Validator(SCHEMA).iter_errors(metadata)
+    errors = Draft7Validator(SCHEMA, registry=REGISTRY).iter_errors(metadata)
 
     msgs = []
     valid = True
@@ -282,15 +289,14 @@ def test_valid_schema(request, metadata):
         raise AssertionError(
             f"Error while validating '{request.node.callspec.id}':\n"
             + json.dumps({"geo": metadata}, indent=2, sort_keys=True)
-            + "\n\nErrors:\n" + "\n".join(msgs)
+            + "\n\nErrors:\n"
+            + "\n".join(msgs)
         )
 
 
-@pytest.mark.parametrize(
-    "metadata", invalid_cases.values(), ids=invalid_cases.keys()
-)
+@pytest.mark.parametrize("metadata", invalid_cases.values(), ids=invalid_cases.keys())
 def test_invalid_schema(request, metadata):
-    errors = Draft7Validator(SCHEMA).iter_errors(metadata)
+    errors = Draft7Validator(SCHEMA, registry=REGISTRY).iter_errors(metadata)
 
     if not len(list(errors)):
         raise AssertionError(
