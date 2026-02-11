@@ -51,10 +51,3 @@ metadata = {
 
 table = table.replace_schema_metadata({"geo": json.dumps(metadata)})
 pq.write_table(table, HERE / "../examples/example.parquet")
-
-print("Output Parquet Schema ---")
-print(pq.ParquetFile(HERE / "../examples/example.parquet").schema)
-
-print("Output Parquet Key/Value Metadata ---")
-tab_check = pq.read_table(HERE / "../examples/example.parquet")
-print(tab_check.schema.metadata)
