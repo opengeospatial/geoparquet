@@ -22,16 +22,19 @@ SCHEMA_SRC = HERE / ".." / "format-specs" / "schema.json"
 SCHEMA = json.loads(SCHEMA_SRC.read_text())
 
 
-def retrieve_remote_schema(uri: str) -> Resource:
-    """Retrieve a remote schema and return it as a Resource."""
-    with urllib.request.urlopen(uri) as response:
-        contents = json.load(response)
-    return Resource.from_contents(contents)
+def fetch_remote_schema(uri: str) -> dict:
+    """Fetch a remote schema and return its contents."""
+    req = urllib.request.Request(uri, headers={"User-Agent": "geoparquet-tests"})
+    with urllib.request.urlopen(req) as response:
+        return json.load(response)
 
 
-# Create a registry that can retrieve the projjson schema referenced in schema.json
+# Pre-fetch the projjson schema and create a registry with it
 PROJJSON_URI = "https://proj.org/schemas/v0.7/projjson.schema.json"
-REGISTRY = Registry(retrieve=retrieve_remote_schema)
+projjson_schema = fetch_remote_schema(PROJJSON_URI)
+REGISTRY = Registry().with_resources(
+    [(PROJJSON_URI, Resource.from_contents(projjson_schema))]
+)
 
 
 # # Define test cases
