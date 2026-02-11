@@ -4,9 +4,9 @@
       "geometry": {
         "bbox": [
           -180.0,
-          -18.288,
+          -18.28799,
           180.0,
-          83.2332
+          83.23324000000001
         ],
         "crs": {
           "$schema": "https://proj.org/schemas/v0.7/projjson.schema.json",
