@@ -118,7 +118,7 @@ STAC Items linked to from the collection, with each item describing the bounding
 
 ## Usage in Frontend Applications
 
-While GeoParquet excels in analytics use cases, it can also be accessed directly from an object store within frontend applications. While GeoParquet is likely not the right choice for high throughput frontend applications, it can be a convenient way to access large geospatial datasets in a format that has more query flexibility than other cloud native geospatial formats like PMTiles or Flatgeobuf. In most frontend use cases, the [row group size](#row-group-size) should generally be significantly smaller than for analytics use cases. Large row groups increase the chance that you will fetch irrelevant data when running geospatial queries and add extra frontend update latency.
+While GeoParquet excels in analytics use cases, it can also be accessed directly from an object store within frontend applications. It can be a convenient way to access large geospatial datasets in a format that has more query flexibility than other cloud native geospatial formats like Flatgeobuf. In most frontend use cases, the [row group size](#row-group-size) should generally be significantly smaller than for analytics use cases. Large row groups increase the chance that you will fetch irrelevant data when running geospatial queries and add extra frontend update latency.
 
 In a frontend application with frequent bbox queries to inspect large datasets, row groups can be as small as a few megabytes, for instance around 2MB. When combined with [spatial partitioning](#spatial-partitioning) and [bbox covering](#bbox-covering), you can use queries against the `bbox` column to skip most irrelevant data and quickly render the data you care about.
 
