@@ -122,7 +122,7 @@ While GeoParquet excels in analytics use cases, it can also be accessed directly
 
 When creating a GeoParquet file for use in a frontend application you will need to decide on a tradeoff between frontend query latency and analytics performance. Many frontend applications only wish to display a subset of geospatial data within a bounding box. When using [bbox covering](#bbox-covering), you can use queries against the `bbox` column to skip most irrelevant data. In such cases, you should significantly reduce [row group size](#row-group-size). This is since large row groups increase the amount of irrelevant data (such as points outside the bounding box) that will be fetched when running geospatial queries and in doing so, add additional latency from network transfer.
 
-However, small row groups come at a tradeoff. Each row group contains metadata and the more groups the file has, the slower the speed of a full scan of all rows. In other words, small row groups decrease the performance of analytical queries like averages or sums. As such, if you wish to use the same GeoParquet file for both frontend displayand analytics, you need to optimize the row group size to strike a balance between the two depending on which use case is most important.
+However, small row groups come at a tradeoff. Each row group contains metadata and the more groups the file has, the slower the speed of a full scan of all rows. In other words, small row groups decrease the performance of analytical queries like averages or sums. As such, if you wish to use the same GeoParquet file for both frontend display and analytics, you need to optimize the row group size to strike a balance between the two depending on which use case is most important.
 
 ## Exemplar Datasets
 
