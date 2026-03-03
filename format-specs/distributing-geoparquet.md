@@ -116,6 +116,14 @@ GeoParquet files this should be very simple, just create a collection.json file 
 use `application/vnd.apache.parquet` as the media type. If the GeoParquet is partitioned then you can create individual
 STAC Items linked to from the collection, with each item describing the bounding box of the data in the file.
 
+## Usage in Frontend Applications
+
+While GeoParquet excels in analytics use cases, it can also be accessed directly from an object store within frontend applications. This can be a convenient way to losslessly access large geospatial datasets in a way that has more query flexibility than other cloud native geospatial formats like FlatGeobuf. For example, FlatGeobuf only provides an index on the geometry column, whereas GeoParquet has row group statistics on other columns.
+
+When creating a GeoParquet file for use in a frontend application you will need to decide your row group sizes, presenting a tradeoff between frontend query latency and analytics performance. Many frontend applications only wish to display a subset of geospatial data within a bounding box. When using [bbox covering](#bbox-covering), you can use queries against the `bbox` column to skip most irrelevant data. In such cases, you should significantly reduce [row group size](#row-group-size). This is since large row groups increase the amount of irrelevant data (such as points outside the bounding box) that will be fetched when running geospatial queries and in doing so, add additional latency from network transfer.
+
+However, small row groups come at a tradeoff. Each row group contains metadata and the more groups the file has, the slower the speed of a full scan of all rows. In other words, small row groups decrease the performance of analytical queries like averages or sums. As such, if you wish to use the same GeoParquet file for both frontend display and analytics, you need to optimize the row group size to strike a balance between the two depending on which use case is most important.
+
 ## Exemplar Datasets
 
 At the time of writing there are several datasets that are fully following the recommendations above. They are provided
