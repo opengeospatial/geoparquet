@@ -118,9 +118,11 @@ STAC Items linked to from the collection, with each item describing the bounding
 
 ## Usage in Frontend Applications
 
-While GeoParquet excels in analytics use cases, it can also be accessed directly from an object store within frontend applications. It can be a convenient way to access large geospatial datasets in a format that has more query flexibility than other cloud native geospatial formats like Flatgeobuf. In most frontend use cases, the [row group size](#row-group-size) should generally be significantly smaller than for analytics use cases. Large row groups increase the chance that you will fetch irrelevant data when running geospatial queries and add extra frontend update latency.
+While GeoParquet excels in analytics use cases, it can also be accessed directly from an object store within frontend applications. This can be a convenient way to losslessly access large geospatial datasets in a way that has more query flexibility than other cloud native geospatial formats like FlatGeobuf. For example, FlatGeobuf only provides an index on the geometry column, whereas GeoParquet has row group statistics on other columns.
 
-In a frontend application with frequent bbox queries to inspect large datasets, row groups can be as small as a few megabytes, for instance around 2MB. When combined with [spatial partitioning](#spatial-partitioning) and [bbox covering](#bbox-covering), you can use queries against the `bbox` column to skip most irrelevant data and quickly render the data you care about.
+When creating a GeoParquet file for use in a frontend application you will need to decide on a tradeoff between frontend query latency and analytics performance. Many frontend applications only wish to display a subset of geospatial data within a bounding box. When using [bbox covering](#bbox-covering), you can use queries against the `bbox` column to skip most irrelevant data. In such cases, you should significantly reduce [row group size](#row-group-size). This is since large row groups increase the amount of irrelevant data (such as points outside the bounding box) that will be fetched when running geospatial queries and in doing so, add additional latency from network transfer.
+
+However, small row groups come at a tradeoff. Each row group contains metadata and the more groups the file has, the slower the speed of a full scan of all rows. In other words, small row groups decrease the performance of analytical queries like averages or sums. As such, if you wish to use the same GeoParquet file for both frontend displayand analytics, you need to optimize the row group size to strike a balance between the two depending on which use case is most important.
 
 ## Exemplar Datasets
 
