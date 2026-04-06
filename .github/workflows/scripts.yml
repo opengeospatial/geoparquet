@@ -27,6 +27,7 @@ jobs:
         run: |
           cd scripts
           uv run pytest test_json_schema.py -v
+          uv run pytest test_example.py -v
           uv run python generate_example.py
           uv run python update_example_schemas.py
           cd ../examples
