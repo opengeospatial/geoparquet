@@ -8,16 +8,16 @@ You can print the metadata with:
    >>> import json, pprint, pyarrow.parquet as pq
    >>> pprint.pprint(json.loads(pq.read_schema("example.parquet").metadata[b"geo"]))
 """
+
 import json
 import pathlib
 import copy
 
+import geoarrow.pyarrow as ga
 import numpy as np
 import pyarrow as pa
 import pyarrow.parquet as pq
 from pyarrow.csv import write_csv
-
-from shapely import from_wkt, to_wkb
 
 
 HERE = pathlib.Path(__file__).parent
@@ -35,29 +35,35 @@ metadata_template = {
 }
 
 
-## Various geometry types with WKB and native (GeoArrow-based) encodings
+## Various geometry types
 
-def write_encoding_files(geometries_wkt, geometries_geoarrow, geometry_type):
+
+def write_encoding_files(geometries_wkt, geometry_type):
 
     table = pa.table({"col": range(len(geometries_wkt)), "geometry": geometries_wkt})
     write_csv(table, HERE / f"data-{geometry_type.lower()}-wkt.csv")
 
     # WKB encoding
     table = pa.table(
-        {"col": range(len(geometries_wkt)), "geometry": to_wkb(from_wkt(geometries_wkt))}
+        {
+            "col": range(len(geometries_wkt)),
+            "geometry": ga.as_wkb(geometries_wkt),
+        }
     )
     metadata = copy.deepcopy(metadata_template)
     metadata["columns"]["geometry"]["geometry_types"] = [geometry_type]
     table = table.replace_schema_metadata({"geo": json.dumps(metadata)})
-    pq.write_table(table, HERE / f"data-{geometry_type.lower()}-encoding_wkb.parquet")
+    out_file = HERE / f"data-{geometry_type.lower()}-encoding_wkb.parquet"
+    pq.write_table(table, out_file)
 
-    # native (geoarrow) encoding
-    table = pa.table(
-        {"col": range(len(geometries_wkt)), "geometry": geometries_geoarrow}
-    )
-    metadata["columns"]["geometry"]["encoding"] = geometry_type.lower()
-    table = table.replace_schema_metadata({"geo": json.dumps(metadata)})
-    pq.write_table(table, HERE / f"data-{geometry_type.lower()}-encoding_native.parquet")
+    # Check geometry logical type output
+    f = pq.ParquetFile(out_file)
+    geom_col_schema = f.schema.column(1)
+    logical_type = geom_col_schema.logical_type
+
+    assert logical_type is not None, "geometry column has no logical type"
+    logical_type_json = json.loads(logical_type.to_json())
+    assert logical_type_json["Type"] == "Geometry"
 
 
 # point
@@ -69,40 +75,13 @@ geometries_wkt = [
     "POINT (40 40)",
 ]
 
-point_type = pa.struct(
-    [
-        pa.field("x", pa.float64(), nullable=False),
-        pa.field("y", pa.float64(), nullable=False)
-    ]
-)
-geometries = pa.array(
-    [(30, 10), (float("nan"), float("nan")), (float("nan"), float("nan")), (40, 40)],
-    mask=np.array([False, False, True, False]),
-    type=point_type
-)
-
-write_encoding_files(
-    geometries_wkt, geometries, geometry_type="Point"
-)
+write_encoding_files(geometries_wkt, geometry_type="Point")
 
 # linestring
 
-geometries_wkt = [
-    "LINESTRING (30 10, 10 30, 40 40)",
-    "LINESTRING EMPTY",
-    None
-]
+geometries_wkt = ["LINESTRING (30 10, 10 30, 40 40)", "LINESTRING EMPTY", None]
 
-linestring_type = pa.list_(pa.field("vertices", point_type, nullable=False))
-geometries = pa.array(
-    [[(30, 10), (10, 30), (40, 40)], [], []],
-    mask=np.array([False, False, True]),
-    type=linestring_type
-)
-
-write_encoding_files(
-    geometries_wkt, geometries, geometry_type="LineString"
-)
+write_encoding_files(geometries_wkt, geometry_type="LineString")
 
 # polygon
 
@@ -113,26 +92,7 @@ geometries_wkt = [
     None,
 ]
 
-polygon_type = pa.list_(
-    pa.field("rings", pa.list_(
-        pa.field("vertices", point_type, nullable=False)
-    ), nullable=False)
-)
-geometries = pa.array(
-    [
-        [[(30, 10), (40, 40), (20, 40), (10, 20), (30, 10)]],
-        [[(35, 10), (45, 45), (15, 40), (10, 20), (35, 10)],
-         [(20, 30), (35, 35), (30, 20), (20, 30)]],
-        [],
-        [],
-    ],
-    mask=np.array([False, False, False, True]),
-    type=polygon_type
-)
-
-write_encoding_files(
-    geometries_wkt, geometries, geometry_type="Polygon"
-)
+write_encoding_files(geometries_wkt, geometry_type="Polygon")
 
 # multipoint
 
@@ -143,21 +103,7 @@ geometries_wkt = [
     None,
 ]
 
-multipoint_type = pa.list_(pa.field("points", point_type, nullable=False))
-geometries = pa.array(
-    [
-        [(30, 10)],
-        [(10, 40), (40, 30), (20, 20), (30, 10)],
-        [],
-        [],
-    ],
-    mask=np.array([False, False, False, True]),
-    type=multipoint_type
-)
-
-write_encoding_files(
-    geometries_wkt, geometries, geometry_type="MultiPoint"
-)
+write_encoding_files(geometries_wkt, geometry_type="MultiPoint")
 
 # multilinestring
 
@@ -168,24 +114,7 @@ geometries_wkt = [
     None,
 ]
 
-multilinestring_type = pa.list_(
-    pa.field("linestrings", linestring_type, nullable=False)
-)
-geometries = pa.array(
-    [
-        [[(30, 10), (10, 30), (40, 40)]],
-        [[(10, 10), (20, 20), (10, 40)],
-         [(40, 40), (30, 30), (40, 20), (30, 10)]],
-        [],
-        [],
-    ],
-    mask=np.array([False, False, False, True]),
-    type=multilinestring_type
-)
-
-write_encoding_files(
-    geometries_wkt, geometries, geometry_type="MultiLineString"
-)
+write_encoding_files(geometries_wkt, geometry_type="MultiLineString")
 
 # multipolygon
 
@@ -197,22 +126,4 @@ geometries_wkt = [
     None,
 ]
 
-multipolygon_type = pa.list_(pa.field("polygons", polygon_type, nullable=False))
-geometries = pa.array(
-    [
-        [[[(30, 10), (40, 40), (20, 40), (10, 20), (30, 10)]]],
-        [[[(30, 20), (45, 40), (10, 40), (30, 20)]],
-         [[(15, 5), (40, 10), (10, 20), (5, 10), (15, 5)]]],
-        [[[(40, 40), (20, 45), (45, 30), (40, 40)]],
-         [[(20, 35), (10, 30), (10, 10), (30, 5), (45, 20), (20, 35)],
-          [(30, 20), (20, 15), (20, 25), (30, 20)]]],
-        [],
-        [],
-    ],
-    mask=np.array([False, False, False, False, True]),
-    type=multipolygon_type
-)
-
-write_encoding_files(
-    geometries_wkt, geometries, geometry_type="MultiPolygon"
-)
+write_encoding_files(geometries_wkt, geometry_type="MultiPolygon")

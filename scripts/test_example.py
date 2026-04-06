@@ -49,7 +49,7 @@ class TestExampleParquet:
         return get_geo_metadata(parquet_file)
 
     def test_file_exists(self):
-        assert EXAMPLE_PARQUET.exists(), f"Example file not found: {EXAMPLE_PARQUET}"
+        assert EXAMPLE_PARQUET.exists()
 
     def test_has_geo_metadata(self, geo_metadata):
         assert geo_metadata is not None
@@ -61,7 +61,6 @@ class TestExampleParquet:
         assert errors == []
 
     def test_has_version(self, geo_metadata):
-        """Verify version field exists and matches schema."""
         assert "version" in geo_metadata
         # Version should match the const in schema.json
         expected_version = SCHEMA["properties"]["version"]["const"]
@@ -70,12 +69,10 @@ class TestExampleParquet:
         )
 
     def test_has_primary_column(self, geo_metadata):
-        """Verify primary_column field exists."""
         assert "primary_column" in geo_metadata
         assert geo_metadata["primary_column"] == "geometry"
 
     def test_has_columns(self, geo_metadata):
-        """Verify columns field exists and contains primary column."""
         assert "columns" in geo_metadata
         primary = geo_metadata["primary_column"]
         assert primary in geo_metadata["columns"], (
@@ -83,13 +80,11 @@ class TestExampleParquet:
         )
 
     def test_geometry_column_has_encoding(self, geo_metadata):
-        """Verify geometry column has valid encoding."""
         geom_col = geo_metadata["columns"]["geometry"]
         assert "encoding" in geom_col
         assert geom_col["encoding"] == "WKB"
 
     def test_geometry_column_has_geometry_types(self, geo_metadata):
-        """Verify geometry column has geometry_types."""
         geom_col = geo_metadata["columns"]["geometry"]
         assert geom_col["geometry_types"] == ["Polygon", "MultiPolygon"]
 
@@ -112,16 +107,13 @@ class TestParquetSchema:
 
     @pytest.fixture(scope="class")
     def parquet_file(self):
-        """Open example.parquet as ParquetFile."""
         return pq.ParquetFile(EXAMPLE_PARQUET)
 
     @pytest.fixture(scope="class")
     def geo_metadata(self, parquet_file):
-        """Load geo metadata from example.parquet."""
         return get_geo_metadata(parquet_file)
 
     def test_geometry_has_geometry_logical_type(self, parquet_file):
-        """Verify geometry column has Parquet GEOMETRY logical type."""
         # Find geometry column index
         column_names = parquet_file.schema.names
         assert "geometry" in column_names, "geometry column not found in schema"
