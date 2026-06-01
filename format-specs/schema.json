@@ -39,6 +39,11 @@
                   "$ref": "https://proj.org/schemas/v0.7/projjson.schema.json"
                 },
                 {
+                  "type": "string",
+                  "description": "An <authority>:<code> CRS reference (e.g. 'OGC:CRS84', 'EPSG:4326', 'EPSG:3857', 'IGNF:ATI').",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*:[A-Za-z0-9_.-]+$"
+                },
+                {
                   "type": "null"
                 }
               ]
