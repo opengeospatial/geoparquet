@@ -49,7 +49,7 @@ Each geometry column in the dataset MUST be included in the `columns` field abov
 | -------------- | ------------ | ----------- |
 | encoding       | string       | **REQUIRED.** Name of the geometry encoding format. Only `"WKB"` is supported. |
 | geometry_types | \[string]    | **REQUIRED.** The geometry types of all geometries, or an empty array if they are not known. |
-| crs            | object\|null | [PROJJSON](https://proj.org/specifications/projjson.html) object representing the Coordinate Reference System (CRS) of the geometry. If the field is not provided, the default CRS is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84), which means the data in this column must be stored in longitude, latitude based on the WGS84 datum. |
+| crs            | object\|string\|null | [PROJJSON](https://proj.org/specifications/projjson.html) object, or an `<authority>:<code>` string (e.g. `"EPSG:4326"`), representing the Coordinate Reference System (CRS) of the geometry. The value MUST equal the Parquet logical-type `crs` property in the same form. If the field is not provided, the default CRS is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84), which means the data in this column must be stored in longitude, latitude based on the WGS84 datum. |
 | orientation    | string       | Winding order of exterior ring of polygons. If present must be `"counterclockwise"`; interior rings are wound in opposite order. If absent, no assertions are made regarding the winding order. |
 | edges          | string       | Describes how to interpret the edges of the geometries. Must be one of `planar`, `spherical`, `vincenty`, `thomas`, `andoyer`, `karney`. The default value is `planar`.
 | bbox           | \[number]    | Bounding Box of the geometries in the file, formatted according to [RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5). |
@@ -59,27 +59,49 @@ Each geometry column in the dataset MUST be included in the `columns` field abov
 
 The Coordinate Reference System (CRS) is an optional parameter for each geometry column defined in GeoParquet format.
 
-The CRS MUST be provided in [PROJJSON](https://proj.org/specifications/projjson.html) format, which is a JSON encoding of [WKT2:2019 / ISO-19162:2019](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html), which itself implements the model of [OGC Topic 2: Referencing by coordinates abstract specification / ISO-19111:2019](http://docs.opengeospatial.org/as/18-005r4/18-005r4.html). Apart from the difference of encodings, the semantics are intended to match WKT2:2019, and a CRS in one encoding can generally be represented in the other.
+In GeoParquet 2.0 the CRS is carried both on the Parquet `GEOMETRY`/`GEOGRAPHY` logical type's `crs` property and (mirrored) on the GeoParquet column-metadata `crs` field. The two MUST be equal and MUST be in the same form.
+
+The CRS MAY be expressed in one of two forms:
+
+1. **Inline [PROJJSON](https://proj.org/specifications/projjson.html)** — a complete CRS definition, which is a JSON encoding of [WKT2:2019 / ISO-19162:2019](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html), itself implementing the model of [OGC Topic 2: Referencing by coordinates abstract specification / ISO-19111:2019](http://docs.opengeospatial.org/as/18-005r4/18-005r4.html). This is the canonical form.
+2. **An `<authority>:<code>` string** — e.g. `"OGC:CRS84"`, `"EPSG:4326"`, `"EPSG:3857"`, `"IGNF:ATI"`. The authority and code MUST be one published by a recognized CRS authority (well-known authorities include OGC, EPSG, ESRI, and IGNF; see <https://spatialreference.org/> for an index).
 
 If the `crs` key does not exist, all coordinates in the geometries MUST use longitude, latitude based on the WGS84 datum, and the default value is [OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84) for CRS-aware implementations. Note that a missing `crs` key has different meaning than a `crs` key set to `null` (see below).
 
-[OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84) is equivalent to the well-known [EPSG:4326](https://epsg.org/crs_4326/WGS-84.html) but changes the axis from latitude-longitude to longitude-latitude.
+[OGC:CRS84](https://www.opengis.net/def/crs/OGC/1.3/CRS84) is equivalent to the well-known [EPSG:4326](https://epsg.org/crs_4326/WGS-84.html) but changes the axis from latitude-longitude to longitude-latitude. See below for additional details about representing or identifying OGC:CRS84, including when it arrives as an `<authority>:<code>` string rather than as PROJJSON.
 
-See below for additional details about representing or identifying OGC:CRS84.
-
-The value of this key may be explicitly set to `null` to indicate that there is no CRS assigned to this column (CRS is undefined or unknown).
-
-The `crs` field of GeoParquet MUST reflect the crs of the Parquet `crs` property on the GEOMETRY or GEOGRAPHY logical type.
+The value of this key may be explicitly set to `null` to indicate that there is no CRS assigned to this column (CRS is undefined or unknown). Because the Parquet core specification has no native way to express "no CRS" (an absent Parquet `crs` defaults to OGC:CRS84), a writer that sets the GeoParquet column-metadata `crs` to `null` MUST omit the Parquet logical-type `crs` property; the GeoParquet `null` is authoritative and overrides Parquet's default-to-OGC:CRS84 interpretation in this case.
 
 ##### `crs` Parquet property
 
-The Parquet Geospatial definitions have a [crs customization](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md#crs-customization) section
-that gives flexibility for how to specify the crs.
+The Parquet Geospatial definitions have a [crs customization](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md#crs-customization) section that permits four forms: inline PROJJSON, `<authority>:<code>`, `srid:<identifier>`, and `projjson:<key_name>`.
 
-The GeoParquet 2.0 specification gives less flexibility. To comply with
-GeoParquet 2.0 if there is a non-default crs then the crs field in the Parquet geometry or geography type MUST be an in-line projjson representation of the crs. This is allowed by the Parquet specification, though it is not explicitly articulated.
+GeoParquet 2.0 is more restrictive:
 
-Readers of geospatial Parquet data SHOULD try to parse other crs representations in the Parquet metadata.
+- A GeoParquet 2.0 writer MUST use one of:
+  - inline PROJJSON, or
+  - an `<authority>:<code>` string.
+- A GeoParquet 2.0 writer MUST NOT use `srid:<identifier>` (no authority context; ambiguous across systems) or `projjson:<key_name>` (indirect reference via another metadata key; no ergonomic benefit over inline PROJJSON).
+- A GeoParquet 2.0 writer SHOULD prefer inline PROJJSON. It is self-describing, requires no external CRS registry, and matches the GeoParquet 1.x convention.
+- A GeoParquet 2.0 writer MAY use `<authority>:<code>` when:
+  - the CRS is precisely identified by a well-known authority entry, AND
+  - the writing environment lacks a PROJJSON generator (e.g., pure-SQL pipelines, lightweight browser-side writers), OR
+  - reducing per-file metadata size is desirable (e.g., very many very small files).
+
+A GeoParquet 2.0 reader MUST handle both writer-permitted forms (inline PROJJSON and `<authority>:<code>`).
+
+Readers of geospatial Parquet data SHOULD additionally try to parse the other Parquet-core `crs` representations (`srid:<identifier>` and `projjson:<key_name>`) when encountered. Such files are not conformant GeoParquet 2.0, but supporting them improves interoperability with the broader Parquet geospatial ecosystem.
+
+The GeoParquet column-metadata `crs` field and the Parquet logical-type `crs` property MUST mirror each other exactly:
+
+| Parquet logical-type `crs`              | GeoParquet column-metadata `crs`           | Meaning                                       |
+| --------------------------------------- | ------------------------------------------ | --------------------------------------------- |
+| absent (Parquet default)                | absent                                     | OGC:CRS84                                     |
+| inline PROJJSON object                  | the same inline PROJJSON object            | CRS fully described in metadata               |
+| `<authority>:<code>` string             | the same `<authority>:<code>` string       | CRS identified by authority code              |
+| absent (writer signaling "no CRS")      | `null`                                     | CRS explicitly undefined / unknown            |
+
+The two fields MUST NOT disagree in form (one being PROJJSON while the other is `<authority>:<code>`) or in value.
 
 #### epoch
 
@@ -231,6 +253,8 @@ The CRS is likely equivalent to OGC:CRS84 for a GeoParquet file if the `id` elem
 It is reasonable for implementations to require that one of the above `id` elements are present and skip further tests to determine if the CRS is functionally equivalent with OGC:CRS84.
 
 Note: EPSG:4326 and OGC:CRS84 are equivalent with respect to this specification because this specification specifically overrides the coordinate axis order in the `crs` to be longitude-latitude.
+
+When the CRS arrives in the `<authority>:<code>` form, the values `"OGC:CRS84"` and `"EPSG:4326"` are likewise equivalent to OGC:CRS84 for the purposes of this specification.
 
 ## Version Compatibility
 

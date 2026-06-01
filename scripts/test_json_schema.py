@@ -156,15 +156,59 @@ metadata["columns"]["geometry"]["geometry_types"] = ["PointZ"]
 invalid_cases["geometry_type_z_missing_space"] = metadata
 
 
-# CRS - explicit null
+# CRS - explicit null (kept in 2.0 pending separate `null`-deprecation discussion)
 
 metadata = copy.deepcopy(metadata_template)
 metadata["columns"]["geometry"]["crs"] = None
 valid_cases["crs_null"] = metadata
 
+# CRS - <authority>:<code> string (new in 2.0)
+
 metadata = copy.deepcopy(metadata_template)
 metadata["columns"]["geometry"]["crs"] = "EPSG:4326"
-invalid_cases["crs_string"] = metadata
+valid_cases["crs_authority_code_epsg_4326"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["crs"] = "OGC:CRS84"
+valid_cases["crs_authority_code_ogc_crs84"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["crs"] = "EPSG:3857"
+valid_cases["crs_authority_code_epsg_3857"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["crs"] = "IGNF:ATI"
+valid_cases["crs_authority_code_ignf_ati"] = metadata
+
+# CRS - malformed strings MUST NOT validate
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["crs"] = ""
+invalid_cases["crs_string_empty"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["crs"] = "EPSG"
+invalid_cases["crs_string_no_colon"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["crs"] = ":4326"
+invalid_cases["crs_string_leading_colon"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["crs"] = "EPSG:"
+invalid_cases["crs_string_trailing_colon"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["crs"] = "EPSG/4326"
+invalid_cases["crs_string_wrong_separator"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["crs"] = "123:4326"  # authority must start with a letter
+invalid_cases["crs_string_numeric_authority"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["crs"] = "urn:ogc:def:crs:EPSG::4326"  # extra colons not allowed
+invalid_cases["crs_string_urn_form"] = metadata
 
 
 # Bbox
