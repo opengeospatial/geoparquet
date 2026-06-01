@@ -156,11 +156,11 @@ metadata["columns"]["geometry"]["geometry_types"] = ["PointZ"]
 invalid_cases["geometry_type_z_missing_space"] = metadata
 
 
-# CRS - explicit null (kept in 2.0 pending separate `null`-deprecation discussion)
+# CRS - explicit null is no longer permitted in 2.0
 
 metadata = copy.deepcopy(metadata_template)
 metadata["columns"]["geometry"]["crs"] = None
-valid_cases["crs_null"] = metadata
+invalid_cases["crs_null"] = metadata
 
 # CRS - <authority>:<code> string (new in 2.0)
 
