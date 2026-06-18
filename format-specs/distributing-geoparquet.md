@@ -119,8 +119,8 @@ boundaries](https://medium.com/radiant-earth-insights/the-admin-partitioned-geop
 approach that works and is used in the [Google-Microsoft-OSM Buildings - combined by VIDA](https://source.coop/repositories/vida/google-microsoft-osm-open-buildings/description)
 dataset.
 
-See [Spatial Partitioning in the tools guide](distributing-geoparquet-tools.md#spatial-partitioning) for how to do this with
-DuckDB, gpio, and Sedona.
+See the [tools guide](distributing-geoparquet-tools.md#examples-in-common-tools) for how to do this with GDAL, DuckDB, gpio,
+and Sedona.
 
 ### Use STAC metadata
 
@@ -130,7 +130,10 @@ GeoParquet files this should be very simple, just create a collection.json file 
 use `application/vnd.apache.parquet` as the media type. If the GeoParquet is partitioned then you can create individual
 STAC Items linked to from the collection, with each item describing the bounding box of the data in the file.
 
-See [STAC Metadata in the tools guide](distributing-geoparquet-tools.md#stac-metadata) for tools that help write it.
+The [geoparquet-io](distributing-geoparquet-tools.md#geoparquet-io) tool can generate STAC Items and Collections from GeoParquet
+files. You can also write STAC by hand for one or two files, or use a library like [rustac](https://github.com/stac-utils/rustac)
+or [pystac](https://pystac.readthedocs.io/en/stable/) to do it programmatically, populating fields like the bbox from the
+GeoParquet files directly.
 
 ## Usage in Frontend Applications
 

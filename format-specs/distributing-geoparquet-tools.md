@@ -6,10 +6,9 @@ recommendations — compression, spatial ordering, row group size, spatial parti
 
 ## Examples in common tools
 
-This section will discuss what each tool does by default, and show any additional options
-needed to follow the [distribution recommendations](distributing-geoparquet.md). STAC metadata and spatial partitioning have
-their own sections below, since there are fewer tools that can do it, but most any of
-the other tools can be used to prep the data.
+This section discusses what each tool does by default, and shows the additional options needed to follow the
+[distribution recommendations](distributing-geoparquet.md), including spatial partitioning and STAC metadata where the tool
+supports them.
 
 ### GDAL/OGR
 
@@ -25,7 +24,7 @@ option to spatially order the data that works by creating a temporary GeoPackage
 using its r-tree spatial index. It defaults to false since it can be an intensive operation,
 and GDAL is usually translating from formats that already have spatial indexes.
 
-### GDAL/OGR with recommended settings
+#### GDAL/OGR with recommended settings
 
 These examples are done with the `ogr2ogr command-line tool, but the layer creation options
 will be the same calling from C or Python.
@@ -76,6 +75,22 @@ ogr2ogr out.parquet -lco USE_PARQUET_GEO_TYPES=ONLY -lco "COMPRESSION=ZSTD" -lco
 > CRS is only on the native Parquet type rather than restated as PROJJSON in the `geo` metadata). It is plain Parquet with native
 > geospatial types — readable by GeoParquet 2.0 readers, but not a self-described GeoParquet file. Switch to a dedicated 2.0 mode
 > once GDAL adds one.
+
+#### Spatial partitioning
+
+GDAL is a flexible tool that can split a dataset into multiple files with `gdal vector partition`. It partitions on the values of
+one or more fields (`--field`), writing a `hive` or `flat` directory layout, and can bound the output with `--max-file-size` or
+`--feature-limit`:
+
+```
+gdal vector partition in.parquet out_dir --field region --max-file-size 1GB
+```
+
+GDAL does not compute a spatial partitioning scheme on its own, but you can partition spatially by first adding a column that
+encodes a spatial grouping — an admin region, geohash, or grid cell — and partitioning on that field. `gdal vector sort` can
+spatially order the features beforehand so each partition stays compact.
+
+GDAL does not write STAC metadata.
 
 ### DuckDB
 
@@ -144,6 +159,29 @@ COPY (
 DuckDB 1.5 and later preserves CRS information when you read GeoParquet in and write it back out. Earlier versions dropped the
 CRS metadata on write, so if you are on an older DuckDB you may need to add the CRS back in with tools like GDAL or QGIS.
 
+#### Spatial partitioning
+
+DuckDB can write a hive-partitioned dataset with `COPY ... PARTITION_BY`. To partition *spatially*, compute a spatial grid cell
+for each row and partition on it. The [a5](https://github.com/Query-farm/a5) DuckDB community extension provides a global,
+equal-area cell grid that works well for this:
+
+```
+INSTALL a5 FROM community; LOAD a5;
+INSTALL spatial; LOAD spatial;
+COPY (
+    SELECT *, a5_u64_to_hex(a5_lonlat_to_cell(ST_X(geometry), ST_Y(geometry), 3)) AS a5_cell
+    FROM   geo_table
+) TO 'partitioned' (FORMAT 'parquet', PARTITION_BY a5_cell, GEOPARQUET_VERSION 'V2', COMPRESSION 'zstd');
+```
+
+Choose the a5 resolution to target a reasonable number of features per partition for your data. For non-point geometries, derive
+the cell from a representative point such as `ST_Centroid(geometry)`. You can also sort within each partition by `ST_Hilbert` for
+tighter row-group bounds. For other approaches, see [this gist using a KD-tree](https://gist.github.com/jwass/8e9b6c16902a05ae66b9688f1a5bb4ff)
+and [this blog post](https://dewey.dunnington.ca/post/2024/partitioning-strategies-for-bigger-than-memory-spatial-data/) that
+discusses the KD-tree along with other options (r-tree, s2 cells).
+
+DuckDB does not write STAC metadata.
+
 ### geoparquet-io
 
 [geoparquet-io](https://geoparquet.io) is a command-line tool, built on DuckDB, that is designed to apply the
@@ -171,37 +209,41 @@ with geospatial statistics and omits the `bbox` column:
 gpio convert geoparquet input.gpkg output.parquet --geoparquet-version 2.0
 ```
 
-gpio also handles other steps covered in this guide, including spatial partitioning (`gpio partition kdtree`), adding
-partitioning columns such as H3 or admin divisions (`gpio add`), generating STAC metadata and uploading
-(`gpio publish`), and validating existing files (`gpio check all`).
+#### Spatial partitioning
 
-### Additional Tools
+gpio partitions large datasets with `gpio partition`, which supports KD-tree, quadkey, S2, H3, A5, and
+[admin](https://medium.com/radiant-earth-insights/the-admin-partitioned-geoparquet-distribution-59f0ca1c6d96) schemes. The
+KD-tree scheme auto-selects a partition count targeting ~120,000 rows per file, and adds the partition column for you if it is
+missing:
 
-We hope to get more discussion of additional tools that follow the same format as DuckDB and OGR/GDAL, especially Sedona, GPQ,
-GeoPandas, QGIS and Esri. But we'll aim to add those later as their own PR's - contributions are very welcome.
+```
+gpio partition kdtree input.parquet output/
+gpio partition kdtree input.parquet output/ --partitions 32
+```
 
-## STAC Metadata
+The `gpio add` commands can also add just the partitioning column (for example `gpio add h3` or `gpio add admin-divisions`) if
+you want to partition or sort on it yourself.
 
-None of the tools to write GeoParquet currently write out STAC Metadata, but that makes sense, as they don't write out other
-metadata formats either. To write STAC metadata you can write it by hand if you've just got one or two GeoParquet files. If you've
-got more then the best option is to use something like [rustac](https://github.com/stac-utils/rustac) or
-[pystac](https://pystac.readthedocs.io/en/stable/) to do it a bit more programmatically. You should be able to populate some
-of the STAC fields like bbox from the GeoParquet files directly.
+#### STAC metadata
 
-## Spatial Partitioning
+gpio generates STAC with `gpio publish stac`. A single file produces a STAC Item; a partitioned directory produces a STAC
+Collection plus per-file Items written alongside the data, following STAC best practices:
 
-Most tools don't yet provide any way to do automatic spatial partitioning across files, when you have larger datasets.
-Many people are finding success using DuckDB, since it's a very flexible tool for manipulating data. For some pointers see
-[this gist using kdtree](https://gist.github.com/jwass/8e9b6c16902a05ae66b9688f1a5bb4ff) and
-[this blog post](https://dewey.dunnington.ca/post/2024/partitioning-strategies-for-bigger-than-memory-spatial-data/) that
-discusses the kdtree, along with some other options (r-tree, s2 cells).
+```
+# Single file -> STAC Item
+gpio publish stac input.parquet item.json --bucket s3://my-bucket/roads/
 
-The [gpio](https://geoparquet.io) tool (see its section above) can add columns to partition on and then perform the partitions,
-supporting KD-tree, quadkey, S2, H3, A5, and [admin](https://medium.com/radiant-earth-insights/the-admin-partitioned-geoparquet-distribution-59f0ca1c6d96)
-partitioning (e.g. `gpio partition kdtree`).
+# Partitioned dataset -> Collection + per-file Items
+gpio publish stac partitions/ . --bucket s3://my-bucket/roads/
+```
 
-The solution that is currently one of the most 'out of the box' option is Sedona, with its
-[Spatial RDD's](https://sedona.apache.org/latest/tutorial/rdd/). The following code takes you through using it to write out partitions by kdtree.
+You can upload the data (and its STAC) to object storage with `gpio publish upload`, and validate any file with `gpio check all`.
+
+### Sedona
+
+[Apache Sedona](https://sedona.apache.org/) is one of the most 'out of the box' options for spatially partitioning large
+datasets, using its [Spatial RDDs](https://sedona.apache.org/latest/tutorial/rdd/). The following code writes out partitions by
+KD-tree:
 
 ```python
 import glob
@@ -258,3 +300,12 @@ df_partitioned.write.format("geoparquet").mode("overwrite").save(
 files = glob.glob("buildings_partitioned/*.parquet")
 len(files)
 ```
+
+Only spatial partitioning is documented here for now. Sedona can do much more for producing distribution-ready GeoParquet
+(compression, row group size, GeoParquet version, etc.) — documenting those settings still needs a PR, and contributions are
+very welcome.
+
+### Additional Tools
+
+We hope to get more discussion of additional tools that follow the same format as the ones above, especially GPQ,
+GeoPandas, QGIS and Esri. But we'll aim to add those later as their own PR's - contributions are very welcome.
