@@ -11,7 +11,7 @@ Later sections will go deep into the reasoning and nuances behind these options,
 just looking to be sure you get the basics right then this section may be sufficient.
 And if you're building a tool or library then consider these as good defaults.
 
- * Use zstd for compression, and set the compression level to 15.
+ * Use zstd for compression, at compression level 15 or higher — go as high as you have time for.
  * Use GeoParquet 2.0, which stores geometries in the native Parquet `GEOMETRY`/`GEOGRAPHY` types. These carry built-in geospatial statistics (a bounding box per column chunk), giving efficient spatial access without the extra `bbox` column that 1.1 required.
  * Spatially order the data within the file.
  * Set the maximum row group size between 50,000 and 150,000 per row.
@@ -32,10 +32,11 @@ better compression makes for faster downloads.
 decompression times are pretty constant with `zstd`, so if you're distributing data then it makes a lot of sense to spend
 a bit more time up to do a higher compression level. Then downloads will go faster, but it won't take clients longer
 to decompress. Many tools default to one of the lowest compression levels, indeed the core Apache Arrow library that
-many tools use defaults to 1. So our recommendation is generally to increase the compression level, particularly if you're
-making data for distribution. But don't bother to go all the way to 22 - the consensus seems to be that the levels 17 and
-above take _way_ longer, but the size gains are less than one percent. There is more research needed on this topic, but
-the current recommendation is to aim for something between 11 and 16.
+many tools use defaults to 1. So our recommendation is to use at least level 15, and generally to go as high as you have time
+for, particularly if you're making data for distribution. The one caveat is that the highest levels have steeply diminishing
+returns - the consensus is that levels 17 and above take _way_ longer while the size gains are less than one percent - so going
+all the way to 22 is rarely worth it. But since clients pay no penalty on decompression, if compression time isn't a concern
+it's nice to push it as high as you can.
 
 ### Efficient spatial access
 
@@ -301,11 +302,12 @@ COPY (
 DuckDB 1.5 and later preserves CRS information when you read GeoParquet in and write it back out. Earlier versions dropped the
 CRS metadata on write, so if you are on an older DuckDB you may need to add the CRS back in with tools like GDAL or QGIS.
 
-### gpio (geoparquet-io)
+### geoparquet-io
 
-[gpio](https://geoparquet.io) is a command-line tool, built on DuckDB, that is designed to apply the recommendations in this
-guide by default — it exists specifically to make 'good' GeoParquet without having to remember all the options. Install it from
-PyPI (the package is `geoparquet-io`):
+[geoparquet-io](https://geoparquet.io) is a command-line tool, built on DuckDB, that is designed to apply the recommendations in this
+guide by default — it exists specifically to make 'good' GeoParquet without having to remember all the options. It produces fully
+compliant GeoParquet that follows every recommendation here; the one area still being finalized is 2.0 output, so by default it
+writes GeoParquet 1.1. Install it from PyPI (the package is `geoparquet-io`):
 
 ```
 pipx install geoparquet-io   # or: pip install geoparquet-io
@@ -318,7 +320,7 @@ row groups, then validates the result:
 gpio convert geoparquet input.gpkg output.parquet
 ```
 
-By default it writes GeoParquet 1.1 (it auto-detects from the input, preserving the input's version and upgrading native geo
+It defaults to writing GeoParquet 1.1 (it auto-detects from the input, preserving the input's version and upgrading native geo
 types to 2.0). Pass `--geoparquet-version 2.0` to write GeoParquet 2.0, which stores the geometry in the native Parquet types
 with geospatial statistics and omits the `bbox` column:
 
