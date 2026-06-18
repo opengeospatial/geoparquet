@@ -12,7 +12,7 @@ just looking to be sure you get the basics right then this section may be suffic
 And if you're building a tool or library then consider these as good defaults.
 
  * Use zstd for compression, and set the compression level to 15.
- * Be sure to include the [bbox covering](https://github.com/opengeospatial/geoparquet/blob/v1.1.0/format-specs/geoparquet.md#bbox-covering-encoding), and use GeoParquet version 1.1.
+ * Use GeoParquet 2.0, which stores geometries in the native Parquet `GEOMETRY`/`GEOGRAPHY` types. These carry built-in geospatial statistics (a bounding box per column chunk), giving efficient spatial access without the extra `bbox` column that 1.1 required.
  * Spatially order the data within the file.
  * Set the maximum row group size between 50,000 and 150,000 per row.
  * If the data is larger than ~2 gigabytes consider spatially partitioning the files.
@@ -37,27 +37,33 @@ making data for distribution. But don't bother to go all the way to 22 - the con
 above take _way_ longer, but the size gains are less than one percent. There is more research needed on this topic, but
 the current recommendation is to aim for something between 11 and 16.
 
-### bbox covering
+### Efficient spatial access
 
-GeoParquet 1.1 included a couple new features that help with spatial indexing and querying. The easiest one to use is the
-bbox covering, which adds a column called `bbox` that contains the bounding box of each geometry as a native Parquet 'struct'
-of four values. This enables Parquet readers to quickly filter rows based on the bounding box, and thus greatly increasing
-the performance of spatial queries. The bbox column by itself is not sufficient to speed up spatial queries - for that
-you'll need to be sure to follow the next two recommendations. But be sure to include it. It is possible for some tools to
-make use of the bbox column even if the GeoParquet version is not 1.1, but it's best to actually distribute the files with
-GeoParquet 1.1 to ensure all tools know they can use the bbox column.
+In GeoParquet 2.0 the geometry column is stored using the native Parquet
+[`GEOMETRY`/`GEOGRAPHY`](https://github.com/apache/parquet-format/blob/master/Geospatial.md) logical types. Parquet writes
+[geospatial statistics](https://github.com/apache/parquet-format/blob/master/Geospatial.md#geospatial-statistics) for these
+columns — most importantly a bounding box for each column chunk (row group). Readers use these statistics to quickly skip any
+row group whose bounding box does not intersect a query's area of interest, which greatly increases the performance of spatial
+queries. This is the same kind of speedup that the GeoParquet 1.1 `bbox` covering provided, but it comes built in to the
+geometry column, so **you no longer need to add a separate `bbox` column**.
 
-The other new feature is the Native geometry encodings, based on GeoArrow. Using these will enable the same types of speed
-ups as the bbox covering, but will store the data more efficiently. Parquet readers will be able to use the min/max statistics
-directly from the geometry column, instead of needing the bbox column. For points this will be a big win, since the bbox
-for a point adds some overhead. But we do not yet recommend using the native encodings, since the tool support
-isn't yet extensive enough to be sure that most clients will understand them. But as the ecosystem matures this will
-be a great option.
+Dropping the `bbox` column also makes files smaller. The 1.1 covering added a Parquet `struct` of four values to every row; for
+point datasets that overhead is especially large, since the four-value box is bigger than the point it describes. With the native
+geospatial statistics you get efficient spatial filtering and a smaller file.
+
+As with the `bbox` column, these statistics only help if the data is spatially ordered and the row groups are sized sensibly —
+see the next two sections. Statistics are per row group, so the row group is the unit at which a reader can skip data spatially.
+
+> [!NOTE]
+> The earlier [`bbox` covering](https://github.com/opengeospatial/geoparquet/blob/v1.1.0/format-specs/geoparquet.md#bbox-covering-encoding)
+> from GeoParquet 1.1 remains a valid way to enable spatial filtering, and may still be worth including if you need to reach
+> readers that do not yet understand the native Parquet geospatial statistics. If you go that route, distribute the files as
+> GeoParquet 1.1 so that all tools know they can use the `bbox` column.
 
 ### Spatial Ordering
 
-It is essential to make sure that the data is spatially ordered in some way within the file, in order for the bbox column
-to be used effectively. If the GeoParquet data was converted from a GIS format like GeoPackage or Shapefile then often
+It is essential to make sure that the data is spatially ordered in some way within the file, in order for the row group
+statistics to be used effectively. If the GeoParquet data was converted from a GIS format like GeoPackage or Shapefile then often
 it will already by spatially ordered. One way to check this is to open the file in a GIS tool and see if the data loads
 all the spatial data for an area in chunks, or if data for the whole are appears and continues to load everywhere.
 
@@ -65,7 +71,7 @@ all the spatial data for an area in chunks, or if data for the whole are appears
 
 GeoParquet itself does not have a specific spatial index like other formats (R-tree in GeoPackage, Packed Hilbert R-tree in
 FlatGeobuf). Instead data can be ordered in any way, and then Parquet's Row Group statistics will be used to speed up spatial
-queries (when using bbox covering or native arrow types). Most tools that provide GeoParquet writers have some ability to apply a spatial ordering. The examples below will show how to do this for a few common tools.
+queries (using the native geometry statistics, or a `bbox` covering column). Most tools that provide GeoParquet writers have some ability to apply a spatial ordering. The examples below will show how to do this for a few common tools.
 
 ### Row Group Size
 
@@ -120,7 +126,7 @@ STAC Items linked to from the collection, with each item describing the bounding
 
 While GeoParquet excels in analytics use cases, it can also be accessed directly from an object store within frontend applications. This can be a convenient way to losslessly access large geospatial datasets in a way that has more query flexibility than other cloud native geospatial formats like FlatGeobuf. For example, FlatGeobuf only provides an index on the geometry column, whereas GeoParquet has row group statistics on other columns.
 
-When creating a GeoParquet file for use in a frontend application you will need to decide your row group sizes, presenting a tradeoff between frontend query latency and analytics performance. Many frontend applications only wish to display a subset of geospatial data within a bounding box. When using [bbox covering](#bbox-covering), you can use queries against the `bbox` column to skip most irrelevant data. In such cases, you should significantly reduce [row group size](#row-group-size). This is since large row groups increase the amount of irrelevant data (such as points outside the bounding box) that will be fetched when running geospatial queries and in doing so, add additional latency from network transfer.
+When creating a GeoParquet file for use in a frontend application you will need to decide your row group sizes, presenting a tradeoff between frontend query latency and analytics performance. Many frontend applications only wish to display a subset of geospatial data within a bounding box. The native [geospatial statistics](#efficient-spatial-access) on the geometry column let a reader skip any row group that does not intersect the requested bounding box. Because those statistics are per row group, the row group is the unit at which irrelevant data can be skipped, so for this access pattern you should significantly reduce [row group size](#row-group-size). This is since large row groups increase the amount of irrelevant data (such as points outside the bounding box) that will be fetched when running geospatial queries and in doing so, add additional latency from network transfer.
 
 However, small row groups come at a tradeoff. Each row group contains metadata and the more groups the file has, the slower the speed of a full scan of all rows. In other words, small row groups decrease the performance of analytical queries like averages or sums. As such, if you wish to use the same GeoParquet file for both frontend display and analytics, you need to optimize the row group size to strike a balance between the two depending on which use case is most important.
 
