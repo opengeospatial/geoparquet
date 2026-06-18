@@ -10,17 +10,17 @@ Initial work started in the [geo-arrow-spec](https://github.com/geoarrow/geoarro
 Arrow work in a compatible way, with this specification focused solely on Parquet. We are in the process of becoming an [OGC](https://ogc.org) official
 [Standards Working Group](https://portal.ogc.org/files/103450) and are on the path to be a full OGC standard.
 
-**The latest [stable specification](https://geoparquet.org/releases/v1.1.0/) and [JSON schema](https://geoparquet.org/releases/v1.1.0/schema.json) are published at [geoparquet.org/releases/](https://geoparquet.org/releases/).**
+**The latest [stable specification](https://geoparquet.org/releases/v2.0.0/) and [JSON schema](https://geoparquet.org/releases/v2.0.0/schema.json) are published at [geoparquet.org/releases/](https://geoparquet.org/releases/).**
 
 **The community has agreed on this release, but it is still pending OGC approval.** We are currently working on the process to get it officially OGC approved as soon as possible. The OGC candidate Standard is at [https://docs.ogc.org/DRAFTS/24-013.html](https://docs.ogc.org/DRAFTS/24-013.html). The candidate Standard remains in draft form until it is approved as a Standard by the OGC Membership. Released versions of GeoParquet will not be changed, so if changes are needed for OGC approval, it will be released with a new version number.
 
 The 'dev' versions of the spec are available in this repo:
 
-- [**Specification**](format-specs/geoparquet.md) (dev version - not stable, go to the [stable specification](https://geoparquet.org/releases/v1.1.0/) instead)
+- [**Specification**](format-specs/geoparquet.md) (dev version - not stable, go to the [stable specification](https://geoparquet.org/releases/v2.0.0/) instead)
 - [JSON Schema](format-specs/schema.json)
 - [Examples](examples/)
 
-The current dev version is 2.0, which is based on [Parquet Geospatial Logical Types](https://github.com/apache/parquet-format/blob/master/Geospatial.md). The Parquet format now includes core `geometry` and `geography` types and the GeoParquet 2.0 spec provides guidance for geospatial tools to the types, along with some optional metadata not covered in the core Parquet specification.
+The latest version is 2.0, which is based on [Parquet Geospatial Logical Types](https://github.com/apache/parquet-format/blob/master/Geospatial.md). The Parquet format now includes core `geometry` and `geography` types and the GeoParquet 2.0 spec provides guidance for geospatial tools to the types, along with some optional metadata not covered in the core Parquet specification.
 
 ## Validating GeoParquet
 
