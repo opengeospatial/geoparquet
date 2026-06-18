@@ -52,7 +52,8 @@ point datasets that overhead is especially large, since the four-value box is bi
 geospatial statistics you get efficient spatial filtering and a smaller file.
 
 As with the `bbox` column, these statistics only help if the data is spatially ordered and the row groups are sized sensibly —
-see the next two sections. Statistics are per row group, so the row group is the unit at which a reader can skip data spatially.
+see the next two sections. Statistics are per row group, so the row group is the unit at which a reader can skip data spatially;
+see [Further Discussion: page-level spatial statistics](#page-level-spatial-statistics) for ongoing exploration of finer-grained pruning.
 
 > [!NOTE]
 > The earlier [`bbox` covering](https://github.com/opengeospatial/geoparquet/blob/v1.1.0/format-specs/geoparquet.md#bbox-covering-encoding)
@@ -138,7 +139,8 @@ here as reference and as a way to see what it looks like when all the recommenda
 ### Overture
 
 [Overture Maps](https://overturemaps.org/) provides a number of different 'themes' of data in well-organized GeoParquet files, with larger datasets. See [their documentation](https://docs.overturemaps.org/getting-data/) for instructions on how to get
-the data. Their buildings data is more than 2.2 billion rows, and follows all the core recommendations above. The row group
+the data. Their buildings data is more than 2.2 billion rows. It is distributed as GeoParquet 1.1 and follows the core
+recommendations for that version. The row group
 size seems to be around 150,000, and it's zstd compressed with the bbox column, ordered by a GeoHash. The data is partitioned
 spatially, see [this discussion comment](https://github.com/opengeospatial/geoparquet/discussions/251#discussioncomment-11478379)
 for more details.
@@ -175,7 +177,7 @@ ogr2ogr out.parquet in.geojson
 ```
 
 Out of the box GDAL/OGR defaults to snappy compression, with max row group size of 65536.
-Version 3.9 and later will write out the bbox column by default. And there is a built-in
+Version 3.9 and later will write out the `bbox` column by default, producing GeoParquet 1.1. And there is a built-in
 option to spatially order the data that works by creating a temporary GeoPackage file and
 using its r-tree spatial index. It defaults to false since it can be an intensive operation,
 and GDAL is usually translating from formats that already have spatial indexes.
@@ -206,31 +208,71 @@ ogr2ogr out.parquet -lco SORT_BY_BBOX=YES -lco "COMPRESSION=ZSTD" in.geojson
 This operation writes the data to a GeoPackage as an interim step, so it can take additional storage and computation, especially
 with large files, so it's not enabled by default.
 
+#### Writing native geometry types
+
+As of this writing GDAL does not yet write GeoParquet 2.0 metadata — by default it produces GeoParquet 1.1 with a `bbox`
+covering column. GDAL 3.12 and above (built against libarrow 21 or later) does, however, let you write the native Parquet
+`GEOMETRY`/`GEOGRAPHY` logical types via the `USE_PARQUET_GEO_TYPES` layer creation option, which takes `NO` (the default),
+`YES`, or `ONLY`:
+
+* `YES` adds the native geometry logical types **but still** writes GeoParquet 1.1 metadata and the redundant `bbox` covering
+  column, so the file is larger than it needs to be and still advertises itself as 1.1.
+* `ONLY` writes **only** the native geometry types — no `bbox` column and no `geo` metadata block. The native column carries the
+  Parquet geospatial statistics (the per–row-group bounding box) that give efficient spatial access, and the CRS is written as
+  PROJJSON on the logical type's `crs` property.
+
+Until GDAL can emit GeoParquet 2.0 directly, `USE_PARQUET_GEO_TYPES=ONLY` is the closest you can get: it produces the native,
+statistics-bearing geometry column that GeoParquet 2.0 is built on, and any GeoParquet 2.0 reader can read it.
+
+```
+ogr2ogr out.parquet -lco USE_PARQUET_GEO_TYPES=ONLY -lco "COMPRESSION=ZSTD" -lco "MAX_ROW_GROUP_SIZE=100000" in.fgb
+```
+
+> [!NOTE]
+> A file written with `ONLY` is **not conformant GeoParquet 2.0**, because it has no `geo` metadata block (no `version`, and the
+> CRS is only on the native Parquet type rather than restated as PROJJSON in the `geo` metadata). It is plain Parquet with native
+> geospatial types — readable by GeoParquet 2.0 readers, but not a self-described GeoParquet file. Switch to a dedicated 2.0 mode
+> once GDAL adds one.
+
 ### DuckDB
 
 Out of the box:
 ```
-LOAD spatial;
 COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet');
 ```
 
-DuckDB will automatically write GeoParquet metadata for any output that contains a geometry column.
-See the [spatial extension](https://duckdb.org/docs/stable/core_extensions/spatial/overview.html)
-is enabled and the table has geometries The default compression is snappy, and the max row group size is 122,880. The bbox column is not currently supported, and it is not spatially ordered by default.
+In DuckDB 1.5 the `GEOMETRY` type and GeoParquet reading and writing are part of core DuckDB — you do **not** need the
+[spatial extension](https://duckdb.org/docs/stable/core_extensions/spatial/overview.html) just to read a GeoParquet file,
+write one, or convert/recompress/repartition it. CRS information is carried through a read/write round-trip in core as well.
+DuckDB automatically writes GeoParquet metadata for any output containing a geometry column. The default compression is snappy,
+the max row group size is 122,880, by default it writes GeoParquet 1.0.0, and the data is not spatially ordered.
+
+You can choose the GeoParquet version written with the `GEOPARQUET_VERSION` copy option. Pass `GEOPARQUET_VERSION 'V2'` to write
+GeoParquet 2.0: the geometry column is stored using the native Parquet `GEOMETRY`/`GEOGRAPHY` logical types (with the geospatial
+statistics that give efficient spatial access), the CRS is written as PROJJSON, and no `bbox` covering column is added.
+
+```
+COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', GEOPARQUET_VERSION 'V2');
+```
+
+The spatial *functions* are not in core, however — anything using an `ST_*` function needs `LOAD spatial` first. That includes
+reprojection (`ST_Transform`) and, importantly for distribution, spatially ordering your data (`ST_Hilbert`, shown below). So in
+practice you will still load the extension whenever you spatially order or reproject, even though the GeoParquet writer itself
+does not require it.
 
 #### DuckDB with recommended settings
 
-You can control the [compression](https://duckdb.org/docs/sql/statements/copy.html#parquet-options), compression level and [row group size](https://duckdb.org/docs/data/parquet/tips.html#selecting-a-row_group_size):
+You can control the [compression](https://duckdb.org/docs/sql/statements/copy.html#parquet-options), compression level and [row group size](https://duckdb.org/docs/data/parquet/tips.html#selecting-a-row_group_size), and write GeoParquet 2.0 with `GEOPARQUET_VERSION 'V2'`:
 
 ```
-COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', COMPRESSION 'zstd', COMPRESSION_LEVEL 15, ROW_GROUP_SIZE '100000');
+COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', GEOPARQUET_VERSION 'V2', COMPRESSION 'zstd', COMPRESSION_LEVEL 15, ROW_GROUP_SIZE '100000');
 ```
 
 Interestingly you can also set the row group size in bytes, which would likely be a better way to handle geospatial data since the
 row size can vary so much.
 
 ```
-COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', COMPRESSION 'zstd', ROW_GROUP_SIZE_BYTES '128mb');
+COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', GEOPARQUET_VERSION 'V2', COMPRESSION 'zstd', ROW_GROUP_SIZE_BYTES '128mb');
 
 ```
 
@@ -238,10 +280,12 @@ But you can only use that when [`SET preserve_insertion_order = false;`](https:/
 clear if it can mess up spatial ordering.
 
 DuckDB also has functionality to spatially order your data, with the `[ST_Hilbert](https://duckdb.org/docs/extensions/spatial/functions#st_hilbert)`
-function. It is strongly recommended to pass in the bounds of your entire dataset to the function call or the hilbert curve
-won't be built right. The following call will dynamically get the bounds of your dataset, and pass that into the ST_Hilbert function.
+function. Because this uses `ST_*` functions you need to `LOAD spatial` first. It is strongly recommended to pass in the bounds of
+your entire dataset to the function call or the hilbert curve won't be built right. The following call will dynamically get the
+bounds of your dataset, pass that into the ST_Hilbert function, and write the result as GeoParquet 2.0.
 
 ```
+LOAD spatial;
 COPY (
     WITH bbox AS (
         SELECT ST_Extent(ST_Extent_Agg(geometry))::BOX_2D AS b
@@ -251,20 +295,45 @@ COPY (
     FROM     geo_table AS t
             CROSS JOIN bbox
     ORDER BY ST_Hilbert(t.geometry, bbox.b)
-) TO 'out.parquet' (FORMAT 'parquet', COMPRESSION 'zstd', ROW_GROUP_SIZE '100000');
+) TO 'out.parquet' (FORMAT 'parquet', GEOPARQUET_VERSION 'V2', COMPRESSION 'zstd', ROW_GROUP_SIZE '100000');
 ```
 
-One note with DuckDB is that it doesn't (yet) handle reprojection, and also does not maintain CRS information if you read data into
-it and then write it out, so watch out for that if you're using it for distribution of GeoParquet data. You can add the CRS info
-back in with tools like GDAL and QGIS - it just loses the metadata.
+DuckDB 1.5 and later preserves CRS information when you read GeoParquet in and write it back out. Earlier versions dropped the
+CRS metadata on write, so if you are on an older DuckDB you may need to add the CRS back in with tools like GDAL or QGIS.
+
+### gpio (geoparquet-io)
+
+[gpio](https://geoparquet.io) is a command-line tool, built on DuckDB, that is designed to apply the recommendations in this
+guide by default — it exists specifically to make 'good' GeoParquet without having to remember all the options. Install it from
+PyPI (the package is `geoparquet-io`):
+
+```
+pipx install geoparquet-io   # or: pip install geoparquet-io
+```
+
+A plain conversion applies ZSTD compression at level 15, Hilbert spatial ordering, a `bbox` covering column, and 100,000-row
+row groups, then validates the result:
+
+```
+gpio convert geoparquet input.gpkg output.parquet
+```
+
+By default it writes GeoParquet 1.1 (it auto-detects from the input, preserving the input's version and upgrading native geo
+types to 2.0). Pass `--geoparquet-version 2.0` to write GeoParquet 2.0, which stores the geometry in the native Parquet types
+with geospatial statistics and omits the `bbox` column:
+
+```
+gpio convert geoparquet input.gpkg output.parquet --geoparquet-version 2.0
+```
+
+gpio also handles other steps covered in this guide, including spatial partitioning (`gpio partition kdtree`), adding
+partitioning columns such as H3 or admin divisions (`gpio add`), generating STAC metadata and uploading
+(`gpio publish`), and validating existing files (`gpio check all`).
 
 ### Additional Tools
 
 We hope to get more discussion of additional tools that follow the same format as DuckDB and OGR/GDAL, especially Sedona, GPQ,
-GeoPandas, QGIS and Esri. But we'll aim to add those later as their own PR's - contributions are very welcome. There is also a project
-currently called [geoparquet-tools](https://github.com/cholmes/geoparquet-tools) that wraps DuckDB in Python and aims to provide all the
-best practices out of the box, along with options to spatially partition. It is still immature (not released to pip, and needs to be
-renamed for that), but can be built from source and the code may be useful to others.
+GeoPandas, QGIS and Esri. But we'll aim to add those later as their own PR's - contributions are very welcome.
 
 ## STAC Metadata
 
@@ -282,8 +351,9 @@ Many people are finding success using DuckDB, since it's a very flexible tool fo
 [this blog post](https://dewey.dunnington.ca/post/2024/partitioning-strategies-for-bigger-than-memory-spatial-data/) that
 discusses the kdtree, along with some other options (r-tree, s2 cells).
 
-The [geoparquet-tools](https://github.com/cholmes/geoparquet-tools) python tool provides a way to add columns that can be partitioned
-on, and then to perform the partitions. Right now it just supports [admin partitions](https://medium.com/radiant-earth-insights/the-admin-partitioned-geoparquet-distribution-59f0ca1c6d96) but [h3 is in a PR](https://github.com/cholmes/geoparquet-tools/pull/3).
+The [gpio](https://geoparquet.io) tool (see its section above) can add columns to partition on and then perform the partitions,
+supporting KD-tree, quadkey, S2, H3, A5, and [admin](https://medium.com/radiant-earth-insights/the-admin-partitioned-geoparquet-distribution-59f0ca1c6d96)
+partitioning (e.g. `gpio partition kdtree`).
 
 The solution that is currently one of the most 'out of the box' option is Sedona, with its
 [Spatial RDD's](https://sedona.apache.org/latest/tutorial/rdd/). The following code takes you through using it to write out partitions by kdtree.
@@ -343,3 +413,58 @@ df_partitioned.write.format("geoparquet").mode("overwrite").save(
 files = glob.glob("buildings_partitioned/*.parquet")
 len(files)
 ```
+
+## Further Discussion
+
+This section captures topics the community is still actively exploring. They are not part of the recommendations above, but
+are written up here both to explain known limitations and to invite others to help move them forward.
+
+### Page-level spatial statistics
+
+As noted under [Efficient spatial access](#efficient-spatial-access), the native Parquet `GEOMETRY`/`GEOGRAPHY` types carry
+geospatial statistics — a bounding box — at the **column chunk (row group)** level only. A reader can therefore skip an entire
+row group whose bounding box does not intersect the query, but once a row group is selected it must read all of that row group's
+pages, even if many of those pages fall entirely outside the area of interest.
+
+This is actually a step back from what the GeoParquet 1.1 `bbox` covering column could do. Because that covering is an ordinary
+Parquet `struct` column, it gets a normal Parquet page index (`ColumnIndex`), so its per-page min/max values let a reader prune
+individual **pages** within a row group, not just whole row groups. So while the native geometry statistics remove the need for
+an extra column and make files smaller, the 1.1 `bbox` covering column can still offer finer-grained spatial pruning.
+
+How much does page-level pruning matter? [Issue #279](https://github.com/opengeospatial/geoparquet/issues/279) collects some
+early benchmarks. On a ~10 million row Overture buildings file with a selective `intersects` query, page-level pruning roughly
+halved query time (~93 ms using the built-in row-group statistics vs. ~48 ms when pruning to the page level). The benefit grows
+the more selective the query is, and — like the row-group statistics — it depends on the data being spatially ordered so that
+individual pages stay spatially compact.
+
+A notable result from the same exploration is that a *specialized* embedded spatial index (an R-tree) gave no measurable
+improvement over a simple "flat" list of per-page bounding boxes. With only a few hundred to a few thousand pages in a typical
+file, brute-force checking each page's bounding box is effectively as fast as querying an index. That suggests the simplest
+possible mechanism — a per-page bounding box — is likely enough, and that a more complex embedded index may not be worth the
+added serialization complexity (every reader and writer would have to agree on its exact binary layout).
+
+#### How page-level geometry statistics could be added
+
+Two broad approaches have come up:
+
+1. **Add geospatial statistics to Parquet at the page level.** The cleanest long-term solution is to extend the Parquet format
+   itself so that geometry/geography columns can carry a per-page bounding box, mirroring the existing per-row-group geospatial
+   statistics. This could be done either by encoding the bounding box into the existing page `min`/`max` statistics fields (with
+   some care needed around Z and M bounds), or by adding a `GeoStatistics` structure alongside the existing `Statistics` in the
+   page metadata (the Thrift definition). The main concern raised when geospatial statistics were first added to Parquet was the
+   increase in metadata/file size — but this can be designed so that there is no effect unless a writer actually chooses to emit
+   geometry page statistics. The practical path is a note to the [Apache Parquet mailing list](https://parquet.apache.org/community/)
+   with a reproducible benchmark, then a pull request against [parquet-format](https://github.com/apache/parquet-format) editing
+   the Thrift definition, followed by at least two implementations.
+
+2. **A user-defined index embedded in the file.** Independent of any Parquet spec change, it is possible to pack a custom spatial
+   index into the bytes of a Parquet file that the footer does not reference (for example, just before the footer), as described
+   in [this DataFusion blog post on user-defined Parquet indexes](https://datafusion.apache.org/blog/2025/07/14/user-defined-parquet-indexes/).
+   A reader that knows where to look can use the index, while other readers ignore it and read the file normally. This keeps the
+   file a valid Parquet file, but requires readers and writers to agree on the index format and how to locate it — and, per the
+   benchmark above, a full index does not appear to beat simple page-level bounding boxes.
+
+None of this is currently on anyone's immediate roadmap, and the native row-group statistics are a good default for most
+distribution use cases today. It is written up here so that anyone interested in finer-grained spatial pruning has a starting
+point — if this is something you would use, the discussion in [issue #279](https://github.com/opengeospatial/geoparquet/issues/279)
+is the place to weigh in.
