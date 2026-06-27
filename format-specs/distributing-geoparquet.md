@@ -111,6 +111,8 @@ boundaries](https://medium.com/radiant-earth-insights/the-admin-partitioned-geop
 approach that works and is used in the [Google-Microsoft-OSM Buildings - combined by VIDA](https://source.coop/repositories/vida/google-microsoft-osm-open-buildings/description)
 dataset.
 
+See also [Spatial Partitioning in Practice](#spatial-partitioning-in-practice) for more details.
+
 ### Use STAC metadata
 
 If you're publishing GeoParquet files publicly or internally then it's a good idea to describe the data in a standard way.
@@ -234,11 +236,11 @@ COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', COMPRESSION '
 But you can only use that when [`SET preserve_insertion_order = false;`](https://duckdb.org/docs/stable/guides/performance/how_to_tune_workloads#the-preserve_insertion_order-option) is enabled, which can help when working with large files, but it's not
 clear if it can mess up spatial ordering.
 
-DuckDB also has functionality to spatially order your data, with the `[ST_Hilbert](https://duckdb.org/docs/extensions/spatial/functions#st_hilbert)`
+DuckDB also has functionality to spatially order your data, with the [`ST_Hilbert`](https://duckdb.org/docs/extensions/spatial/functions#st_hilbert)
 function. It is strongly recommended to pass in the bounds of your entire dataset to the function call or the hilbert curve
-won't be built right. The following call will dynamically get the bounds of your dataset, and pass that into the ST_Hilbert function.
+won't be built right. The following call will dynamically get the bounds of your dataset, and pass that into the `ST_Hilbert` function.
 
-```
+```sql
 COPY (
     WITH bbox AS (
         SELECT ST_Extent(ST_Extent_Agg(geometry))::BOX_2D AS b
@@ -271,7 +273,7 @@ got more then the best option is to use something like [rustac](https://github.c
 [pystac](https://pystac.readthedocs.io/en/stable/) to do it a bit more programmatically. You should be able to populate some
 of the STAC fields like bbox from the GeoParquet files directly.
 
-## Spatial Partitioning
+## Spatial Partitioning in Practice
 
 Most tools don't yet provide any way to do automatic spatial partitioning across files, when you have larger datasets.
 Many people are finding success using DuckDB, since it's a very flexible tool for manipulating data. For some pointers see
