@@ -6,7 +6,7 @@ This repository defines a [specification](https://geoparquet.org/releases/) for 
 
 Contributors include developers from GeoPandas, GeoTrellis, OpenLayers, Vis.gl, Voltron Data, Microsoft, CARTO, Planet & Unfolded.
 Anyone is welcome to join the project, by building implementations, trying it out, giving feedback through issues and contributing to the spec via pull requests.
-The [geoarrow](https://github.com/geoarrow/geoarrow) specification is related to GeoParquet and enbraces geospatial in
+The [geoarrow](https://github.com/geoarrow/geoarrow) specification is related to GeoParquet and embraces geospatial in
 Arrow in a compatible way, with this specification focused solely on Parquet. We are an [OGC](https://ogc.org) official
 [Standards Working Group](https://www.ogc.org/standards-working-gr/geoparquet-swg-geoparquet-swg/) and are on the path to be an OGC standard.
 
@@ -20,7 +20,7 @@ The 'dev' versions of the spec are available in this repo:
 - [JSON Schema](format-specs/schema.json)
 - [Examples](examples/)
 
-The latest version is 2.0.0, which is based on [Parquet Geospatial Logical Types](https://github.com/apache/parquet-format/blob/master/Geospatial.md). The Parquet format now includes core `geometry` and `geography` types and the GeoParquet 2 specification provides guidance for geospatial tools to the types, along with some optional metadata not covered in the core Parquet specification.
+The latest version is 2.0.0, which is based on [Parquet Geospatial Logical Types](https://github.com/apache/parquet-format/blob/master/Geospatial.md). The Parquet format now includes core `geometry` and `geography` types and the GeoParquet 2 specification provides guidance for geospatial tools for these types, along with some optional metadata not covered in the core Parquet specification.
 
 ## Validating GeoParquet
 
@@ -41,7 +41,7 @@ There are a few core goals driving the initial development.
 * **Enable interoperability among cloud data warehouses** - BigQuery, Snowflake, Redshift and others all support spatial operations but importing and exporting data
  with existing formats can be problematic. All support and often recommend Parquet, so defining a solid GeoParquet can help enable interoperability.
 * **Persist geospatial data from Apache Arrow** - GeoParquet is developed in parallel with a [GeoArrow spec](https://github.com/geoarrow/geoarrow), to
- enable cross-language in-memory analytics of geospatial information with Arrow. Parquet is already well-supported by Arrow as the key on disk persistance format.
+ enable cross-language in-memory analytics of geospatial information with Arrow. Parquet is already well-supported by Arrow as the key on-disk persistence format.
 
 And our broader goal is to innovate with 'cloud-native vector' providing a stable base to try out new ideas for cloud-native & streaming workflows.
 

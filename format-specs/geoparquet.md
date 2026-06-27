@@ -143,7 +143,7 @@ If no value is set, no assertions are made about winding order or consistency of
 
 Writers are encouraged but not required to set `orientation="counterclockwise"` for portability of the data within the broader ecosystem.
 
-It is RECOMMENDED to always set the orientation (to counterclockwise) if `edges` is `"spherical"` (see below).
+It is RECOMMENDED to always set the orientation to counterclockwise if `edges` is `"spherical"` (see below).
 
 #### edges
 
@@ -163,13 +163,13 @@ This attribute indicates how to interpret the edges of the geometries: whether t
   using [Vincenty's formula](https://en.wikipedia.org/wiki/Vincenty%27s_formulae) and
   the ellipsoid specified by the `"crs"`.
 - `"thomas"`:  Edges in the longitude-latitude dimensions follow a path calculated by
-  the fomula in Thomas, Paul D. Spheroidal geodesics, reference systems, & local geometry.
+  the formula in Thomas, Paul D. Spheroidal geodesics, reference systems, & local geometry.
   US Naval Oceanographic Office, 1970 using the ellipsoid specified by the `"crs"`.
 - `"andoyer"`: Edges in the longitude-latitude dimensions follow a path calculated by
-  the fomula in Thomas, Paul D. Mathematical models for navigation systems. US Naval
+  the formula in Thomas, Paul D. Mathematical models for navigation systems. US Naval
   Oceanographic Office, 1965 using the ellipsoid specified by the `"crs"`.
 - `"karney"`: Edges in the longitude-latitude dimensions follow a path calculated by
-  the fomula in
+  the formula in
   [Karney, Charles FF. "Algorithms for geodesics." Journal of Geodesy 87 (2013): 43-55](https://link.springer.com/content/pdf/10.1007/s00190-012-0578-z.pdf)
   and [GeographicLib](https://geographiclib.sourceforge.io/)
   using the ellipsoid specified by the `"crs"`. GeographicLib is available via modern
@@ -186,6 +186,7 @@ Bounding boxes are used to help define the spatial extent of each geometry colum
 The bbox, if specified, MUST be encoded with an array representing the range of values for each dimension in the geometry coordinates. For geometries in a geographic coordinate reference system, longitude and latitude values are listed for the most southwesterly coordinate followed by values for the most northeasterly coordinate. This follows the GeoJSON specification ([RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5)), which also describes how to represent the bbox for a set of geometries that cross the antimeridian.
 
 For non-geographic coordinate reference systems, the items in the bbox are minimum values for each dimension followed by maximum values for each dimension. For example:
+
 - XY (two dimensions): `[<xmin>, <ymin>, <xmax>, <ymax>]`
 - XYZ (three dimensions): `[<xmin>, <ymin>, <zmin>, <xmax>, <ymax>, <zmax>]`
 - XYZM (three dimensions with measure): `[<xmin>, <ymin>, <zmin>, <mmin>, <xmax>, <ymax>, <zmax>, <mmax>]`
@@ -242,35 +243,40 @@ The PROJJSON object for OGC:CRS84 is:
 }
 ```
 
-For implementations that operate entirely with longitude, latitude coordinates and are not CRS-aware or do not have easy access to CRS-aware libraries that can fully parse PROJJSON, it may be possible to infer that coordinates conform to the OGC:CRS84 CRS based on elements of the `crs` field.  For simplicity, Javascript object dot notation is used to refer to nested elements.
+For implementations that operate entirely with longitude, latitude coordinates and are not CRS-aware or do not have easy access to CRS-aware libraries that can fully parse PROJJSON, it may be possible to infer that coordinates conform to the OGC:CRS84 CRS based on properties of the `crs` field. For simplicity, JavaScript object dot notation is used to refer to nested properties below.
 
-The CRS is likely equivalent to OGC:CRS84 for a GeoParquet file if the `id` element is present:
+The CRS is likely equivalent to OGC:CRS84 for a GeoParquet file if the `id` property is present:
 
-* `id.authority` = `"OGC"` and `id.code` = `"CRS84"`
-* `id.authority` = `"EPSG"` and `id.code` = `4326` (due to longitude, latitude ordering in this specification)
+- `id.authority` = `"OGC"` and `id.code` = `"CRS84"`
+- `id.authority` = `"EPSG"` and `id.code` = `4326` (due to longitude, latitude ordering in this specification)
 
-It is reasonable for implementations to require that one of the above `id` elements are present and skip further tests to determine if the CRS is functionally equivalent with OGC:CRS84.
+It is reasonable for implementations to require that one of the above `id` combinations are present and skip further tests to determine if the CRS is functionally equivalent with OGC:CRS84.
 
-Note: EPSG:4326 and OGC:CRS84 are equivalent with respect to this specification because this specification specifically overrides the coordinate axis order in the `crs` to be longitude-latitude.
+> [!NOTE]
+>
+> EPSG:4326 and OGC:CRS84 are equivalent with respect to this specification because this specification specifically overrides the coordinate axis order in the `crs` to be longitude-latitude.
 
 When the Parquet `crs` property identifies the CRS by an `<authority>:<code>` string, the values `"OGC:CRS84"` and `"EPSG:4326"` are likewise equivalent to OGC:CRS84 for the purposes of this specification.
 
 ## Version Compatibility
 
-GeoParquet version numbers follow [SemVer](https://semver.org), meaning patch releases are for bugfixes, minor releases represent backwards compatible changes, and major releases represent breaking changes. For this specification, a backwards compatible change means that a file written with the older specification will always be compatible with the newer specification. Minor releases are also guaranteed to be forward compatible up the the next major release. Forward compatiblity means that an implementation that is only aware of the older specification MUST be able to correctly interpret data written according to the newer specification, OR recognize that it cannot correctly interpret that data.
+GeoParquet version numbers follow [SemVer](https://semver.org), meaning patch releases are for bugfixes, minor releases represent backwards compatible changes, and major releases represent breaking changes. For this specification, a backwards compatible change means that a file written with the older specification will always be compatible with the newer specification. Minor releases are also guaranteed to be forward compatible up to the next major release. Forward compatibility means that an implementation that is only aware of the older specification MUST be able to correctly interpret data written according to the newer specification, OR recognize that it cannot correctly interpret that data.
 
 Examples of a forward compatible change include:
+
 - Adding a new field in File or Column Metadata that can be ignored without changing the interpretation of the data (e.g. an index that can improve query performance).
 - Adding a new option to an existing field.
 
 Examples of a breaking change include:
+
 - Adding a new field that cannot be ignored without changing the interpretation of the data.
 - Changing the default value in an existing field.
 - Changing the meaning of an existing field value.
 
-In order to support data written according future minor relases, implementations of this specification:
+In order to support data written according to future minor releases, implementations of this specification:
+
 - SHOULD NOT reject metadata with unknown fields.
-- SHOULD explicitly validate all field values they rely on (e.g. an implementation of the 1.0.0 specification should validate enocoding = "WKB" even though it is the only allowed value, as new options might be added).
+- SHOULD explicitly validate all field values they rely on (e.g. an implementation of the 1.0.0 specification should validate encoding = "WKB" even though it is the only allowed value, as new options might be added).
 
 ## File Extension
 
