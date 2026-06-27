@@ -1,5 +1,8 @@
 # Best Practices for Distributing GeoParquet
 
+> [!IMPORTANT]  
+> This guide is written for GeoParquet 1.1 and has not been fully updated for GeoParquet 2.0 yet.
+
 This guide aims to encapsulate a number of best practices that the community has
 started to align on for making 'good' GeoParquet files, especially for distribution
 of data. Parquet gives users lots of different options, and the defaults of various
