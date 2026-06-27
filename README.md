@@ -2,17 +2,17 @@
 
 ## About
 
-This repository defines a [specification](https://geoparquet.org/releases/) for how to store geospatial [vector data](https://gisgeography.com/spatial-data-types-vector-raster/) (point, lines, polygons) in [Apache Parquet](https://parquet.apache.org/), a popular columnar storage format for tabular data - see [this vendor explanation](https://databricks.com/glossary/what-is-parquet) for more on what that means. Our goal is to standardize how geospatial data is represented in Parquet to further geospatial interoperability among tools using Parquet today, and hopefully help push forward what's possible with 'cloud-native geospatial' workflows. There are now more than 20 different tools and libraries in 6 different languages that support GeoParquet, you can learn more at [geoparquet.org](https://geoparquet.org).
+This repository defines a [specification](https://geoparquet.org/releases/) for how to store geospatial [vector data](https://gisgeography.com/spatial-data-types-vector-raster/) (point, lines, polygons) in [Apache Parquet](https://parquet.apache.org/), a popular columnar storage format for tabular data - see [this vendor explanation](https://databricks.com/glossary/what-is-parquet) for more on what that means. Our goal is to further standardize how geospatial data is represented in Parquet to enhance geospatial interoperability among tools using Parquet today, and hopefully help push forward what's possible with 'cloud-native geospatial' workflows. There are now more than 20 different tools and libraries in 7 different languages that support GeoParquet, you can learn more at [geoparquet.org](https://geoparquet.org).
 
-Early contributors include developers from GeoPandas, GeoTrellis, OpenLayers, Vis.gl, Voltron Data, Microsoft, CARTO, Azavea, Planet & Unfolded.
+Contributors include developers from GeoPandas, GeoTrellis, OpenLayers, Vis.gl, Voltron Data, Microsoft, CARTO, Planet & Unfolded.
 Anyone is welcome to join the project, by building implementations, trying it out, giving feedback through issues and contributing to the spec via pull requests.
-Initial work started in the [geo-arrow-spec](https://github.com/geoarrow/geoarrow) GeoPandas repository, and that will continue on
-Arrow work in a compatible way, with this specification focused solely on Parquet. We are in the process of becoming an [OGC](https://ogc.org) official
-[Standards Working Group](https://portal.ogc.org/files/103450) and are on the path to be a full OGC standard.
+The [geoarrow](https://github.com/geoarrow/geoarrow) specification is related to GeoParquet and enbraces geospatial in
+Arrow in a compatible way, with this specification focused solely on Parquet. We are an [OGC](https://ogc.org) official
+[Standards Working Group](https://www.ogc.org/standards-working-gr/geoparquet-swg-geoparquet-swg/) and are on the path to be an OGC standard.
 
 **The latest [stable specification](https://geoparquet.org/releases/v2.0.0/) and [JSON schema](https://geoparquet.org/releases/v2.0.0/schema.json) are published at [geoparquet.org/releases/](https://geoparquet.org/releases/).**
 
-**The community has agreed on this release, but it is still pending OGC approval.** We are currently working on the process to get it officially OGC approved as soon as possible. The OGC candidate Standard is at [https://docs.ogc.org/DRAFTS/24-013.html](https://docs.ogc.org/DRAFTS/24-013.html). The candidate Standard remains in draft form until it is approved as a Standard by the OGC Membership. Released versions of GeoParquet will not be changed, so if changes are needed for OGC approval, it will be released with a new version number.
+**The community has agreed on this release, but it is still pending OGC approval.** We are currently working on the process to get it officially OGC approved as soon as possible by the OGC Membership. Released versions of GeoParquet will not be changed, so if changes are needed for OGC approval, it will be released with a new version number.
 
 The 'dev' versions of the spec are available in this repo:
 
@@ -20,7 +20,7 @@ The 'dev' versions of the spec are available in this repo:
 - [JSON Schema](format-specs/schema.json)
 - [Examples](examples/)
 
-The latest version is 2.0, which is based on [Parquet Geospatial Logical Types](https://github.com/apache/parquet-format/blob/master/Geospatial.md). The Parquet format now includes core `geometry` and `geography` types and the GeoParquet 2.0 spec provides guidance for geospatial tools to the types, along with some optional metadata not covered in the core Parquet specification.
+The latest version is 2.0.0, which is based on [Parquet Geospatial Logical Types](https://github.com/apache/parquet-format/blob/master/Geospatial.md). The Parquet format now includes core `geometry` and `geography` types and the GeoParquet 2 specification provides guidance for geospatial tools to the types, along with some optional metadata not covered in the core Parquet specification.
 
 ## Validating GeoParquet
 
@@ -66,7 +66,7 @@ will work much better if it is backing a system that is constantly updating the 
 
 ## Versioning
 
-As of version 1.0 the specification follows [Semantic Versioning](https://semver.org/), so at that point any breaking change will require the spec to go to 2.0.0.
+As of version 1.0 the specification follows [Semantic Versioning](https://semver.org/), so at that point any breaking change will require the spec to go to the next major version number, e.g. 1.0.0 to 2.0.0.
 
 ## Current Implementations & Examples
 
