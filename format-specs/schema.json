@@ -45,11 +45,7 @@
             },
             "edges": {
               "type": "string",
-              "enum": ["planar", "spherical"]
-            },
-            "algorithm": {
-              "type": "string",
-              "enum": ["spherical", "vincenty", "thomas", "andoyer", "karney"]
+              "enum": ["planar", "spherical", "vincenty", "thomas", "andoyer", "karney"]
             },
             "orientation": {
               "type": "string",

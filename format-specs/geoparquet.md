@@ -33,11 +33,11 @@ A GeoParquet file MUST include a `geo` key in the Parquet metadata (see [`FileMe
 
 ## File metadata
 
-|     Field Name     |  Type  |                             Description                              |
-| ------------------ | ------ | -------------------------------------------------------------------- |
-| version     		 | string | **REQUIRED.** The version identifier for the GeoParquet specification. |
-| primary_column     | string | **REQUIRED.** The name of the "primary" geometry column. In cases where a GeoParquet file contains multiple geometry columns, the primary geometry may be used by default in geospatial operations. |
-| columns            | object\<string, [Column Metadata](#column-metadata)> | **REQUIRED.** Metadata about geometry columns. Each key is the name of a geometry column in the table. |
+|   Field Name   |  Type  |                             Description                              |
+| -------------- | ------ | -------------------------------------------------------------------- |
+| version        | string | **REQUIRED.** The version identifier for the GeoParquet specification. |
+| primary_column | string | **REQUIRED.** The name of the "primary" geometry column. In cases where a GeoParquet file contains multiple geometry columns, the primary geometry may be used by default in geospatial operations. |
+| columns        | object\<string, [Column Metadata](#column-metadata)> | **REQUIRED.** Metadata about geometry columns. Each key is the name of a geometry column in the table. |
 
 At this level, additional implementation-specific fields (e.g. library name) MAY be present, and readers should be robust in ignoring those.
 
@@ -148,31 +148,32 @@ It is RECOMMENDED to always set the orientation (to counterclockwise) if `edges`
 #### edges
 
 This attribute indicates how to interpret the edges of the geometries: whether the line between two points is a straight cartesian line or the shortest line on the sphere (geodesic line). Available values are:
- - `"planar"`: use a flat cartesian coordinate system.
- - `"spherical"`: Edges in the longitude-latitude dimensions follow the
-    shortest distance between vertices approximated as the shortest distance
-    between the vertices on a perfect sphere. This edge interpretation is used by
-    [BigQuery Geography](https://cloud.google.com/bigquery/docs/geospatial-data#coordinate_systems_and_edges),
-    and [Snowflake Geography](https://docs.snowflake.com/en/sql-reference/data-types-geospatial).
-    A common library for interpreting edges in this way is
-    [Google's s2geometry](https://github.com/google/s2geometry); a common formula
-    for calculating distances along this trajectory is the
-    [Haversine Formula](https://en.wikipedia.org/wiki/Haversine_formula).
-  - `"vincenty"`: Edges in the longitude-latitude dimensions follow a path calculated
-    using [Vincenty's formula](https://en.wikipedia.org/wiki/Vincenty%27s_formulae) and
-    the ellipsoid specified by the `"crs"`.
-  - `"thomas"`:  Edges in the longitude-latitude dimensions follow a path calculated by
-    the fomula in Thomas, Paul D. Spheroidal geodesics, reference systems, & local geometry.
-    US Naval Oceanographic Office, 1970 using the ellipsoid specified by the `"crs"`.
-  - `"andoyer"`: Edges in the longitude-latitude dimensions follow a path calculated by
-    the fomula in Thomas, Paul D. Mathematical models for navigation systems. US Naval
-    Oceanographic Office, 1965 using the ellipsoid specified by the `"crs"`.
-  - `"karney"`: Edges in the longitude-latitude dimensions follow a path calculated by
-    the fomula in
-    [Karney, Charles FF. "Algorithms for geodesics." Journal of Geodesy 87 (2013): 43-55](https://link.springer.com/content/pdf/10.1007/s00190-012-0578-z.pdf)
-    and [GeographicLib](https://geographiclib.sourceforge.io/)
-    using the ellipsoid specified by the `"crs"`. GeographicLib is available via modern
-    versions of PROJ.
+
+- `"planar"`: use a flat cartesian coordinate system.
+- `"spherical"`: Edges in the longitude-latitude dimensions follow the
+  shortest distance between vertices approximated as the shortest distance
+  between the vertices on a perfect sphere. This edge interpretation is used by
+  [BigQuery Geography](https://cloud.google.com/bigquery/docs/geospatial-data#coordinate_systems_and_edges),
+  and [Snowflake Geography](https://docs.snowflake.com/en/sql-reference/data-types-geospatial).
+  A common library for interpreting edges in this way is
+  [Google's s2geometry](https://github.com/google/s2geometry); a common formula
+  for calculating distances along this trajectory is the
+  [Haversine Formula](https://en.wikipedia.org/wiki/Haversine_formula).
+- `"vincenty"`: Edges in the longitude-latitude dimensions follow a path calculated
+  using [Vincenty's formula](https://en.wikipedia.org/wiki/Vincenty%27s_formulae) and
+  the ellipsoid specified by the `"crs"`.
+- `"thomas"`:  Edges in the longitude-latitude dimensions follow a path calculated by
+  the fomula in Thomas, Paul D. Spheroidal geodesics, reference systems, & local geometry.
+  US Naval Oceanographic Office, 1970 using the ellipsoid specified by the `"crs"`.
+- `"andoyer"`: Edges in the longitude-latitude dimensions follow a path calculated by
+  the fomula in Thomas, Paul D. Mathematical models for navigation systems. US Naval
+  Oceanographic Office, 1965 using the ellipsoid specified by the `"crs"`.
+- `"karney"`: Edges in the longitude-latitude dimensions follow a path calculated by
+  the fomula in
+  [Karney, Charles FF. "Algorithms for geodesics." Journal of Geodesy 87 (2013): 43-55](https://link.springer.com/content/pdf/10.1007/s00190-012-0578-z.pdf)
+  and [GeographicLib](https://geographiclib.sourceforge.io/)
+  using the ellipsoid specified by the `"crs"`. GeographicLib is available via modern
+  versions of PROJ.
 
 If no value is set, the default value to assume is `"planar"`.
 
