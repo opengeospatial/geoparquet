@@ -208,8 +208,32 @@ metadata["columns"]["geometry"]["edges"] = "spherical"
 valid_cases["edges_spherical"] = metadata
 
 metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["edges"] = "vincenty"
+valid_cases["edges_vincenty"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["edges"] = "thomas"
+valid_cases["edges_thomas"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["edges"] = "andoyer"
+valid_cases["edges_andoyer"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["edges"] = "karney"
+valid_cases["edges_karney"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
 metadata["columns"]["geometry"]["edges"] = "ellipsoid"
-invalid_cases["edges"] = metadata
+invalid_cases["edges_ellipsoid"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["edges"] = "SPHERICAL"
+invalid_cases["edges_uppercase"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["edges"] = "unknown"
+invalid_cases["edges_unknown"] = metadata
 
 # Epoch
 
@@ -220,28 +244,6 @@ valid_cases["epoch"] = metadata
 metadata = copy.deepcopy(metadata_template)
 metadata["columns"]["geometry"]["epoch"] = "2015.1"
 invalid_cases["epoch_string"] = metadata
-
-# Algorithm
-
-metadata = copy.deepcopy(metadata_template)
-metadata["columns"]["geometry"]["algorithm"] = "spherical"
-valid_cases["algorithm_spherical"] = metadata
-
-metadata = copy.deepcopy(metadata_template)
-metadata["columns"]["geometry"]["algorithm"] = "vincenty"
-valid_cases["algorithm_vincenty"] = metadata
-
-metadata = copy.deepcopy(metadata_template)
-metadata["columns"]["geometry"]["algorithm"] = "karney"
-valid_cases["algorithm_karney"] = metadata
-
-metadata = copy.deepcopy(metadata_template)
-metadata["columns"]["geometry"]["algorithm"] = "SPHERICAL"
-invalid_cases["algorithm_uppercase"] = metadata
-
-metadata = copy.deepcopy(metadata_template)
-metadata["columns"]["geometry"]["algorithm"] = "unknown"
-invalid_cases["algorithm_unknown"] = metadata
 
 # Geometry type with M dimension
 

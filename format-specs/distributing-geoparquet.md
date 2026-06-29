@@ -1,5 +1,9 @@
 # Best Practices for Distributing GeoParquet
 
+> [!IMPORTANT]
+>
+> This guide is written for GeoParquet 1.1 and has not been fully updated for GeoParquet 2.0 yet.
+
 This guide aims to encapsulate a number of best practices that the community has
 started to align on for making 'good' GeoParquet files, especially for distribution
 of data. Parquet gives users lots of different options, and the defaults of various
@@ -11,13 +15,12 @@ Later sections will go deep into the reasoning and nuances behind these options,
 just looking to be sure you get the basics right then this section may be sufficient.
 And if you're building a tool or library then consider these as good defaults.
 
- * Use zstd for compression, and set the compression level to 15.
- * Be sure to include the [bbox covering](https://github.com/opengeospatial/geoparquet/blob/v1.1.0/format-specs/geoparquet.md#bbox-covering-encoding), and use GeoParquet version 1.1.
- * Spatially order the data within the file.
- * Set the maximum row group size between 50,000 and 150,000 per row.
- * If the data is larger than ~2 gigabytes consider spatially partitioning the files.
- * Use [STAC Metadata](https://stacspec.org/) metadata to describe the data.
-
+- Use zstd for compression, and set the compression level to 15.
+- Be sure to include the [bbox covering](https://github.com/opengeospatial/geoparquet/blob/v1.1.0/format-specs/geoparquet.md#bbox-covering-encoding), and use GeoParquet version 1.1.
+- Spatially order the data within the file.
+- Set the maximum row group size between 50,000 and 150,000 per row.
+- If the data is larger than ~2 gigabytes consider spatially partitioning the files.
+- Use [STAC Metadata](https://stacspec.org/) metadata to describe the data.
 
 ### Compression
 
@@ -58,8 +61,8 @@ be a great option.
 
 It is essential to make sure that the data is spatially ordered in some way within the file, in order for the bbox column
 to be used effectively. If the GeoParquet data was converted from a GIS format like GeoPackage or Shapefile then often
-it will already by spatially ordered. One way to check this is to open the file in a GIS tool and see if the data loads
-all the spatial data for an area in chunks, or if data for the whole are appears and continues to load everywhere.
+it will already be spatially ordered. One way to check this is to open the file in a GIS tool and see if the data loads
+all the spatial data for an area in chunks, or if data for the whole area appears and continues to load everywhere.
 
 <img alt="non-indexed load" height="300" src="https://miro.medium.com/v2/resize:fit:1400/format:webp/1*yugDd1ZjLG4lEwUZucRdmA.gif"> vs <img alt="indexed load" height="300" src="https://miro.medium.com/v2/resize:fit:1400/format:webp/1*-4wyoKgwFXpUnkLeziv5KA.gif"/>
 
@@ -92,7 +95,7 @@ per row group.
 One of the useful features of Parquet is the ability to partition a large dataset into multiple files, as most readers
 can be pointed at a folder of files and it will read them as a single dataset. The reader will use the row group statistics
 to quickly figure out if a given file needs to be read, and multiple files can be read in parallel. So with spatial data,
-where most every query contains a spatial filter, partioning the data spatially can greatly accelerate the performance.
+where most every query contains a spatial filter, partitioning the data spatially can greatly accelerate the performance.
 
 Similar to the row group size, the community is still figuring out the best way to spatially partition the data, and the
 overall query performance will depend on both row group size and the size of the partitioned files, along with the nature of
@@ -100,7 +103,7 @@ the data. Hopefully someone will do a set of robust testing to help inform more 
 
 For now the recommendation is to spatially partition your data 'in some way', at least if the dataset is larger than a couple
 gigabytes. If it's smaller than that then the additional overhead of splitting it up is likely not worth it. There was some
-[great discussion](https://github.com/opengeospatial/geoparquet/discussions/251) on the topic, and an nice
+[great discussion](https://github.com/opengeospatial/geoparquet/discussions/251) on the topic, and a nice
 [blog post](https://dewey.dunnington.ca/post/2024/partitioning-strategies-for-bigger-than-memory-spatial-data/) with some
 further experimentation. The leading approach at the moment is to use a K-dimensional tree (KD-tree), which will enable
 balancing of the file sizes and spatial separation; however, sorts based on S2, GeoHash or R-tree can all work. Partitioning [based on admin
@@ -108,10 +111,12 @@ boundaries](https://medium.com/radiant-earth-insights/the-admin-partitioned-geop
 approach that works and is used in the [Google-Microsoft-OSM Buildings - combined by VIDA](https://source.coop/repositories/vida/google-microsoft-osm-open-buildings/description)
 dataset.
 
+See also [Spatial Partitioning in Practice](#spatial-partitioning-in-practice) for more details.
+
 ### Use STAC metadata
 
 If you're publishing GeoParquet files publicly or internally then it's a good idea to describe the data in a standard way.
-The [STAC specification](https://stacspec.org/en)'s [Collection](https://github.com/radiantearth/stac-spec/blob/master/collection-spec/collection-spec.md#provider-object%20PROVIDERS%20=%20[) level metadata to describe what's in it. For single
+The [STAC specification](https://stacspec.org/en)'s [Collection](https://github.com/radiantearth/stac-spec/blob/master/collection-spec/collection-spec.md) level metadata can describe what's in it. For single
 GeoParquet files this should be very simple, just create a collection.json file in the same folder as the GeoParquet file and
 use `application/vnd.apache.parquet` as the media type. If the GeoParquet is partitioned then you can create individual
 STAC Items linked to from the collection, with each item describing the bounding box of the data in the file.
@@ -142,15 +147,13 @@ for more details.
 These datasets are all 'good enough' to use, but don't quite follow all the recommendations above. Once they are updated we'll
 move them up.
 
-* The [Google-Microsoft-OSM Buildings - combined by VIDA](https://source.coop/repositories/vida/google-microsoft-osm-open-buildings/description) is a great example of a dataset that is almost following all the recommendations above. They did use snappy, and
+- The [Google-Microsoft-OSM Buildings - combined by VIDA](https://source.coop/repositories/vida/google-microsoft-osm-open-buildings/description) is a great example of a dataset that is almost following all the recommendations above. They did use snappy, and
 their row group sizes are around 5,000 (which still gets reasonable performance). They distribute the data in 2 different
 partition schemes. One is just by admin boundary, which leads to a few really large files (India, USA, etc). The other further
 splits larger countries into smaller files, using S2 cells.
-
-* [US Structures from Oak Ridge National Laboratory](https://source.coop/wherobots/usa-structures/geoparquet) formatted by
+- [US Structures from Oak Ridge National Laboratory](https://source.coop/wherobots/usa-structures/geoparquet) formatted by
 Wherobots.
-
-* [Planet Ag Field Boundaries over EU](https://source.coop/repositories/planet/eu-field-boundaries/description) - needs to be
+- [Planet Ag Field Boundaries over EU](https://source.coop/repositories/planet/eu-field-boundaries/description) - needs to be
 spatially partitioned, row group size is 25,000.
 
 ## Examples in common tools
@@ -164,7 +167,7 @@ the other tools can be used to prep the data.
 
 Out of the box:
 
-```
+```bash
 ogr2ogr out.parquet in.geojson
 ```
 
@@ -181,19 +184,21 @@ will be the same calling from C or Python.
 
 You can easily control the compression and the max row group size, and the following command is sufficient
 if your source data is already spatially ordered in a file format with a spatial index (like FlatGeobuf or GeoPackage):
-```
+
+```bash
 ogr2ogr out.parquet -lco "COMPRESSION=ZSTD" -lco "MAX_ROW_GROUP_SIZE=100000" in.fgb
 ```
 
 GDAL 3.12 and above introduces `COMPRESSION_LEVEL` as a [Parquet layer creation option](https://gdal.org/en/latest/drivers/vector/parquet.html#layer-creation-options). So if you're working with that then you should definitely use it (along with the new
 [gdal CLI](https://gdal.org/en/latest/programs/index.html#general), which is used here.
 
-```
+```bash
 gdal vector convert vegetation.fgb vegetation.parquet --lco compression=zstd --lco compression_level=15
 ```
 
 If you want to be sure that the output is spatially ordered then you can add `SORT_BY_BBOX=YES`, like in the following example:
-```
+
+```bash
 ogr2ogr out.parquet -lco SORT_BY_BBOX=YES -lco "COMPRESSION=ZSTD" in.geojson
 ```
 
@@ -203,7 +208,8 @@ with large files, so it's not enabled by default.
 ### DuckDB
 
 Out of the box:
-```
+
+```sql
 LOAD spatial;
 COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet');
 ```
@@ -216,26 +222,25 @@ is enabled and the table has geometries The default compression is snappy, and t
 
 You can control the [compression](https://duckdb.org/docs/sql/statements/copy.html#parquet-options), compression level and [row group size](https://duckdb.org/docs/data/parquet/tips.html#selecting-a-row_group_size):
 
-```
+```sql
 COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', COMPRESSION 'zstd', COMPRESSION_LEVEL 15, ROW_GROUP_SIZE '100000');
 ```
 
 Interestingly you can also set the row group size in bytes, which would likely be a better way to handle geospatial data since the
 row size can vary so much.
 
-```
+```sql
 COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', COMPRESSION 'zstd', ROW_GROUP_SIZE_BYTES '128mb');
-
 ```
 
 But you can only use that when [`SET preserve_insertion_order = false;`](https://duckdb.org/docs/stable/guides/performance/how_to_tune_workloads#the-preserve_insertion_order-option) is enabled, which can help when working with large files, but it's not
 clear if it can mess up spatial ordering.
 
-DuckDB also has functionality to spatially order your data, with the `[ST_Hilbert](https://duckdb.org/docs/extensions/spatial/functions#st_hilbert)`
+DuckDB also has functionality to spatially order your data, with the [`ST_Hilbert`](https://duckdb.org/docs/extensions/spatial/functions#st_hilbert)
 function. It is strongly recommended to pass in the bounds of your entire dataset to the function call or the hilbert curve
-won't be built right. The following call will dynamically get the bounds of your dataset, and pass that into the ST_Hilbert function.
+won't be built right. The following call will dynamically get the bounds of your dataset, and pass that into the `ST_Hilbert` function.
 
-```
+```sql
 COPY (
     WITH bbox AS (
         SELECT ST_Extent(ST_Extent_Agg(geometry))::BOX_2D AS b
@@ -268,7 +273,7 @@ got more then the best option is to use something like [rustac](https://github.c
 [pystac](https://pystac.readthedocs.io/en/stable/) to do it a bit more programmatically. You should be able to populate some
 of the STAC fields like bbox from the GeoParquet files directly.
 
-## Spatial Partitioning
+## Spatial Partitioning in Practice
 
 Most tools don't yet provide any way to do automatic spatial partitioning across files, when you have larger datasets.
 Many people are finding success using DuckDB, since it's a very flexible tool for manipulating data. For some pointers see
