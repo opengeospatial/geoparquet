@@ -15,7 +15,8 @@ just looking to be sure you get the basics right then this section may be suffic
 And if you're building a tool or library then consider these as good defaults.
 
  * Use zstd for compression, at compression level 15 or higher — go as high as you have time for.
- * Use GeoParquet 2.0, which stores geometries in the native Parquet `GEOMETRY`/`GEOGRAPHY` types. These carry built-in geospatial statistics (a bounding box per column chunk), giving efficient spatial access without the extra `bbox` column that 1.1 required.
+ * Use GeoParquet 2.0, which stores geometries in the native Parquet `GEOMETRY`/`GEOGRAPHY` types,
+  or GeoParquet 1.1 with the [bbox covering](https://github.com/opengeospatial/geoparquet/blob/v1.1.0/format-specs/geoparquet.md#bbox-covering-encoding) for efficient spatial access.
  * Spatially order the data within the file.
  * Set the maximum row group size between 50,000 and 150,000 per row.
  * If the data is larger than ~2 gigabytes consider spatially partitioning the files.
@@ -61,9 +62,9 @@ see [Further Discussion: page-level spatial statistics](#page-level-spatial-stat
 
 > [!NOTE]
 > The earlier [`bbox` covering](https://github.com/opengeospatial/geoparquet/blob/v1.1.0/format-specs/geoparquet.md#bbox-covering-encoding)
-> from GeoParquet 1.1 remains a valid way to enable spatial filtering, and may still be worth including if you need to reach
-> readers that do not yet understand the native Parquet geospatial statistics. If you go that route, distribute the files as
-> GeoParquet 1.1 so that all tools know they can use the `bbox` column.
+> from GeoParquet 1.1 remains a valid way to enable spatial filtering, and using 1.1 is recommended if you need to support a
+> wider range of software/versions to read your data. Many tools (GDAL, DuckDB, Hyparquet, geoparquet-io, SedonaDB, QGIS)
+> will work with Parquet native types (and the GeoParquet 2.0 metadata), and eventually 2.0 will be the only recommended way.
 
 ### Spatial Ordering
 
