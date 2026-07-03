@@ -14,7 +14,7 @@ supports them.
 
 Out of the box:
 
-```
+```bash
 ogr2ogr out.parquet in.geojson
 ```
 
@@ -26,24 +26,26 @@ and GDAL is usually translating from formats that already have spatial indexes.
 
 #### GDAL/OGR with recommended settings
 
-These examples are done with the `ogr2ogr command-line tool, but the layer creation options
+These examples are done with the `ogr2ogr` command-line tool, but the layer creation options
 will be the same calling from C or Python.
 
 You can easily control the compression and the max row group size, and the following command is sufficient
 if your source data is already spatially ordered in a file format with a spatial index (like FlatGeobuf or GeoPackage):
-```
+
+```bash
 ogr2ogr out.parquet -lco "COMPRESSION=ZSTD" -lco "MAX_ROW_GROUP_SIZE=100000" in.fgb
 ```
 
 GDAL 3.12 and above introduces `COMPRESSION_LEVEL` as a [Parquet layer creation option](https://gdal.org/en/latest/drivers/vector/parquet.html#layer-creation-options). So if you're working with that then you should definitely use it (along with the new
 [gdal CLI](https://gdal.org/en/latest/programs/index.html#general), which is used here.
 
-```
+```bash
 gdal vector convert vegetation.fgb vegetation.parquet --lco compression=zstd --lco compression_level=15
 ```
 
 If you want to be sure that the output is spatially ordered then you can add `SORT_BY_BBOX=YES`, like in the following example:
-```
+
+```bash
 ogr2ogr out.parquet -lco SORT_BY_BBOX=YES -lco "COMPRESSION=ZSTD" in.geojson
 ```
 
@@ -66,7 +68,7 @@ covering column. GDAL 3.12 and above (built against libarrow 21 or later) does, 
 Until GDAL can emit GeoParquet 2.0 directly, `USE_PARQUET_GEO_TYPES=ONLY` is the closest you can get: it produces the native,
 statistics-bearing geometry column that GeoParquet 2.0 is built on, and any GeoParquet 2.0 reader can read it.
 
-```
+```bash
 ogr2ogr out.parquet -lco USE_PARQUET_GEO_TYPES=ONLY -lco "COMPRESSION=ZSTD" -lco "MAX_ROW_GROUP_SIZE=100000" in.fgb
 ```
 
@@ -82,7 +84,7 @@ GDAL is a flexible tool that can split a dataset into multiple files with `gdal 
 one or more fields (`--field`), writing a `hive` or `flat` directory layout, and can bound the output with `--max-file-size` or
 `--feature-limit`:
 
-```
+```bash
 gdal vector partition in.parquet out_dir --field region --max-file-size 1GB
 ```
 
@@ -95,7 +97,8 @@ GDAL does not write STAC metadata.
 ### DuckDB
 
 Out of the box:
-```
+
+```sql
 COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet');
 ```
 
@@ -109,7 +112,7 @@ You can choose the GeoParquet version written with the `GEOPARQUET_VERSION` copy
 GeoParquet 2.0: the geometry column is stored using the native Parquet `GEOMETRY`/`GEOGRAPHY` logical types (with the geospatial
 statistics that give efficient spatial access), the CRS is written as PROJJSON, and no `bbox` covering column is added.
 
-```
+```sql
 COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', GEOPARQUET_VERSION 'V2');
 ```
 
@@ -122,27 +125,26 @@ does not require it.
 
 You can control the [compression](https://duckdb.org/docs/sql/statements/copy.html#parquet-options), compression level and [row group size](https://duckdb.org/docs/data/parquet/tips.html#selecting-a-row_group_size), and write GeoParquet 2.0 with `GEOPARQUET_VERSION 'V2'`:
 
-```
+```sql
 COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', GEOPARQUET_VERSION 'V2', COMPRESSION 'zstd', COMPRESSION_LEVEL 15, ROW_GROUP_SIZE '100000');
 ```
 
 Interestingly you can also set the row group size in bytes, which would likely be a better way to handle geospatial data since the
 row size can vary so much.
 
-```
+```sql
 COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', GEOPARQUET_VERSION 'V2', COMPRESSION 'zstd', ROW_GROUP_SIZE_BYTES '128mb');
-
 ```
 
 But you can only use that when [`SET preserve_insertion_order = false;`](https://duckdb.org/docs/stable/guides/performance/how_to_tune_workloads#the-preserve_insertion_order-option) is enabled, which can help when working with large files, but it's not
 clear if it can mess up spatial ordering.
 
-DuckDB also has functionality to spatially order your data, with the `[ST_Hilbert](https://duckdb.org/docs/extensions/spatial/functions#st_hilbert)`
+DuckDB also has functionality to spatially order your data, with the [`ST_Hilbert`](https://duckdb.org/docs/extensions/spatial/functions#st_hilbert)
 function. Because this uses `ST_*` functions you need to `LOAD spatial` first. It is strongly recommended to pass in the bounds of
 your entire dataset to the function call or the hilbert curve won't be built right. The following call will dynamically get the
-bounds of your dataset, pass that into the ST_Hilbert function, and write the result as GeoParquet 2.0.
+bounds of your dataset, pass that into the `ST_Hilbert` function, and write the result as GeoParquet 2.0.
 
-```
+```sql
 LOAD spatial;
 COPY (
     WITH bbox AS (
@@ -165,7 +167,7 @@ DuckDB can write a hive-partitioned dataset with `COPY ... PARTITION_BY`. To par
 for each row and partition on it. The [a5](https://github.com/Query-farm/a5) DuckDB community extension provides a global,
 equal-area cell grid that works well for this:
 
-```
+```sql
 INSTALL a5 FROM community; LOAD a5;
 INSTALL spatial; LOAD spatial;
 COPY (
@@ -190,14 +192,14 @@ having to remember all the options. It produces fully compliant GeoParquet that 
 one area still being finalized is 2.0 output, so by default it writes GeoParquet 1.1. Install it from PyPI (the package is
 `geoparquet-io`):
 
-```
+```bash
 pipx install geoparquet-io   # or: pip install geoparquet-io
 ```
 
 A plain conversion applies ZSTD compression at level 15, Hilbert spatial ordering, a `bbox` covering column, and 100,000-row
 row groups, then validates the result:
 
-```
+```bash
 gpio convert geoparquet input.gpkg output.parquet
 ```
 
@@ -205,7 +207,7 @@ It defaults to writing GeoParquet 1.1 (it auto-detects from the input, preservin
 types to 2.0). Pass `--geoparquet-version 2.0` to write GeoParquet 2.0, which stores the geometry in the native Parquet types
 with geospatial statistics and omits the `bbox` column:
 
-```
+```bash
 gpio convert geoparquet input.gpkg output.parquet --geoparquet-version 2.0
 ```
 
@@ -216,7 +218,7 @@ gpio partitions large datasets with `gpio partition`, which supports KD-tree, qu
 KD-tree scheme auto-selects a partition count targeting ~120,000 rows per file, and adds the partition column for you if it is
 missing:
 
-```
+```bash
 gpio partition kdtree input.parquet output/
 gpio partition kdtree input.parquet output/ --partitions 32
 ```
@@ -229,7 +231,7 @@ you want to partition or sort on it yourself.
 gpio generates STAC with `gpio publish stac`. A single file produces a STAC Item; a partitioned directory produces a STAC
 Collection plus per-file Items written alongside the data, following STAC best practices:
 
-```
+```bash
 # Single file -> STAC Item
 gpio publish stac input.parquet item.json --bucket s3://my-bucket/roads/
 

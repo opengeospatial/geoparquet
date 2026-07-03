@@ -8,7 +8,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ## Version and schema
 
-This is version 2.0-dev of the GeoParquet specification.  See the [JSON Schema](schema.json) to validate metadata for this version. See [Version Compatibility](#version-compatibility) for details on version compatibility guarantees.
+This is version 2.0.0 of the GeoParquet specification.  See the [JSON Schema](schema.json) to validate metadata for this version. See [Version Compatibility](#version-compatibility) for details on version compatibility guarantees.
 
 ## Geometry columns
 
@@ -33,11 +33,11 @@ A GeoParquet file MUST include a `geo` key in the Parquet metadata (see [`FileMe
 
 ## File metadata
 
-|     Field Name     |  Type  |                             Description                              |
-| ------------------ | ------ | -------------------------------------------------------------------- |
-| version     		 | string | **REQUIRED.** The version identifier for the GeoParquet specification. |
-| primary_column     | string | **REQUIRED.** The name of the "primary" geometry column. In cases where a GeoParquet file contains multiple geometry columns, the primary geometry may be used by default in geospatial operations. |
-| columns            | object\<string, [Column Metadata](#column-metadata)> | **REQUIRED.** Metadata about geometry columns. Each key is the name of a geometry column in the table. |
+|   Field Name   |  Type  |                             Description                              |
+| -------------- | ------ | -------------------------------------------------------------------- |
+| version        | string | **REQUIRED.** The version identifier for the GeoParquet specification. |
+| primary_column | string | **REQUIRED.** The name of the "primary" geometry column. In cases where a GeoParquet file contains multiple geometry columns, the primary geometry may be used by default in geospatial operations. |
+| columns        | object\<string, [Column Metadata](#column-metadata)> | **REQUIRED.** Metadata about geometry columns. Each key is the name of a geometry column in the table. |
 
 At this level, additional implementation-specific fields (e.g. library name) MAY be present, and readers should be robust in ignoring those.
 
@@ -59,7 +59,7 @@ Each geometry column in the dataset MUST be included in the `columns` field abov
 
 The Coordinate Reference System (CRS) is an optional parameter for each geometry column defined in GeoParquet format.
 
-In GeoParquet 2.0 the CRS travels with the geometry column on the Parquet `GEOMETRY`/`GEOGRAPHY` logical type's `crs` property, which is the source of truth (see [`crs` Parquet property](#crs-parquet-property)). That Parquet property is flexible and MAY identify the CRS in several forms. The GeoParquet column-metadata `crs` field described here restates that same CRS for files that carry GeoParquet `geo` metadata. (Writing that metadata is itself optional — a writer MAY emit only the native Parquet geospatial types — but a file that does carry GeoParquet metadata describes its CRS here.) Unlike the Parquet property, the GeoParquet `crs` field MUST be inline PROJJSON (or `null`), so that a reader of the GeoParquet metadata can always obtain a complete CRS definition directly, without resolving an authority code against an external registry.
+Since GeoParquet 2 the CRS travels with the geometry column on the Parquet `GEOMETRY`/`GEOGRAPHY` logical type's `crs` property, which is the source of truth (see [`crs` Parquet property](#crs-parquet-property)). That Parquet property is flexible and MAY identify the CRS in several forms. The GeoParquet column-metadata `crs` field described here restates that same CRS for files that carry GeoParquet `geo` metadata. (Writing that metadata is itself optional — a writer MAY emit only the native Parquet geospatial types — but a file that does carry GeoParquet metadata describes its CRS here.) Unlike the Parquet property, the GeoParquet `crs` field MUST be inline PROJJSON (or `null`), so that a reader of the GeoParquet metadata can always obtain a complete CRS definition directly, without resolving an authority code against an external registry.
 
 The CRS, when given in the GeoParquet column-metadata `crs` field, MUST be provided in [PROJJSON](https://proj.org/specifications/projjson.html) format, which is a JSON encoding of [WKT2:2019 / ISO-19162:2019](https://docs.opengeospatial.org/is/18-010r7/18-010r7.html), which itself implements the model of [OGC Topic 2: Referencing by coordinates abstract specification / ISO-19111:2019](http://docs.opengeospatial.org/as/18-005r4/18-005r4.html). Apart from the difference of encodings, the semantics are intended to match WKT2:2019, and a CRS in one encoding can generally be represented in the other.
 
@@ -143,36 +143,37 @@ If no value is set, no assertions are made about winding order or consistency of
 
 Writers are encouraged but not required to set `orientation="counterclockwise"` for portability of the data within the broader ecosystem.
 
-It is RECOMMENDED to always set the orientation (to counterclockwise) if `edges` is `"spherical"` (see below).
+It is RECOMMENDED to always set the orientation to counterclockwise if `edges` is `"spherical"` (see below).
 
 #### edges
 
 This attribute indicates how to interpret the edges of the geometries: whether the line between two points is a straight cartesian line or the shortest line on the sphere (geodesic line). Available values are:
- - `"planar"`: use a flat cartesian coordinate system.
- - `"spherical"`: Edges in the longitude-latitude dimensions follow the
-    shortest distance between vertices approximated as the shortest distance
-    between the vertices on a perfect sphere. This edge interpretation is used by
-    [BigQuery Geography](https://cloud.google.com/bigquery/docs/geospatial-data#coordinate_systems_and_edges),
-    and [Snowflake Geography](https://docs.snowflake.com/en/sql-reference/data-types-geospatial).
-    A common library for interpreting edges in this way is
-    [Google's s2geometry](https://github.com/google/s2geometry); a common formula
-    for calculating distances along this trajectory is the
-    [Haversine Formula](https://en.wikipedia.org/wiki/Haversine_formula).
-  - `"vincenty"`: Edges in the longitude-latitude dimensions follow a path calculated
-    using [Vincenty's formula](https://en.wikipedia.org/wiki/Vincenty%27s_formulae) and
-    the ellipsoid specified by the `"crs"`.
-  - `"thomas"`:  Edges in the longitude-latitude dimensions follow a path calculated by
-    the fomula in Thomas, Paul D. Spheroidal geodesics, reference systems, & local geometry.
-    US Naval Oceanographic Office, 1970 using the ellipsoid specified by the `"crs"`.
-  - `"andoyer"`: Edges in the longitude-latitude dimensions follow a path calculated by
-    the fomula in Thomas, Paul D. Mathematical models for navigation systems. US Naval
-    Oceanographic Office, 1965 using the ellipsoid specified by the `"crs"`.
-  - `"karney"`: Edges in the longitude-latitude dimensions follow a path calculated by
-    the fomula in
-    [Karney, Charles FF. "Algorithms for geodesics." Journal of Geodesy 87 (2013): 43-55](https://link.springer.com/content/pdf/10.1007/s00190-012-0578-z.pdf)
-    and [GeographicLib](https://geographiclib.sourceforge.io/)
-    using the ellipsoid specified by the `"crs"`. GeographicLib is available via modern
-    versions of PROJ.
+
+- `"planar"`: use a flat cartesian coordinate system.
+- `"spherical"`: Edges in the longitude-latitude dimensions follow the
+  shortest distance between vertices approximated as the shortest distance
+  between the vertices on a perfect sphere. This edge interpretation is used by
+  [BigQuery Geography](https://cloud.google.com/bigquery/docs/geospatial-data#coordinate_systems_and_edges),
+  and [Snowflake Geography](https://docs.snowflake.com/en/sql-reference/data-types-geospatial).
+  A common library for interpreting edges in this way is
+  [Google's s2geometry](https://github.com/google/s2geometry); a common formula
+  for calculating distances along this trajectory is the
+  [Haversine Formula](https://en.wikipedia.org/wiki/Haversine_formula).
+- `"vincenty"`: Edges in the longitude-latitude dimensions follow a path calculated
+  using [Vincenty's formula](https://en.wikipedia.org/wiki/Vincenty%27s_formulae) and
+  the ellipsoid specified by the `"crs"`.
+- `"thomas"`:  Edges in the longitude-latitude dimensions follow a path calculated by
+  the formula in Thomas, Paul D. Spheroidal geodesics, reference systems, & local geometry.
+  US Naval Oceanographic Office, 1970 using the ellipsoid specified by the `"crs"`.
+- `"andoyer"`: Edges in the longitude-latitude dimensions follow a path calculated by
+  the formula in Thomas, Paul D. Mathematical models for navigation systems. US Naval
+  Oceanographic Office, 1965 using the ellipsoid specified by the `"crs"`.
+- `"karney"`: Edges in the longitude-latitude dimensions follow a path calculated by
+  the formula in
+  [Karney, Charles FF. "Algorithms for geodesics." Journal of Geodesy 87 (2013): 43-55](https://link.springer.com/content/pdf/10.1007/s00190-012-0578-z.pdf)
+  and [GeographicLib](https://geographiclib.sourceforge.io/)
+  using the ellipsoid specified by the `"crs"`. GeographicLib is available via modern
+  versions of PROJ.
 
 If no value is set, the default value to assume is `"planar"`.
 
@@ -185,6 +186,7 @@ Bounding boxes are used to help define the spatial extent of each geometry colum
 The bbox, if specified, MUST be encoded with an array representing the range of values for each dimension in the geometry coordinates. For geometries in a geographic coordinate reference system, longitude and latitude values are listed for the most southwesterly coordinate followed by values for the most northeasterly coordinate. This follows the GeoJSON specification ([RFC 7946, section 5](https://tools.ietf.org/html/rfc7946#section-5)), which also describes how to represent the bbox for a set of geometries that cross the antimeridian.
 
 For non-geographic coordinate reference systems, the items in the bbox are minimum values for each dimension followed by maximum values for each dimension. For example:
+
 - XY (two dimensions): `[<xmin>, <ymin>, <xmax>, <ymax>]`
 - XYZ (three dimensions): `[<xmin>, <ymin>, <zmin>, <xmax>, <ymax>, <zmax>]`
 - XYZM (three dimensions with measure): `[<xmin>, <ymin>, <zmin>, <mmin>, <xmax>, <ymax>, <zmax>, <mmax>]`
@@ -241,35 +243,40 @@ The PROJJSON object for OGC:CRS84 is:
 }
 ```
 
-For implementations that operate entirely with longitude, latitude coordinates and are not CRS-aware or do not have easy access to CRS-aware libraries that can fully parse PROJJSON, it may be possible to infer that coordinates conform to the OGC:CRS84 CRS based on elements of the `crs` field.  For simplicity, Javascript object dot notation is used to refer to nested elements.
+For implementations that operate entirely with longitude, latitude coordinates and are not CRS-aware or do not have easy access to CRS-aware libraries that can fully parse PROJJSON, it may be possible to infer that coordinates conform to the OGC:CRS84 CRS based on properties of the `crs` field. For simplicity, JavaScript object dot notation is used to refer to nested properties below.
 
-The CRS is likely equivalent to OGC:CRS84 for a GeoParquet file if the `id` element is present:
+The CRS is likely equivalent to OGC:CRS84 for a GeoParquet file if the `id` property is present:
 
-* `id.authority` = `"OGC"` and `id.code` = `"CRS84"`
-* `id.authority` = `"EPSG"` and `id.code` = `4326` (due to longitude, latitude ordering in this specification)
+- `id.authority` = `"OGC"` and `id.code` = `"CRS84"`
+- `id.authority` = `"EPSG"` and `id.code` = `4326` (due to longitude, latitude ordering in this specification)
 
-It is reasonable for implementations to require that one of the above `id` elements are present and skip further tests to determine if the CRS is functionally equivalent with OGC:CRS84.
+It is reasonable for implementations to require that one of the above `id` combinations are present and skip further tests to determine if the CRS is functionally equivalent with OGC:CRS84.
 
-Note: EPSG:4326 and OGC:CRS84 are equivalent with respect to this specification because this specification specifically overrides the coordinate axis order in the `crs` to be longitude-latitude.
+> [!NOTE]
+>
+> EPSG:4326 and OGC:CRS84 are equivalent with respect to this specification because this specification specifically overrides the coordinate axis order in the `crs` to be longitude-latitude.
 
 When the Parquet `crs` property identifies the CRS by an `<authority>:<code>` string, the values `"OGC:CRS84"` and `"EPSG:4326"` are likewise equivalent to OGC:CRS84 for the purposes of this specification.
 
 ## Version Compatibility
 
-GeoParquet version numbers follow [SemVer](https://semver.org), meaning patch releases are for bugfixes, minor releases represent backwards compatible changes, and major releases represent breaking changes. For this specification, a backwards compatible change means that a file written with the older specification will always be compatible with the newer specification. Minor releases are also guaranteed to be forward compatible up the the next major release. Forward compatiblity means that an implementation that is only aware of the older specification MUST be able to correctly interpret data written according to the newer specification, OR recognize that it cannot correctly interpret that data.
+GeoParquet version numbers follow [SemVer](https://semver.org), meaning patch releases are for bugfixes, minor releases represent backwards compatible changes, and major releases represent breaking changes. For this specification, a backwards compatible change means that a file written with the older specification will always be compatible with the newer specification. Minor releases are also guaranteed to be forward compatible up to the next major release. Forward compatibility means that an implementation that is only aware of the older specification MUST be able to correctly interpret data written according to the newer specification, OR recognize that it cannot correctly interpret that data.
 
 Examples of a forward compatible change include:
+
 - Adding a new field in File or Column Metadata that can be ignored without changing the interpretation of the data (e.g. an index that can improve query performance).
 - Adding a new option to an existing field.
 
 Examples of a breaking change include:
+
 - Adding a new field that cannot be ignored without changing the interpretation of the data.
 - Changing the default value in an existing field.
 - Changing the meaning of an existing field value.
 
-In order to support data written according future minor relases, implementations of this specification:
+In order to support data written according to future minor releases, implementations of this specification:
+
 - SHOULD NOT reject metadata with unknown fields.
-- SHOULD explicitly validate all field values they rely on (e.g. an implementation of the 1.0.0 specification should validate enocoding = "WKB" even though it is the only allowed value, as new options might be added).
+- SHOULD explicitly validate all field values they rely on (e.g. an implementation of the 1.0.0 specification should validate encoding = "WKB" even though it is the only allowed value, as new options might be added).
 
 ## File Extension
 

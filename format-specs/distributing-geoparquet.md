@@ -14,14 +14,13 @@ Later sections will go deep into the reasoning and nuances behind these options,
 just looking to be sure you get the basics right then this section may be sufficient.
 And if you're building a tool or library then consider these as good defaults.
 
- * Use zstd for compression, at compression level 15 or higher — go as high as you have time for.
- * Use GeoParquet 2.0, which stores geometries in the native Parquet `GEOMETRY`/`GEOGRAPHY` types,
+- Use zstd for compression, at compression level 15 or higher — go as high as you have time for.
+- Use GeoParquet 2.0, which stores geometries in the native Parquet `GEOMETRY`/`GEOGRAPHY` types,
   or GeoParquet 1.1 with the [bbox covering](https://github.com/opengeospatial/geoparquet/blob/v1.1.0/format-specs/geoparquet.md#bbox-covering-encoding) for efficient spatial access.
- * Spatially order the data within the file.
- * Set the maximum row group size between 50,000 and 150,000 per row.
- * If the data is larger than ~2 gigabytes consider spatially partitioning the files.
- * Use [STAC Metadata](https://stacspec.org/) metadata to describe the data.
-
+- Spatially order the data within the file.
+- Set the maximum row group size between 50,000 and 150,000 per row.
+- If the data is larger than ~2 gigabytes consider spatially partitioning the files.
+- Use [STAC Metadata](https://stacspec.org/) metadata to describe the data.
 
 ### Compression
 
@@ -70,8 +69,8 @@ see [Further Discussion: page-level spatial statistics](#page-level-spatial-stat
 
 It is essential to make sure that the data is spatially ordered in some way within the file, in order for the row group
 statistics to be used effectively. If the GeoParquet data was converted from a GIS format like GeoPackage or Shapefile then often
-it will already by spatially ordered. One way to check this is to open the file in a GIS tool and see if the data loads
-all the spatial data for an area in chunks, or if data for the whole are appears and continues to load everywhere.
+it will already be spatially ordered. One way to check this is to open the file in a GIS tool and see if the data loads
+all the spatial data for an area in chunks, or if data for the whole area appears and continues to load everywhere.
 
 <img alt="non-indexed load" height="300" src="https://miro.medium.com/v2/resize:fit:1400/format:webp/1*yugDd1ZjLG4lEwUZucRdmA.gif"> vs <img alt="indexed load" height="300" src="https://miro.medium.com/v2/resize:fit:1400/format:webp/1*-4wyoKgwFXpUnkLeziv5KA.gif"/>
 
@@ -104,7 +103,7 @@ per row group.
 One of the useful features of Parquet is the ability to partition a large dataset into multiple files, as most readers
 can be pointed at a folder of files and it will read them as a single dataset. The reader will use the row group statistics
 to quickly figure out if a given file needs to be read, and multiple files can be read in parallel. So with spatial data,
-where most every query contains a spatial filter, partioning the data spatially can greatly accelerate the performance.
+where most every query contains a spatial filter, partitioning the data spatially can greatly accelerate the performance.
 
 Similar to the row group size, the community is still figuring out the best way to spatially partition the data, and the
 overall query performance will depend on both row group size and the size of the partitioned files, along with the nature of
@@ -112,7 +111,7 @@ the data. Hopefully someone will do a set of robust testing to help inform more 
 
 For now the recommendation is to spatially partition your data 'in some way', at least if the dataset is larger than a couple
 gigabytes. If it's smaller than that then the additional overhead of splitting it up is likely not worth it. There was some
-[great discussion](https://github.com/opengeospatial/geoparquet/discussions/251) on the topic, and an nice
+[great discussion](https://github.com/opengeospatial/geoparquet/discussions/251) on the topic, and a nice
 [blog post](https://dewey.dunnington.ca/post/2024/partitioning-strategies-for-bigger-than-memory-spatial-data/) with some
 further experimentation. The leading approach at the moment is to use a K-dimensional tree (KD-tree), which will enable
 balancing of the file sizes and spatial separation; however, sorts based on S2, GeoHash or R-tree can all work. Partitioning [based on admin
@@ -126,7 +125,7 @@ and Sedona.
 ### Use STAC metadata
 
 If you're publishing GeoParquet files publicly or internally then it's a good idea to describe the data in a standard way.
-The [STAC specification](https://stacspec.org/en)'s [Collection](https://github.com/radiantearth/stac-spec/blob/master/collection-spec/collection-spec.md#provider-object%20PROVIDERS%20=%20[) level metadata to describe what's in it. For single
+The [STAC specification](https://stacspec.org/en)'s [Collection](https://github.com/radiantearth/stac-spec/blob/master/collection-spec/collection-spec.md) level metadata can describe what's in it. For single
 GeoParquet files this should be very simple, just create a collection.json file in the same folder as the GeoParquet file and
 use `application/vnd.apache.parquet` as the media type. If the GeoParquet is partitioned then you can create individual
 STAC Items linked to from the collection, with each item describing the bounding box of the data in the file.
@@ -163,15 +162,13 @@ for more details.
 These datasets are all 'good enough' to use, but don't quite follow all the recommendations above. Once they are updated we'll
 move them up.
 
-* The [Google-Microsoft-OSM Buildings - combined by VIDA](https://source.coop/repositories/vida/google-microsoft-osm-open-buildings/description) is a great example of a dataset that is almost following all the recommendations above. They did use snappy, and
+- The [Google-Microsoft-OSM Buildings - combined by VIDA](https://source.coop/repositories/vida/google-microsoft-osm-open-buildings/description) is a great example of a dataset that is almost following all the recommendations above. They did use snappy, and
 their row group sizes are around 5,000 (which still gets reasonable performance). They distribute the data in 2 different
 partition schemes. One is just by admin boundary, which leads to a few really large files (India, USA, etc). The other further
 splits larger countries into smaller files, using S2 cells.
-
-* [US Structures from Oak Ridge National Laboratory](https://source.coop/wherobots/usa-structures/geoparquet) formatted by
+- [US Structures from Oak Ridge National Laboratory](https://source.coop/wherobots/usa-structures/geoparquet) formatted by
 Wherobots.
-
-* [Planet Ag Field Boundaries over EU](https://source.coop/repositories/planet/eu-field-boundaries/description) - needs to be
+- [Planet Ag Field Boundaries over EU](https://source.coop/repositories/planet/eu-field-boundaries/description) - needs to be
 spatially partitioned, row group size is 25,000.
 
 ## Tool Examples
