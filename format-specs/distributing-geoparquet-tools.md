@@ -52,7 +52,7 @@ with large files, so it's not enabled by default.
 
 #### Writing native geometry types
 
-As of this writing GDAL does not yet write GeoParquet 2.0 metadata — by default it produces GeoParquet 1.1 with a `bbox`
+As of this writing GDAL does not yet write GeoParquet 2.0 metadata: by default it produces GeoParquet 1.1 with a `bbox`
 covering column. GDAL 3.12 and above (built against libarrow 21 or later) does, however, let you write the native Parquet
 `GEOMETRY`/`GEOGRAPHY` logical types via the `USE_PARQUET_GEO_TYPES` layer creation option, which takes `NO` (the default),
 `YES`, or `ONLY`:
