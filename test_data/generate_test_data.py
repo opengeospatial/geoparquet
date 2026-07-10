@@ -24,7 +24,7 @@ HERE = pathlib.Path(__file__).parent
 
 
 metadata_template = {
-    "version": "2.0-dev",
+    "version": "2.0.0",
     "primary_column": "geometry",
     "columns": {
         "geometry": {
