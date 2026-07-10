@@ -19,8 +19,8 @@ ogr2ogr out.parquet in.geojson
 ```
 
 Out of the box GDAL/OGR defaults to snappy compression, with max row group size of 65536.
-Version 3.9 and later will write out the `bbox` column by default, producing GeoParquet 1.1. And there is a built-in
-option to spatially order the data that works by creating a temporary GeoPackage file and
+Version 3.9 and later will write out the `bbox` column by default, producing GeoParquet 1.1. There is a built-in
+option (`SORT_BY_BBOX=YES`) to spatially order the data that works by creating a temporary GeoPackage file and
 using its r-tree spatial index. It defaults to false since it can be an intensive operation,
 and GDAL is usually translating from formats that already have spatial indexes.
 
