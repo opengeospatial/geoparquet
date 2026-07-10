@@ -29,7 +29,7 @@ and GDAL is usually translating from formats that already have spatial indexes.
 These examples are done with the `ogr2ogr command-line tool, but the layer creation options
 will be the same calling from C or Python.
 
-You can easily control the compression and the max row group size, and the following command is sufficient
+You can control the compression and the max row group size, and the following command is sufficient
 if your source data is already spatially ordered in a file format with a spatial index (like FlatGeobuf or GeoPackage):
 ```
 ogr2ogr out.parquet -lco "COMPRESSION=ZSTD" -lco "MAX_ROW_GROUP_SIZE=100000" in.fgb
