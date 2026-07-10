@@ -135,7 +135,7 @@ COPY (SELECT * FROM geo_table) TO 'out.parquet' (FORMAT 'parquet', GEOPARQUET_VE
 ```
 
 But you can only use that when [`SET preserve_insertion_order = false;`](https://duckdb.org/docs/stable/guides/performance/how_to_tune_workloads#the-preserve_insertion_order-option) is enabled, which can help when working with large files, but it's not
-clear if it can mess up spatial ordering.
+clear if it can preserve spatial ordering.
 
 DuckDB also has functionality to spatially order your data, with the `[ST_Hilbert](https://duckdb.org/docs/extensions/spatial/functions#st_hilbert)`
 function. Because this uses `ST_*` functions you need to `LOAD spatial` first. It is strongly recommended to pass in the bounds of
