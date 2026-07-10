@@ -35,8 +35,8 @@ if your source data is already spatially ordered in a file format with a spatial
 ogr2ogr out.parquet -lco "COMPRESSION=ZSTD" -lco "MAX_ROW_GROUP_SIZE=100000" in.fgb
 ```
 
-GDAL 3.12 and above introduces `COMPRESSION_LEVEL` as a [Parquet layer creation option](https://gdal.org/en/latest/drivers/vector/parquet.html#layer-creation-options). So if you're working with that then you should definitely use it (along with the new
-[gdal CLI](https://gdal.org/en/latest/programs/index.html#general), which is used here.
+GDAL 3.12 and above introduces `COMPRESSION_LEVEL` as a [Parquet layer creation option](https://gdal.org/en/latest/drivers/vector/parquet.html#layer-creation-options) and a new
+[CLI](https://gdal.org/en/latest/programs/index.html#general), which is used here.
 
 ```
 gdal vector convert vegetation.fgb vegetation.parquet --lco compression=zstd --lco compression_level=15
