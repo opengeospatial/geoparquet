@@ -334,7 +334,7 @@ df_partitioned = (
 # Write in parallel directly from each executor node.
 # There are several options for geoparquet writing:
 # https://sedona.apache.org/latest/tutorial/files/geoparquet-sedona-spark/
-df_partitioned.write.format("geoparquet").mode("overwrite").save(
+df_partitioned.write.format("geoparquet").mode("overwrite").option("compression", "zstd").save(
     "buildings_partitioned"
 )
 
