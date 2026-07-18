@@ -273,6 +273,201 @@ metadata = copy.deepcopy(metadata_template)
 metadata["columns"]["geometry"]["bbox"] = [0, 0, 0, 0, 0, 0, 0, 0]
 valid_cases["bbox_8_element"] = metadata
 
+# Display optimization
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["geometry_types"] = ["Point"]
+metadata["display"] = {
+    "geometry_column": "geometry",
+    "ordering": {
+        "type": "z",
+        "extent": [-180, -90, 180, 90],
+        "column": ["geodisplay", "ordering_code"],
+        "bit_width": 16,
+    },
+}
+valid_cases["display_z"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["geometry_types"] = ["Point ZM"]
+metadata["display"] = {
+    "geometry_column": "geometry",
+    "ordering": {
+        "type": "z",
+        "extent": [-180, -90, 180, 90],
+        "column": ["geodisplay", "ordering_code"],
+        "bit_width": 32,
+    },
+}
+valid_cases["display_z_zm"] = metadata
+
+metadata = copy.deepcopy(metadata_template)
+metadata["columns"]["geometry"]["geometry_types"] = ["Polygon"]
+metadata["display"] = {
+    "geometry_column": "geometry",
+    "ordering": {
+        "type": "xz",
+        "extent": [-180, -90, 180, 90],
+        "column": ["geodisplay", "ordering_code"],
+        "max_level": 20,
+    },
+    "lods": {
+        "encoding": "pbf",
+        "orientation": "clockwise",
+        "levels": [
+            {
+                "column": ["geodisplay", "level_0"],
+                "scale": 1000000,
+                "transform": {
+                    "scale": [0.703125, 0.703125, 1, 1],
+                    "translate": [0, 0, 0, 0],
+                },
+            }
+        ],
+    },
+}
+valid_cases["display_xz"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["lods"]["levels"].append(
+    {
+        "column": ["geodisplay", "level_1"],
+        "scale": 500000,
+        "transform": {
+            "scale": [0.3515625, 0.3515625, 1, 1],
+            "translate": [0, 0, 0, 0],
+        },
+    }
+)
+valid_cases["display_xz_multiple_levels"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_z"])
+metadata["display"].pop("geometry_column")
+invalid_cases["display_missing_geometry_column"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_z"])
+metadata["display"]["ordering"]["bit_width"] = 0
+invalid_cases["display_z_bit_width_zero"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_z"])
+metadata["display"]["ordering"]["bit_width"] = 33
+invalid_cases["display_z_bit_width_above_maximum"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_z"])
+metadata["display"]["ordering"]["extent"] = [-180, -90, 180]
+invalid_cases["display_ordering_extent_too_short"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_z"])
+metadata["display"]["ordering"]["extent"] = [-180, -90, 180, 90, 0]
+invalid_cases["display_ordering_extent_too_long"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_z"])
+metadata["display"]["ordering"]["column"] = []
+invalid_cases["display_empty_column_path"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_z"])
+metadata["display"]["ordering"]["column"] = ["display", "ordering_code"]
+invalid_cases["display_wrong_parent_column"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_z"])
+metadata["display"]["ordering"]["column"] = [
+    "geodisplay",
+    "nested",
+    "ordering_code",
+]
+invalid_cases["display_nested_column_path"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"].pop("lods")
+invalid_cases["display_xz_without_lods"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["ordering"]["max_level"] = 19
+invalid_cases["display_xz_max_level"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["lods"]["levels"] = []
+invalid_cases["display_xz_missing_levels"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["lods"].pop("encoding")
+invalid_cases["display_xz_missing_encoding"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["lods"].pop("orientation")
+invalid_cases["display_xz_missing_orientation"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["lods"]["orientation"] = "counterclockwise"
+invalid_cases["display_xz_invalid_orientation"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["lods"]["levels"][0]["scale"] = 0
+invalid_cases["display_xz_scale_zero"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["lods"]["levels"][0]["scale"] = -1
+invalid_cases["display_xz_scale_negative"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["lods"]["encoding"] = "delta"
+invalid_cases["display_xz_invalid_encoding"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["lods"]["levels"].append(
+    copy.deepcopy(metadata["display"]["lods"]["levels"][0])
+)
+invalid_cases["display_xz_duplicate_level"] = metadata
+
+for field in ("column", "scale", "transform"):
+    metadata = copy.deepcopy(valid_cases["display_xz"])
+    metadata["display"]["lods"]["levels"][0].pop(field)
+    invalid_cases[f"display_xz_level_missing_{field}"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["lods"]["levels"][0]["column"] = ["lods", "level_0"]
+invalid_cases["display_xz_invalid_level_column"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["lods"]["levels"][0]["transform"]["scale"] = [1, 1, 1]
+invalid_cases["display_xz_transform_width"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["lods"]["levels"][0]["transform"]["scale"][0] = 0
+invalid_cases["display_xz_transform_scale_zero"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["lods"]["levels"][0]["transform"]["scale"][0] = -1
+invalid_cases["display_xz_transform_scale_negative"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["lods"]["levels"][0]["transform"]["translate"] = [0, 0, 0]
+invalid_cases["display_xz_transform_translate_width"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["unexpected"] = True
+invalid_cases["display_unexpected_property"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["ordering"]["unexpected"] = True
+invalid_cases["display_ordering_unexpected_property"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["lods"]["unexpected"] = True
+invalid_cases["display_xz_lods_unexpected_property"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["lods"]["levels"][0]["unexpected"] = True
+invalid_cases["display_xz_level_unexpected_property"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_xz"])
+metadata["display"]["lods"]["levels"][0]["transform"]["unexpected"] = True
+invalid_cases["display_xz_transform_unexpected_property"] = metadata
+
+metadata = copy.deepcopy(valid_cases["display_z"])
+metadata["display"]["lods"] = copy.deepcopy(valid_cases["display_xz"]["display"]["lods"])
+invalid_cases["display_z_with_lods"] = metadata
+
 
 # # Tests
 

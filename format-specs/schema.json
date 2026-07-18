@@ -7,7 +7,7 @@
   "properties": {
     "version": {
       "type": "string",
-      "const": "2.0.0"
+      "const": "2.1.0"
     },
     "primary_column": {
       "type": "string",
@@ -81,6 +81,174 @@
         }
       },
       "additionalProperties": false
+    },
+    "display": {
+      "$ref": "#/definitions/display"
+    }
+  },
+  "definitions": {
+    "display_column_path": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": [
+        {
+          "const": "geodisplay"
+        },
+        {
+          "type": "string",
+          "minLength": 1
+        }
+      ],
+      "additionalItems": false
+    },
+    "display_extent": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "number"
+      }
+    },
+    "transform": {
+      "type": "object",
+      "required": ["scale", "translate"],
+      "properties": {
+        "scale": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "translate": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "number"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "level": {
+      "type": "object",
+      "required": ["column", "scale", "transform"],
+      "properties": {
+        "column": {
+          "$ref": "#/definitions/display_column_path"
+        },
+        "scale": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "transform": {
+          "$ref": "#/definitions/transform"
+        }
+      },
+      "additionalProperties": false
+    },
+    "z_ordering": {
+      "type": "object",
+      "required": ["type", "extent", "column", "bit_width"],
+      "properties": {
+        "type": {
+          "const": "z"
+        },
+        "extent": {
+          "$ref": "#/definitions/display_extent"
+        },
+        "column": {
+          "$ref": "#/definitions/display_column_path"
+        },
+        "bit_width": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        }
+      },
+      "additionalProperties": false
+    },
+    "xz_ordering": {
+      "type": "object",
+      "required": ["type", "extent", "column", "max_level"],
+      "properties": {
+        "type": {
+          "const": "xz"
+        },
+        "extent": {
+          "$ref": "#/definitions/display_extent"
+        },
+        "column": {
+          "$ref": "#/definitions/display_column_path"
+        },
+        "max_level": {
+          "type": "integer",
+          "const": 20
+        }
+      },
+      "additionalProperties": false
+    },
+    "lods": {
+      "type": "object",
+      "required": ["encoding", "orientation", "levels"],
+      "properties": {
+        "encoding": {
+          "type": "string",
+          "const": "pbf"
+        },
+        "orientation": {
+          "type": "string",
+          "const": "clockwise"
+        },
+        "levels": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/level"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "display": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["geometry_column", "ordering"],
+          "properties": {
+            "geometry_column": {
+              "type": "string",
+              "minLength": 1
+            },
+            "ordering": {
+              "$ref": "#/definitions/z_ordering"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["geometry_column", "ordering", "lods"],
+          "properties": {
+            "geometry_column": {
+              "type": "string",
+              "minLength": 1
+            },
+            "ordering": {
+              "$ref": "#/definitions/xz_ordering"
+            },
+            "lods": {
+              "$ref": "#/definitions/lods"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
     }
   }
 }
