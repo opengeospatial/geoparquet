@@ -8,7 +8,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ## Version and schema
 
-This is version 2.0.0 of the GeoParquet specification.  See the [JSON Schema](schema.json) to validate metadata for this version. See [Version Compatibility](#version-compatibility) for details on version compatibility guarantees.
+This is version 2.1.0 of the GeoParquet specification.  See the [JSON Schema](schema.json) to validate metadata for this version. See [Version Compatibility](#version-compatibility) for details on version compatibility guarantees.
 
 ## Geometry columns
 
@@ -38,6 +38,7 @@ A GeoParquet file MUST include a `geo` key in the Parquet metadata (see [`FileMe
 | version        | string | **REQUIRED.** The version identifier for the GeoParquet specification. |
 | primary_column | string | **REQUIRED.** The name of the "primary" geometry column. In cases where a GeoParquet file contains multiple geometry columns, the primary geometry may be used by default in geospatial operations. |
 | columns        | object\<string, [Column Metadata](#column-metadata)> | **REQUIRED.** Metadata about geometry columns. Each key is the name of a geometry column in the table. |
+| display        | [Display Metadata](#display-optimization) | Optional metadata describing spatial row ordering and other optimizations for display streaming. |
 
 At this level, additional implementation-specific fields (e.g. library name) MAY be present, and readers should be robust in ignoring those.
 
@@ -194,6 +195,199 @@ For non-geographic coordinate reference systems, the items in the bbox are minim
 It is not currently possible to specify M bounds without Z bounds using a GeoParquet metadata bbox: in this case, producers may produce an XY bounding box and omit M bounds. M bounds are typically encoded in Parquet statistics for consumers that benefit from this information.
 
 The bbox values MUST be in the same coordinate reference system as the geometry.
+
+## Display optimization
+
+The optional `display` metadata indicates which spatial optimizations, such as spatial ordering or levels of detail, have been applied to the file to enable streaming for display.
+
+
+| Field Name | Type | Description |
+| --- | --- | --- |
+| `geometry_column` | string | **REQUIRED.** Name of the geometry column used for display ordering and LOD generation. The name MUST exist in `columns`. |
+| `ordering` | [Z Ordering](#z-order-point-ordering) \| [XZ Ordering](#xz-order-geometry-ordering) | **REQUIRED.** The spatial ordering of the file. |
+| `lods` | [Levels of Detail](#levels-of-detail) | These levels describe the geometry columns that provide lower-detail representations of the `geometry_column` at different scales. MUST be present when `ordering` type is `"xz"`.|
+
+### Geometry column requirements
+
+The geometry identified by `display.geometry_column` is the authoritative full-resolution geometry for each displayed feature. It MUST satisfy the following requirements:
+
+- `geometry_types` MUST contain exactly one value:
+  - For `"z"` ordering it MUST be `Point`.
+  - For `"xz"` ordering it MUST be one of `MultiPoint`, `LineString`, `MultiLineString`, `Polygon`, or `MultiPolygon`.
+- The CRS MUST be equivalent to WGS 84 longitude-latitude or Web Mercator. The conventional EPSG identifiers are EPSG:4326 and EPSG:3857, respectively.
+
+### Geodisplay column
+
+The `geodisplay` group column MUST exist at the root of the schema. It MUST NOT be nested in another group. Every ordering and LOD field referenced by `display` MUST be a direct child of this group.
+
+The `geodisplay` group MAY be required or optional. Every referenced child field MUST be required whenever the group exists.
+
+Display column names are encoded as two-element Parquet schema paths. The first item in every path MUST be `"geodisplay"`, and the second item names a child field. For example, `["geodisplay", "ordering_code"]` identifies the `ordering_code` field in the `geodisplay` group.
+
+### Ordering extent
+
+`geodisplay` ordering types contain an `extent` defined as `[xmin, ymin, xmax, ymax]`. The values MUST be finite, MUST satisfy `xmin < xmax` and `ymin < ymax`, and MUST use the CRS of `display.geometry_column`. If every geometry is either NULL or non-finite, `geodisplay` MUST be null or undefined.
+
+### Z-order point ordering
+
+Z-ordering spatially orders points by interleaving X and Y coordinate bits.
+
+| Field Name | Type | Description |
+| --- | --- | --- |
+| `type` | string | **REQUIRED.** MUST be `"z"`. |
+| `extent` | \[number] | **REQUIRED.** Four-element ordered normalization extent for the point coordinates. |
+| `column` | \[string] | **REQUIRED.** Path of the Morton-code column, stored as Parquet `INT64` annotated as unsigned 64-bit. |
+| `bit_width` | integer | **REQUIRED.** Number of bits used to quantize each coordinate axis before Morton-code interleaving. MUST be between `1` and `32`. |
+
+To generate a Z code, a writer MUST:
+
+1. Normalize X and Y independently into the range from `0` through `1` using `extent`.
+2. Multiply each normalized coordinate by `2^bit_width`.
+3. Truncate each result to an integer and clamp it to the range from `0` through `2^bit_width - 1`.
+4. Interleave X bits into even bit positions and Y bits into odd bit positions, starting with the least-significant bit.
+5. Sort rows by the resulting unsigned code.
+
+### XZ-order geometry ordering
+
+XZ ordering spatially orders non-point geometries using feature extents.
+
+| Field Name | Type | Description |
+| --- | --- | --- |
+| `type` | string | **REQUIRED.** MUST be `"xz"`. |
+| `extent` | \[number] | **REQUIRED.** Four-element ordered normalization extent used for XZ-code generation. |
+| `column` | \[string] | **REQUIRED.** Path of the XZ-code column, stored as Parquet `INT64` annotated as unsigned 64-bit. |
+| `max_level` | integer | **REQUIRED.** Maximum XZ hierarchy depth. MUST currently be `20`. |
+
+XZ-code generation MUST follow the [XZ-ordering algorithm described by Böhm et al.](http://dx.doi.org/10.1007/3-540-48482-5_7):
+
+1. Compare the feature extent width and height with the corresponding normalization extent.
+2. Select the deepest level at which the feature fits within the enlarged two-cell XZ region, capped by `max_level`.
+3. Recursively subdivide the normalization extent into four quadrants.
+4. Encode the quadrant sequence containing the feature extent's lower-left corner.
+5. Sort rows by the resulting unsigned code.
+
+Clients can compute the XZ covering of a query extent and compare it with page-level code statistics to skip unrelated byte ranges.
+
+### Levels of detail
+
+The optional `lods` object describes derived geometry columns at one or more scales. It MUST be present when `ordering.type` is `"xz"`.
+
+| Field Name | Type | Description |
+| --- | --- | --- |
+| `encoding` | string | **REQUIRED.** Encoding shared by all LOD columns. MUST currently be `"pbf"`, the PBF Geometry format defined below. |
+| `orientation` | string | **REQUIRED.** Winding order of polygon exterior rings in every LOD column. MUST be `"clockwise"`; interior rings use the opposite winding order. |
+| `levels` | \[[Level](#level)] | **REQUIRED.** One or more unique LOD levels. |
+
+#### Level
+
+A `Level` object describes one derived geometry column and its display resolution:
+
+| Field Name | Type | Description |
+| --- | --- | --- |
+| `column` | \[string] | **REQUIRED.** Path of the LOD column, stored as Parquet `BYTE_ARRAY` type. |
+| `scale` | number | **REQUIRED.** Map scale associated with the level.
+| `transform` | [Transform](#transform) | **REQUIRED.** Scale and translation used to quantize and unquantize X, Y, Z, and M values. |
+
+##### Transform
+
+A `Transform` object contains the scale and translation for each coordinate dimension:
+
+| Field Name | Type | Description |
+| --- | --- | --- |
+| `scale` | \[number] | **REQUIRED.** Four scale values ordered as X, Y, Z, and M. |
+| `translate` | \[number] | **REQUIRED.** Four translation values ordered as X, Y, Z, and M. |
+
+`scale` and `translate` are both tuples ordered as X, Y, Z, and M and MUST contain four finite numbers. Scale values MUST be positive. Writers MUST use scale `1` and translation `0` for dimensions absent from the source geometry.
+
+#### LOD generation
+
+Feature geometries are quantized for each level, reducing the number of vertices needed at each scale.
+
+```text
+quantized = round((coordinate - translate) / scale)
+```
+
+The way that writers quantize geometries is implementation dependent, but the following steps are RECOMMENDED:
+- For 2D geometries with only XY, snap vertices to the level grid and merge consecutive collinear vertices.
+- For geometry containing Z or M, pixel snapping is not ideal as it does not preserve original vertices, making Z and M values ambiguous. First generalize with [Douglas-Peucker](https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm), using the XY resolution associated with the `scale` as the tolerance. Then snap the retained XY coordinates to the level grid and encode them as deltas, while preserving the Z and M values attached to those source vertices.
+
+#### PBF Geometry format
+
+The `"pbf"` format encodes flattened geometries in a Protocol Buffers message:
+
+```proto
+message Geometry {
+  repeated uint32 lengths = 2 [packed = true];
+  repeated sint64 coords = 3 [packed = true];
+}
+```
+
+Each `lengths` value contains the vertex count of one path or ring. The coordinate stride is two for XY, three when the dimensional suffix contains Z or M, and four when it contains ZM. Coordinates are interleaved per vertex as XY, XYZ, XYM, or XYZM.
+
+The first X and Y values of each part are absolute quantized coordinates. Later X and Y values are deltas from the preceding vertex. Z and M values are absolute quantized coordinates for every vertex and MUST NOT use delta encoding. Missing, non-finite Z or M ordinates MUST encode as `0`.
+
+##### Polygon winding
+
+Polygon exterior rings MUST be clockwise and interior rings MUST be counterclockwise. This rule is independent of the full-resolution GeoParquet `orientation`. Writers MUST therefore reorient derived rings when required. Quantization may collapse a ring to a single coordinate or otherwise remove a stable orientation.
+
+##### Polygon example
+
+Consider the following polygon in WGS 84 longitude-latitude coordinates. It contains one clockwise exterior ring and one counterclockwise interior ring:
+
+```text
+Polygon {
+  rings: [
+    [
+      [-122.50, 37.70], [-122.50, 37.80], [-122.40, 37.80],
+      [-122.40, 37.70], [-122.50, 37.70]
+    ],
+    [
+      [-122.48, 37.72], [-122.42, 37.72], [-122.42, 37.78],
+      [-122.48, 37.78], [-122.48, 37.72]
+    ]
+  ]
+}
+```
+
+With `scale` set to `[0.01, 0.01, 1, 1]` and `translate` set to `[-132.50, 17.70, 0, 0]`, the coordinate `[-122.40, 37.80]` quantizes to `[1010, 2010]`:
+
+```text
+x = round((-122.40 - -132.50) / 0.01) = 1010
+y = round((  37.80 -   17.70) / 0.01) = 2010
+```
+
+The complete rings quantize to:
+
+```text
+[
+  [[1000, 2000], [1000, 2010], [1010, 2010], [1010, 2000], [1000, 2000]],
+  [[1002, 2002], [1008, 2002], [1008, 2008], [1002, 2008], [1002, 2002]]
+]
+```
+
+Each ring contains five coordinates, including its closing coordinate:
+
+```text
+lengths: [5, 5]
+```
+
+The first X and Y values of each ring remain absolute. Every later X and Y value stores the delta from the preceding coordinate:
+
+```text
+coords: [
+  1000, 2000,   0, 10,  10,  0,   0, -10, -10,  0,
+  1002, 2002,   6,  0,   0,  6,  -6,   0,   0, -6
+]
+```
+
+This produces the following Geometry message:
+
+```text
+Geometry {
+  lengths: [5, 5],
+  coords: [1000, 2000, 0, 10, 10, 0, 0, -10, -10, 0, 1002, 2002, 6, 0, 0, 6, -6, 0, 0, -6]
+}
+```
 
 ### Additional information
 
