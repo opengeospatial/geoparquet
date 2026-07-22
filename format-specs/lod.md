@@ -24,7 +24,9 @@ The GeoParquet file metadata MAY contain a top-level `lod` object:
 
 ### Geometry column requirements
 
-The column identified by `lod.geometry_column` is the authoritative full-resolution geometry for each feature. Its `geometry_types` metadata MUST contain exactly one value whose base geometry type is `LineString`, `MultiLineString`, `Polygon`, or `MultiPolygon`. The value MAY include the `Z`, `M`, or `ZM` dimensional suffix defined by the GeoParquet specification.
+The column identified by `lod.geometry_column` is the authoritative full-resolution geometry for each feature. Its non-empty `geometry_types` metadata MUST contain only one geometry family: `LineString` and `MultiLineString`, or `Polygon` and `MultiPolygon`. Every value MUST use the same dimensional suffix: no suffix, `Z`, `M`, or `ZM`.
+
+Polygon-family LOD metadata MUST define `orientation` as `"clockwise"`. Line-family LOD metadata MUST omit `orientation`.
 
 The CRS MUST be equivalent to WGS 84 longitude-latitude or Web Mercator. The conventional EPSG identifiers are EPSG:4326 and EPSG:3857, respectively.
 
