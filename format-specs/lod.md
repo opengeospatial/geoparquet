@@ -12,11 +12,10 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ## LOD metadata
 
-The GeoParquet file metadata MAY contain a top-level `lod` object:
+Each geometry column definition in the GeoParquet `columns` metadata MAY contain an `lod` object:
 
 | Field Name | Type | Description |
 | --- | --- | --- |
-| `geometry_column` | string | **REQUIRED.** Name of the authoritative full-resolution line or polygon geometry column. The name MUST exist in the GeoParquet `columns` metadata. |
 | `encoding` | string | **REQUIRED.** Encoding shared by every LOD column. MUST currently be `"pbf"`. |
 | `orientation` | string | **REQUIRED.** Winding order of polygon exterior rings in every LOD column. MUST be `"clockwise"`. Interior rings use the opposite winding order. MUST be omitted for line geometry. |
 | `levels` | \[[Level](#level)] | **REQUIRED.** One or more LOD levels. |
@@ -24,7 +23,7 @@ The GeoParquet file metadata MAY contain a top-level `lod` object:
 
 ### Geometry column requirements
 
-The column identified by `lod.geometry_column` is the authoritative full-resolution geometry for each feature. Its non-empty `geometry_types` metadata MUST contain only one geometry family: `LineString` and `MultiLineString`, or `Polygon` and `MultiPolygon`. Every value MUST use the same dimensional suffix: no suffix, `Z`, `M`, or `ZM`.
+The geometry column containing the `lod` object is the authoritative full-resolution geometry for each feature. Its non-empty `geometry_types` metadata MUST contain only one geometry family: `LineString` and `MultiLineString`, or `Polygon` and `MultiPolygon`. Every value MUST use the same dimensional suffix: no suffix, `Z`, `M`, or `ZM`.
 
 Polygon-family LOD metadata MUST define `orientation` as `"clockwise"`. Line-family LOD metadata MUST omit `orientation`.
 

@@ -243,12 +243,11 @@ def write_geometry_file(path, geometry):
                 "geometry_types": [geometry_type],
                 "bbox": bounds,
                 "crs": EPSG_4326,
+                **({"lod": lod_metadata} if lod_metadata is not None else {}),
             }
         },
         "ordering": ordering,
     }
-    if lod_metadata is not None:
-        metadata["lod"] = lod_metadata
 
     schema = pa.schema(fields, metadata={b"geo": json.dumps(metadata).encode()})
     table = pa.Table.from_arrays(columns, schema=schema)
@@ -407,7 +406,6 @@ def create_lod_column(geometry):
     geolod_type = pa.struct(fields)
     geolod = pa.StructArray.from_arrays(arrays, fields=fields)
     metadata = {
-        "geometry_column": "geometry",
         "encoding": "pbf",
         "levels": levels_metadata,
     }
