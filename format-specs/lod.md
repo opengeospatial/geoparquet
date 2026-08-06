@@ -43,8 +43,29 @@ A `Level` object describes one derived geometry column and its display resolutio
 | Field Name | Type | Description |
 | --- | --- | --- |
 | `column` | \[string] | **REQUIRED.** Path of the LOD column, stored as Parquet `BYTE_ARRAY` type. |
-| `scale` | number | **REQUIRED.** Map scale associated with the level.
+| `resolution` | number | **REQUIRED.** Positive size of one logical display pixel in CRS coordinate units for the level. |
 | `transform` | [Transform](#transform) | **REQUIRED.** Scale and translation used to quantize and unquantize X, Y, Z, and M values. |
+
+##### Selecting a level for a display scale
+
+Given a display scale denominator, compute the target resolution using:
+
+```text
+target_resolution =
+    scale_denominator
+    * physical_pixel_size_in_meters
+    / meters_per_crs_unit
+```
+
+The physical pixel size depends on the scale convention. ArcGIS uses `96` dots per inch, equivalent to approximately `0.000264583` meters per pixel:
+
+```text
+target_resolution =
+    scale_denominator
+    / (meters_per_crs_unit * 96 * 39.37)
+```
+
+OGC standards commonly use `0.00028` meters per pixel. Readers SHOULD select the level with the largest resolution that does not exceed the target resolution. This chooses the least detailed level that still provides at least one source sample per logical display pixel.
 
 ##### Transform
 
@@ -67,7 +88,7 @@ quantized = round((coordinate - translate) / scale)
 
 The way that writers quantize geometries is implementation dependent, but the following steps are RECOMMENDED:
 - For 2D geometries with only XY, snap vertices to the level grid and merge consecutive collinear vertices.
-- For geometry containing Z or M, pixel snapping is not ideal as it does not preserve original vertices, making Z and M values ambiguous. First generalize with [Douglas-Peucker](https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm), using the XY resolution associated with the `scale` as the tolerance. Then snap the retained XY coordinates to the level grid and encode them as deltas, while preserving the Z and M values attached to those source vertices.
+- For geometry containing Z or M, pixel snapping is not ideal as it does not preserve original vertices, making Z and M values ambiguous. First generalize with [Douglas-Peucker](https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm), using the level `resolution` as the tolerance. Then snap the retained XY coordinates to the level grid and encode them as deltas, while preserving the Z and M values attached to those source vertices.
 
 #### PBF Geometry format
 

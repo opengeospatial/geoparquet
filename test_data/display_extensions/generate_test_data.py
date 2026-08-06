@@ -8,10 +8,11 @@
 # ]
 # ///
 """
-Generates example data using pyarrow, shapely, and proto-plus by running:
+Generate GeoParquet files for testing display extensions.
 
-    uv run test_data/display_extensions/generate_test_data.py
+Run this script to regenerate the single geometry test data:
 
+    uv run generate_test_data.py
 """
 
 import json
@@ -22,6 +23,7 @@ import geoarrow.pyarrow as ga
 import proto
 import pyarrow as pa
 import pyarrow.parquet as pq
+import shapely
 from shapely.geometry import (
     LineString,
     MultiLineString,
@@ -128,7 +130,6 @@ def generate_example_files():
 
 def create_lod_levels():
     resolution = 0.703125
-    scale = 295_829_355.4545656
     levels = []
 
     for level in range(17):
@@ -137,11 +138,9 @@ def create_lod_levels():
                 {
                     "column": f"level_{level}",
                     "resolution": resolution,
-                    "scale": scale,
                 }
             )
         resolution /= 2
-        scale /= 2
 
     return levels
 
@@ -373,18 +372,26 @@ def interleave_bits(x_value, y_value, bit_width):
 
 
 def create_lod_column(geometry):
+    geometries = (
+        [geometry]
+        if hasattr(geometry, "geom_type")
+        else list(geometry)
+    )
     arrays = []
     fields = []
     levels_metadata = []
 
     for level in create_lod_levels():
-        encoded = encode_lod_geometry(geometry, level["resolution"])
-        arrays.append(pa.array([encoded], type=pa.binary()))
+        encoded = [
+            encode_lod_geometry(item, level["resolution"])
+            for item in geometries
+        ]
+        arrays.append(pa.array(encoded, type=pa.binary()))
         fields.append(pa.field(level["column"], pa.binary(), nullable=True))
         levels_metadata.append(
             {
                 "column": ["geolod", level["column"]],
-                "scale": level["scale"],
+                "resolution": level["resolution"],
                 "transform": {
                     "scale": [
                         level["resolution"],
@@ -404,7 +411,10 @@ def create_lod_column(geometry):
         "encoding": "pbf",
         "levels": levels_metadata,
     }
-    if geometry.geom_type in {"Polygon", "MultiPolygon"}:
+    if all(
+        item.geom_type in {"Polygon", "MultiPolygon"}
+        for item in geometries
+    ):
         metadata["orientation"] = "clockwise"
     return geolod, pa.field("geolod", geolod_type, nullable=False), metadata
 
@@ -452,8 +462,9 @@ def geometry_paths(geometry):
 
 
 def polygon_paths(polygon):
-    paths = [list(reversed(polygon.exterior.coords))]
-    paths.extend(list(reversed(interior.coords)) for interior in polygon.interiors)
+    oriented = shapely.orient_polygons(polygon, exterior_cw=True)
+    paths = [list(oriented.exterior.coords)]
+    paths.extend(list(interior.coords) for interior in oriented.interiors)
     return paths
 
 
