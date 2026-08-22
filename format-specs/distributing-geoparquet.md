@@ -65,6 +65,30 @@ see [Further Discussion: page-level spatial statistics](#page-level-spatial-stat
 > wider range of software/versions to read your data. Many tools (GDAL, DuckDB, Hyparquet, geoparquet-io, SedonaDB, QGIS)
 > will work with Parquet native types (and the GeoParquet 2.0 metadata), and eventually 2.0 will be the only recommended way.
 
+### When to add a bbox covering column
+
+GeoParquet 2.0 retains the [`bbox` covering](geoparquet.md#covering) from version 1.1 as an option. Most files don't
+need it — the native row group statistics described above provide efficient spatial access without any extra column — so
+the default recommendation is to leave it out. But there are two situations where adding it can be worth the additional
+file size:
+
+- **Page-level spatial pruning.** The native geospatial statistics only exist at the row group level, so once a row
+  group matches a query the reader must fetch all of it. A `bbox` covering is an ordinary Parquet struct column, so it
+  gets a standard [page index](https://github.com/apache/parquet-format/blob/master/PageIndex.md) whose per-page min/max
+  values let readers skip individual pages *within* a row group. Early benchmarks
+  ([issue #279](https://github.com/opengeospatial/geoparquet/issues/279)) saw a selective spatial query on a ~10 million
+  row file roughly halve in time (~93 ms down to ~48 ms) with page-level pruning. The benefit is largest for highly
+  selective queries over remote files — for example a frontend application fetching just the features in a small
+  bounding box over HTTP — and, like the row group statistics, it only helps if the data is spatially ordered. See
+  [Further Discussion: page-level spatial statistics](#page-level-spatial-statistics) for more depth.
+- **Compatibility with more readers.** Tools that don't (yet) understand the native geospatial statistics can still get
+  efficient spatial filtering from the covering, since it is a plain column with ordinary Parquet statistics that any
+  query engine can push predicates down onto.
+
+The cost is file size: the covering adds a struct of four doubles to every row. For polygon and line datasets the
+overhead is usually modest since the geometries themselves dominate, but for point datasets the bounding box is larger
+than the point it describes, so it is rarely worth adding there.
+
 ### Spatial Ordering
 
 It is essential to make sure that the data is spatially ordered in some way within the file, in order for the row group
@@ -189,10 +213,11 @@ geospatial statistics — a bounding box — at the **column chunk (row group)**
 row group whose bounding box does not intersect the query, but once a row group is selected it must read all of that row group's
 pages, even if many of those pages fall entirely outside the area of interest.
 
-This is actually a step back from what the GeoParquet 1.1 `bbox` covering column could do. Because that covering is an ordinary
+This is actually a step back from what the `bbox` covering column could do. Because that covering is an ordinary
 Parquet `struct` column, it gets a normal Parquet page index (`ColumnIndex`), so its per-page min/max values let a reader prune
 individual **pages** within a row group, not just whole row groups. So while the native geometry statistics remove the need for
-an extra column and make files smaller, the 1.1 `bbox` covering column can still offer finer-grained spatial pruning.
+an extra column and make files smaller, the `bbox` covering column can still offer finer-grained spatial pruning — which is why
+GeoParquet 2.0 retains it as an option (see [when to add a bbox covering column](#when-to-add-a-bbox-covering-column)).
 
 How much does page-level pruning matter? [Issue #279](https://github.com/opengeospatial/geoparquet/issues/279) collects some
 early benchmarks. On a ~10 million row Overture buildings file with a selective `intersects` query, page-level pruning roughly
