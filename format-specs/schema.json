@@ -63,7 +63,7 @@
                   "maxItems": 4
                 },
                 {
-                  "description": "3D bbox consisting of (xmin, ymin, zmin, xmax, ymax, zmax) or 2D+M bbox (xmin, ymin, mmin, xmax, ymax, mmax)",
+                  "description": "3D bbox consisting of (xmin, ymin, zmin, xmax, ymax, zmax)",
                   "minItems": 6,
                   "maxItems": 6
                 },
