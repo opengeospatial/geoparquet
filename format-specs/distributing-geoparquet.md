@@ -75,9 +75,7 @@ file size:
 - **Page-level spatial pruning.** The native geospatial statistics only exist at the row group level, so once a row
   group matches a query the reader must fetch all of it. A `bbox` covering is an ordinary Parquet struct column, so it
   gets a standard [page index](https://github.com/apache/parquet-format/blob/master/PageIndex.md) whose per-page min/max
-  values let readers skip individual pages *within* a row group. Early benchmarks
-  ([issue #279](https://github.com/opengeospatial/geoparquet/issues/279)) saw a selective spatial query on a ~10 million
-  row file roughly halve in time (~93 ms down to ~48 ms) with page-level pruning. The benefit is largest for highly
+  values let readers skip individual pages *within* a row group. The benefit is largest for highly
   selective queries over remote files — for example a frontend application fetching just the features in a small
   bounding box over HTTP — and, like the row group statistics, it only helps if the data is spatially ordered. See
   [Further Discussion: page-level spatial statistics](#page-level-spatial-statistics) for more depth.
