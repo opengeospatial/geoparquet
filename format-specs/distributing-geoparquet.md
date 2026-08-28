@@ -68,8 +68,8 @@ see [Further Discussion: page-level spatial statistics](#page-level-spatial-stat
 ### When to add a bbox covering column
 
 GeoParquet 2.0 retains the [`bbox` covering](geoparquet.md#covering) from version 1.1 as an option. Most files don't
-need it — the native row group statistics described above provide efficient spatial access without any extra column — so
-the default recommendation is to leave it out. But there are two situations where adding it can be worth the additional
+need it because the native row group statistics described above provide efficient spatial access without any extra column.
+Therefore, the default recommendation is to leave it out, but there are two situations where adding it can be worth the additional
 file size:
 
 - **Page-level spatial pruning.** The native geospatial statistics only exist at the row group level, so once a row
