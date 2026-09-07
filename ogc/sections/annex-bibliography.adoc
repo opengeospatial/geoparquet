@@ -1,0 +1,13 @@
+[bibliography]
+[[Bibliography]]
+== Bibliography
+
+* [[[geoparquet-community,GeoParquet community specification]]], GeoParquet community: GeoParquet Specification, version 2.0.0, `format-specs/geoparquet.md`. https://github.com/opengeospatial/geoparquet
+* [[[geoparquet-distribution,GeoParquet distribution best practices]]], GeoParquet community: Distributing GeoParquet, `format-specs/distributing-geoparquet.md`. https://github.com/opengeospatial/geoparquet
+* [[[geoparquet-testing,GeoParquet testing corpus]]], GeoParquet community: geoparquet-testing, conformance and negative test files for GeoParquet 2.0. https://github.com/geoparquet/geoparquet-testing
+* [[[geoarrow,GeoArrow]]], GeoArrow community: GeoArrow specification. https://geoarrow.org/
+* [[[OGC18-010r7,OGC 18-010r7]]]
+* [[[OGC18-005r4,OGC 18-005r4]]]
+* [[[OGC12-128r18,OGC 12-128r18]]]
+* [[[ISO13249-3,ISO/IEC 13249-3:2016]]]
+* [[[semver,Semantic Versioning 2.0.0]]], Preston-Werner, T.: Semantic Versioning 2.0.0. https://semver.org/

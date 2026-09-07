@@ -1,0 +1,9 @@
+// Source: geoparquet.md 2.0.0, Geometry columns (L15) and encoding (L50, L112-L114)
+[[req_core_geometry-column-type]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/geometry-column-type
+part:: A geometry column SHALL be a Parquet column of primitive type `BYTE_ARRAY` annotated with the `GEOMETRY` or the `GEOGRAPHY` logical type as specified in <<parquet-logical-types>>.
+part:: The `encoding` member of the column metadata object SHALL be the string `"WKB"`.
+====

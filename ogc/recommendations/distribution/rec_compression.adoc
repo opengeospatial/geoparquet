@@ -1,0 +1,9 @@
+// Source: Portolan formats.md, GeoParquet: 'Files SHOULD be compressed to stay small, with zstd RECOMMENDED'; distributing-geoparquet.md L17, L25-L42
+[[rec_distribution_compression]]
+[recommendation]
+====
+[%metadata]
+identifier:: /rec/distribution/compression
+part:: The column chunks of the file SHOULD be compressed.
+part:: The ZSTD codec is RECOMMENDED, at compression level 15 or higher.
+====

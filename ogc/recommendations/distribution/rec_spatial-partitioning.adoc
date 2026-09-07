@@ -1,0 +1,8 @@
+// Source: Portolan formats.md, Partitioned Collections: 'consider partitioning files over ~2 GB, targeting 200 MB-1 GB per file'; distributing-geoparquet.md L22, L101-L123
+[[rec_distribution_spatial-partitioning]]
+[recommendation]
+====
+[%metadata]
+identifier:: /rec/distribution/spatial-partitioning
+part:: A dataset larger than approximately 2 GB SHOULD be partitioned into several files by a spatial partitioning scheme, targeting 200 MB to 1 GB per file, so that readers can skip whole files using their statistics.
+====

@@ -1,0 +1,19 @@
+[[ats_core_axis-order]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/core/axis-order
+target:: /req/core/axis-order
+test-purpose:: Verify the coordinate axis order of geometry values.
+test-method::
++
+--
+1. For each geometry column whose coordinate reference system has a latitude-longitude axis order (for example EPSG:4326), decode a sample of geometry values.
+
+2. Verify that the first coordinate of each point is the longitude (easting) and the second is the latitude (northing), for example by checking that first coordinates lie within [-180, 180] and second coordinates within [-90, 90] and that the geometries fall within the `bbox`, if present.
+
+NOTE: For coordinate reference systems with an easting-northing axis order this test is trivially satisfied.
+
+NOTE: Heuristic only: `gpio validate` `coordinates_valid_for_crs_*` and `geography_coordinate_bounds_*`; GDAL bbox range checks.
+--
+====

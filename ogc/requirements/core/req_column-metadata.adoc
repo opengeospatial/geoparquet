@@ -1,0 +1,9 @@
+// Source: geoparquet.md 2.0.0, Column metadata (L40, L46-L51)
+[[req_core_column-metadata]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/column-metadata
+part:: Every geometry column of the file SHALL be described by a member of the `columns` object whose name is the name of that geometry column.
+part:: Every member of the `columns` object SHALL be a JSON object (the column metadata object) containing an `encoding` member and a `geometry_types` member.
+====

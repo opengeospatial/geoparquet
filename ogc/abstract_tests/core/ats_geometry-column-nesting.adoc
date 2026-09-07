@@ -1,0 +1,15 @@
+[[ats_core_geometry-column-nesting]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/core/geometry-column-nesting
+target:: /req/core/geometry-column-nesting
+test-purpose:: Verify that geometry columns are not nested.
+test-method::
++
+--
+1. For each member of `columns`, verify that the schema element with that name is a direct child of the root of the Parquet schema and is not a group field.
+
+NOTE: Implemented by `gpio validate` check `geometry_not_grouped_*` and by GPQ `geometry columns must not be grouped`.
+--
+====

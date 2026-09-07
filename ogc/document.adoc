@@ -1,0 +1,75 @@
+= GeoParquet Standard
+:doctype: standard
+:docsubtype: encoding
+:encoding: utf-8
+:lang: en
+:status: swg-draft
+:committee: technical
+:draft: 0.1
+:external-id: http://www.opengis.net/doc/IS/geoparquet/2.0
+:docnumber: 24-013
+:received-date: 2026-09-03
+:issued-date: 2026-09-03
+:published-date: 2026-09-03
+:fullname: Chris Holmes
+:fullname_2: Tim Schaub
+:fullname_3: Joris Van den Bossche
+:fullname_4: Kyle Barron
+:fullname_5: Javier de la Torre
+:keywords: ogcdoc, OGC document, GeoParquet, Parquet, columnar, cloud-native, geospatial, encoding
+:submitting-organizations: Planet Labs PBC; CARTO
+:mn-document-class: ogc
+:mn-output-extensions: xml,html
+:local-cache-only:
+:data-uri-image:
+:edition: 2.0.0
+
+////
+EDITORIAL STATUS (remove before submission)
+
+This is a proposal prepared on the ogc-spec-alignment branch. It restates the GeoParquet
+2.0.0 community specification (format-specs/geoparquet.md, format-specs/schema.json) as an
+OGC Standard. Open items that the SWG has to confirm:
+
+* docnumber 24-013 was assigned by OGC in 2024 for the 1.0 draft; confirm with OGC staff
+  that it is still reserved for GeoParquet.
+* received/issued/published dates are placeholders (date of drafting).
+* editors (fullname..fullname_5) and submitting organizations are carried over from PR #224.
+  The chair considers the five names correct but expects that others are needed
+  (for example the authors of the 2.0 changes). @cholmes: who else should be listed as
+  editor, and who as contributor in clause 0? The Contributors table is a placeholder.
+* Clause 7 (Bounding Box Covering) restates pull request #302, merged into the community
+  specification on 2026-09-07.
+* The normative reference to the GeoParquet JSON Schema points at the v2.0.0 release URL,
+  which exists only once 2.0.0 is tagged.
+
+See docs/ogc/CHANGES.md for every place where the wording here differs from the markdown.
+////
+
+include::sections/clause_0_front_material.adoc[]
+
+include::sections/clause_1_scope.adoc[]
+
+include::sections/clause_2_conformance.adoc[]
+
+include::sections/clause_3_references.adoc[]
+
+include::sections/clause_4_terms_and_definitions.adoc[]
+
+include::sections/clause_5_conventions.adoc[]
+
+include::sections/clause_6_core.adoc[]
+
+include::sections/clause_7_covering.adoc[]
+
+include::sections/clause_8_distribution.adoc[]
+
+include::sections/clause_9_implementation_considerations.adoc[]
+
+include::sections/annex-a.adoc[]
+
+include::sections/annex-b-example.adoc[]
+
+include::sections/annex-history.adoc[]
+
+include::sections/annex-bibliography.adoc[]

@@ -1,0 +1,17 @@
+[[ats_covering_keys]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/covering/keys
+target:: /req/covering/keys
+test-purpose:: Verify the member names of the `covering` object.
+test-method::
++
+--
+1. For each column metadata object that has a `covering` member, verify that every member name of `covering` is `bbox`.
+
+2. Verify that the `covering` object has a `bbox` member.
+
+NOTE: Partly implemented by `gpio validate` `covering_is_object_*`. Unknown covering keys and a missing `bbox` member are not detected by any tool.
+--
+====

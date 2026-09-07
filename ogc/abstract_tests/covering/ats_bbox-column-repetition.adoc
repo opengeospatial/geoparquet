@@ -1,0 +1,17 @@
+[[ats_covering_bbox-column-repetition]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/covering/bbox-column-repetition
+target:: /req/covering/bbox-column-repetition
+test-purpose:: Verify the repetition of a bounding box column.
+test-method::
++
+--
+1. Verify that the repetition type of the bounding box column equals the repetition type of the geometry column it describes.
+
+2. Read every row and verify that the bounding box value is present when, and only when, the geometry value is present.
+
+NOTE: Not implemented by any tool.
+--
+====

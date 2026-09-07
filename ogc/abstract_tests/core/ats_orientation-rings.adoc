@@ -1,0 +1,17 @@
+[[ats_core_orientation-rings]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/core/orientation-rings
+target:: /req/core/orientation-rings
+test-purpose:: Verify the winding order of polygon rings when `orientation` is declared.
+test-method::
++
+--
+1. For each geometry column whose column metadata object has an `orientation` member, decode every non-null geometry value.
+
+2. For every Polygon, including Polygons contained in MultiPolygon and GeometryCollection values, verify that the exterior ring is counterclockwise and that every interior ring is clockwise.
+
+NOTE: Implemented by GDAL `validate_geoparquet.py --check-data` (Polygon, MultiPolygon, GeometryCollection). GPQ checks top-level Polygons only. `gpio validate` reports `orientation_matches_data_*` as not implemented.
+--
+====

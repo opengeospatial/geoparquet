@@ -1,0 +1,8 @@
+// Source: distributing-geoparquet.md (PR #302), When to add a bbox covering column; gpio check bbox
+[[rec_distribution_bbox-column-declared]]
+[recommendation]
+====
+[%metadata]
+identifier:: /rec/distribution/bbox-column-declared
+part:: If the file contains a root-level group column with child fields named `xmin`, `ymin`, `xmax` and `ymax`, that column SHOULD be declared as the bounding box covering of a geometry column (<<rc_covering>>).
+====

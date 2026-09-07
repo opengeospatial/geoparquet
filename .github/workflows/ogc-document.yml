@@ -1,0 +1,69 @@
+name: OGC document
+
+# Builds the OGC (metanorma) version of the specification in ogc/ and fails on metanorma
+# errors. Warnings are reported in the uploaded document.err.html but do not fail the job.
+
+on:
+  push:
+    paths:
+      - 'ogc/**'
+      - '.github/workflows/ogc-document.yml'
+  pull_request:
+    paths:
+      - 'ogc/**'
+      - '.github/workflows/ogc-document.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Compile with metanorma (docker)
+        working-directory: ogc
+        run: |
+          docker run --rm -v "$PWD":/metanorma metanorma/metanorma:latest \
+            metanorma compile --agree-to-terms -t ogc -x xml,html document.adoc 2>&1 | tee ../metanorma-build.log
+          test -f document.html
+          test -f document.xml
+
+      - name: Fail on metanorma errors (severity 0 or 1)
+        working-directory: ogc
+        run: |
+          python3 - <<'EOF'
+          import html, re, sys
+          s = open("document.err.html", encoding="utf-8").read()
+          rows = re.findall(r"<tr[^>]*>(.*?)</tr>", s, re.S)
+          bad = []
+          for r in rows:
+              cells = [html.unescape(re.sub("<[^>]+>", "", c)).strip()
+                       for c in re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", r, re.S)]
+              # Ignore the duplicate "Layer_1" id that metanorma's bundled OGC logo SVG produces.
+              if len(cells) >= 6 and cells[-1] in ("0", "1") and cells[1] != "Layer_1":
+                  bad.append(" | ".join(c[:120] for c in cells))
+          if bad:
+              print("Metanorma reported errors:")
+              print("\n".join(bad))
+              sys.exit(1)
+          print("No metanorma errors of severity 0 or 1.")
+          EOF
+
+      - name: Check requirement/test linkage warnings
+        working-directory: ogc
+        run: |
+          # Every requirement must have a conformance test; report metanorma's MODSPEC linkage
+          # warnings for requirements (recommendations and permissions have no tests by design).
+          if grep -E "Requirement /req/[^ ]+ has no corresponding Conformance test" ../metanorma-build.log; then
+            echo "A requirement is missing its abstract test."; exit 1
+          fi
+          echo "All requirements have a conformance test."
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ogc-document
+          path: |
+            ogc/document.html
+            ogc/document.xml
+            ogc/document.err.html
+            metanorma-build.log

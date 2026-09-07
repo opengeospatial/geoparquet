@@ -1,0 +1,8 @@
+// Source: Portolan formats.md, GeoParquet: 'For 2.x, a covering column remains RECOMMENDED even where native statistics exist'
+[[rec_distribution_bbox-covering]]
+[recommendation]
+====
+[%metadata]
+identifier:: /rec/distribution/bbox-covering
+part:: A bounding box covering (<<rc_covering>>) is RECOMMENDED even where native geospatial statistics exist, because the page-level statistics of its column enable finer-grained pruning than the row-group statistics.
+====

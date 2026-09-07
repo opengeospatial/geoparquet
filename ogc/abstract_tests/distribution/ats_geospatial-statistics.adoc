@@ -1,0 +1,15 @@
+[[ats_distribution_geospatial-statistics]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/distribution/geospatial-statistics
+target:: /req/distribution/geospatial-statistics
+test-purpose:: Verify that geospatial statistics are present for every geometry column.
+test-method::
++
+--
+1. For every geometry column and every row group, read the `ColumnMetaData` of the column chunk and verify that `geospatial_statistics` is present and contains `bbox` with `xmin`, `xmax`, `ymin` and `ymax`.
+
+NOTE: Implemented by `gpio validate` check `native_geo_stats_*` and by `gpio check optimization` (factor 2, geo bbox statistics).
+--
+====

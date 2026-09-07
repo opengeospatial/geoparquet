@@ -1,0 +1,38 @@
+[[ats_covering]]
+[conformance_class]
+====
+[%metadata]
+identifier:: http://www.opengis.net/spec/geoparquet/2.0/conf/covering
+target:: http://www.opengis.net/spec/geoparquet/2.0/req/covering
+classification:: Target Type:GeoParquet file
+abstract-test:: /conf/covering/keys
+abstract-test:: /conf/covering/bbox-paths
+abstract-test:: /conf/covering/bbox-column-structure
+abstract-test:: /conf/covering/bbox-column-type
+abstract-test:: /conf/covering/bbox-column-repetition
+abstract-test:: /conf/covering/bbox-column-nesting
+====
+
+==== Keys
+
+include::./covering/ats_keys.adoc[]
+
+==== Bbox paths
+
+include::./covering/ats_bbox-paths.adoc[]
+
+==== Bbox column structure
+
+include::./covering/ats_bbox-column-structure.adoc[]
+
+==== Bbox column type
+
+include::./covering/ats_bbox-column-type.adoc[]
+
+==== Bbox column repetition
+
+include::./covering/ats_bbox-column-repetition.adoc[]
+
+==== Bbox column nesting
+
+include::./covering/ats_bbox-column-nesting.adoc[]

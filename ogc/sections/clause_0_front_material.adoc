@@ -1,0 +1,51 @@
+.Preface
+
+This document is the OGC Standard for version 2.0.0 of GeoParquet. GeoParquet is developed in the open by the GeoParquet community and the OGC GeoParquet Standards Working Group at https://github.com/opengeospatial/geoparquet. The community specification (`format-specs/geoparquet.md`, version 2.0.0) and its JSON Schema (`format-specs/schema.json`) are the source of every normative provision in this document. This document restates those provisions as OGC requirements, recommendations and permissions, each with an identifier and, for requirements, an abstract test. It does not add to or change them. Where the wording differs, the differences and their reasons are recorded in the GeoParquet repository (`docs/ogc/CHANGES.md`).
+
+GeoParquet 2.0 is built on the geospatial logical types `GEOMETRY` and `GEOGRAPHY` and the geospatial statistics that Apache Parquet added in format version 2.11 (March 2025). The Parquet format specification is therefore a normative reference of this Standard: this Standard does not redefine the encoding of geometries, the syntax of the Parquet `crs` parameter or the edge interpolation algorithms, but requires their use and specifies the additional GeoParquet metadata and the consistency between that metadata and the Parquet schema.
+
+// Metanorma inserts the OGC patent declaration ("Attention is drawn to the possibility...")
+// automatically in the front matter; it is not repeated here.
+
+[abstract]
+== Abstract
+
+Apache Parquet is a standardized open-source columnar storage format. GeoParquet specifies how geospatial vector data is stored in Parquet files: geometry columns use the Parquet `GEOMETRY` and `GEOGRAPHY` logical types with Well-Known Binary (WKB) values, and a `geo` entry in the Parquet file metadata carries additional metadata about each geometry column, such as the geometry types present, the coordinate reference system, the coordinate epoch, the edge interpolation, the polygon orientation and the bounding box. This Standard defines the requirements that a Parquet file has to satisfy to be a GeoParquet 2.0 file, in two requirements classes: Core, which applies to every GeoParquet file, and Bounding Box Covering, which applies to files that additionally store a per-row bounding box column for accelerated spatial filtering.
+
+
+// Security Considerations - Since this standard does not specify security considerations, metanorma will automatically include text stating that "No security considerations have been made for this Standard.".
+
+== Submitters
+
+All questions regarding this submission should be directed to the editor or the submitters:
+
+////
+Carried over from PR #224. The chair considers these names correct. Question for
+@cholmes and the SWG: should other submitters be listed (for example the organizations
+of the 2.0 authors)?
+////
+
+.Submitters
+|===
+|*Name* |*Affiliation*
+| Chris Holmes | Planet Labs PBC
+| Tim Schaub | Planet Labs PBC
+| Javier de la Torre | CARTO
+|===
+
+== Contributors
+
+////
+Placeholder. Question for @cholmes and the SWG: who should be listed here? Candidates are
+the maintainers of the community specification and the authors of the GeoParquet 2.0
+changes, plus the people who did the 1.0 OGC migration (Gobe Hobona, Matthias Mohr).
+Names are not added without the person's agreement.
+////
+
+Additional contributors to this Standard include the following:
+
+.Contributors
+|===
+|*Name* |*Affiliation* |*OGC Member*
+| To be confirmed | | Yes/No
+|===

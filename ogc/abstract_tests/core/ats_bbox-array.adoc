@@ -1,0 +1,17 @@
+[[ats_core_bbox-array]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/core/bbox-array
+target:: /req/core/bbox-array
+test-purpose:: Verify the structure of the `bbox` member.
+test-method::
++
+--
+1. For each column metadata object that has a `bbox` member, verify that its value is a JSON array with 4, 6 or 8 elements, each of which is a JSON number.
+
+2. For a geometry column in a geographic coordinate reference system, verify that the latitude values satisfy ymin <= ymax and that the longitude values either satisfy xmin <= xmax or, when xmin > xmax, that the declared extent crosses the antimeridian, as specified in <<rfc7946>>, section 5.
+
+NOTE: Partly implemented by `gpio validate` `bbox_valid_*` and GPQ `optional bbox must be an array of 4 or 6 numbers`; both reject the 8-element form, and GDAL raises an exception on it. Only the JSON Schema accepts 8 elements. Step 2 (antimeridian ordering) is not implemented.
+--
+====

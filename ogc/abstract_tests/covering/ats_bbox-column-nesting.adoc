@@ -1,0 +1,15 @@
+[[ats_covering_bbox-column-nesting]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/covering/bbox-column-nesting
+target:: /req/covering/bbox-column-nesting
+test-purpose:: Verify that a bounding box column is not nested.
+test-method::
++
+--
+1. Verify that the schema element of the bounding box column is a direct child of the root of the Parquet schema.
+
+NOTE: Partly implemented by `gpio validate` `covering_bbox_column_exists_*`.
+--
+====

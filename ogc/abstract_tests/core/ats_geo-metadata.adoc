@@ -1,0 +1,19 @@
+[[ats_core_geo-metadata]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/core/geo-metadata
+target:: /req/core/geo-metadata
+test-purpose:: Verify that the file carries valid GeoParquet metadata.
+test-method::
++
+--
+1. Read `FileMetaData::key_value_metadata` and verify that an entry with the key `geo` is present.
+
+2. Verify that the value of the `geo` entry is a valid UTF-8 string that parses as a JSON object.
+
+3. Validate the parsed JSON object against the GeoParquet 2.0.0 JSON Schema (<<geoparquet-schema>>) and verify that no validation error is reported.
+
+NOTE: Implemented by geoparquet-io `gpio validate` checks `geo_key_exists`, `metadata_is_json_object` and `geo_metadata_parse` (steps 1 and 2). Step 3, validation against the JSON Schema, is implemented by GDAL `validate_geoparquet.py`; gpio does not run the schema.
+--
+====

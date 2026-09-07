@@ -1,0 +1,11 @@
+// Source: geoparquet.md 2.0.0, geometry_types (L51, L122-L136); schema.json `uniqueItems`, item `pattern`
+[[req_core_geometry-types]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/geometry-types
+part:: Each element of `geometry_types` SHALL be one of the strings `"Point"`, `"LineString"`, `"Polygon"`, `"MultiPoint"`, `"MultiLineString"`, `"MultiPolygon"`, `"GeometryCollection"`, optionally followed by the suffix `" Z"` (XYZ geometries), `" M"` (XYM geometries) or `" ZM"` (XYZM geometries).
+part:: The elements of `geometry_types` SHALL be unique.
+part:: If `geometry_types` is not empty, it SHALL contain the geometry type, including the dimension suffix, of every non-null geometry in the column.
+part:: Where the column chunks of the geometry column carry `GeospatialStatistics`, the set of geometry types listed in `geometry_types` SHALL correspond to the `geospatial_types` recorded in those statistics, as specified in <<parquet-geospatial>>.
+====

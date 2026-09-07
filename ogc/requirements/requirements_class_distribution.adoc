@@ -1,0 +1,17 @@
+[[rc_distribution]]
+[requirements_class]
+.Requirements Class Cloud-Optimized Distribution
+====
+[%metadata]
+identifier:: http://www.opengis.net/spec/geoparquet/2.0/req/distribution
+subject:: GeoParquet file
+inherit:: http://www.opengis.net/spec/geoparquet/2.0/req/core
+requirement:: /req/distribution/geospatial-statistics
+requirement:: /req/distribution/spatial-order
+recommendation:: /rec/distribution/row-group-size
+recommendation:: /rec/distribution/compression
+recommendation:: /rec/distribution/bbox-covering
+recommendation:: /rec/distribution/bbox-column-declared
+recommendation:: /rec/distribution/spatial-partitioning
+recommendation:: /rec/distribution/stac-metadata
+====

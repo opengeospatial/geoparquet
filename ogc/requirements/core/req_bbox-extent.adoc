@@ -1,0 +1,8 @@
+// Source: geoparquet.md 2.0.0, bbox (L186)
+[[req_core_bbox-extent]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/bbox-extent
+part:: If the `bbox` member of a column metadata object is present, it SHALL represent the range of coordinate values, in each dimension, of all non-null geometries in the geometry column.
+====
