@@ -3,11 +3,11 @@
 
 ////
 EDITORIAL NOTE: this requirements class restates the `covering` member and the bounding box
-columns of GeoParquet 1.1 as re-introduced into GeoParquet 2.0 by pull request #302
-(https://github.com/opengeospatial/geoparquet/pull/302). It is to be kept only if that pull
-request is merged before this document is submitted; otherwise remove this clause, the
-`covering` row of <<tbl_column_metadata>>, the conformance class in Annex A and the
-"covering" and "bounding box column" terms.
+columns of GeoParquet 1.1, re-introduced into GeoParquet 2.0 by pull request #302
+(https://github.com/opengeospatial/geoparquet/pull/302), merged on 2026-09-07 as commit
+4c9f87e. The class is therefore no longer conditional. The merged text dropped the rule that
+the four child fields be ordered `xmin`, `ymin`, `xmax`, `ymax`; the requirement follows it
+(see docs/ogc/spec-issues.md, SI-26).
 ////
 
 === Overview

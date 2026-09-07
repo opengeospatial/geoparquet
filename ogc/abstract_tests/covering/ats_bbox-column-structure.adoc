@@ -10,10 +10,10 @@ test-method::
 --
 1. Verify that the schema element of the bounding box column is a group field with four or six child fields.
 
-2. If it has four child fields, verify that they are named `xmin`, `ymin`, `xmax`, `ymax`, in that order.
+2. If it has four child fields, verify that they are named `xmin`, `ymin`, `xmax` and `ymax`, in any order.
 
 3. If it has six child fields, verify that they are named `xmin`, `ymin`, `zmin`, `xmax`, `ymax`, `zmax`, in that order.
 
-NOTE: Partly implemented by `gpio validate` `covering_bbox_structure_*` (four children named `xmin`, `ymin`, `xmax`, `ymax`). Field order and the `zmin`/`zmax` pairing are not checked.
+NOTE: Partly implemented by `gpio validate` `covering_bbox_structure_*` (four children named `xmin`, `ymin`, `xmax`, `ymax`). The `zmin`/`zmax` pairing and the order of the six-child form are not checked.
 --
 ====

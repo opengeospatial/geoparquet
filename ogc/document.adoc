@@ -38,8 +38,8 @@ OGC Standard. Open items that the SWG has to confirm:
   The chair considers the five names correct but expects that others are needed
   (for example the authors of the 2.0 changes). @cholmes: who else should be listed as
   editor, and who as contributor in clause 0? The Contributors table is a placeholder.
-* Clause 7 (Bounding Box Covering) depends on pull request #302 being merged into the
-  community specification.
+* Clause 7 (Bounding Box Covering) restates pull request #302, merged into the community
+  specification on 2026-09-07.
 * The normative reference to the GeoParquet JSON Schema points at the v2.0.0 release URL,
   which exists only once 2.0.0 is tagged.
 

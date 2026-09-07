@@ -1,10 +1,10 @@
-// Source: geoparquet.md (PR #302), Bounding Box Columns
+// Source: geoparquet.md L238, Bounding Box Columns (as merged by PR #302, commit 4c9f87e)
 [[req_covering_bbox-column-structure]]
 [requirement]
 ====
 [%metadata]
 identifier:: /req/covering/bbox-column-structure
 part:: A bounding box column SHALL be a Parquet group field with four or six child fields.
-part:: For two-dimensional data the child fields SHALL be named `xmin`, `ymin`, `xmax` and `ymax`, in that order.
+part:: For two-dimensional data the child fields SHALL be named `xmin`, `ymin`, `xmax` and `ymax`.
 part:: The child fields `zmin` and `zmax` MAY be present; `zmin` SHALL be present if and only if `zmax` is present, and in that case the child fields SHALL be named `xmin`, `ymin`, `zmin`, `xmax`, `ymax` and `zmax`, in that order.
 ====

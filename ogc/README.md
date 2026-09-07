@@ -23,7 +23,7 @@ Board and to the OGC membership for a vote.
 | `document.adoc` | Entry file: document attributes (number, edition, editors, status) and the list of included sections. |
 | `sections/clause_0_front_material.adoc` … `clause_5_conventions.adoc` | Preface, abstract, submitters, scope, conformance, normative references, terms, conventions. |
 | `sections/clause_6_core.adoc` | Requirements Class **Core**: prose from `geoparquet.md` with the requirement, recommendation and permission blocks included at the point where the markdown states them. |
-| `sections/clause_7_covering.adoc` | Requirements Class **Bounding Box Covering** (the `covering` member and bounding box columns). Conditional on PR #302 being merged. |
+| `sections/clause_7_covering.adoc` | Requirements Class **Bounding Box Covering** (the `covering` member and bounding box columns), from PR #302 as merged on 2026-09-07. |
 | `sections/clause_8_distribution.adoc` | Requirements Class **Cloud-Optimized Distribution** (proposal): the distribution best practices as an optional class that other specifications can cite. Two requirements (geospatial statistics, spatial ordering) and six recommendations (row group size, ZSTD, bbox covering, declared bbox column, partitioning, STAC). Sourced from the Portolan specification; numbers to be confirmed. |
 | `sections/clause_9_implementation_considerations.adoc` | Informative: expectations on readers, version compatibility, GeoParquet 1.x, OGC:CRS84 details. |
 | `sections/annex-a.adoc` | Abstract Test Suite (normative), includes `abstract_tests/ATS_class_*.adoc`. |
