@@ -1,7 +1,7 @@
 # Changelog
 
-This changelog tracks the meaningful changes in each GeoParquet release — the things an
-implementor needs to know when moving between versions. For the complete list of every change see
+This changelog records the changes in each release, focused on the key things implementors need
+to know when moving to a new version. For the complete list of every change see
 the [GitHub releases](https://github.com/opengeospatial/geoparquet/releases).
 
 ## 2.0.0 (2026-07-19, pending final OGC approval)
@@ -12,8 +12,9 @@ that became part of the core Parquet format in version 2.11 (March 2025). Where 
 layered geospatial metadata on top of plain binary columns, 2.0 makes the native Parquet `GEOMETRY`
 and `GEOGRAPHY` types the foundation: the geometry column is typed by the format itself, the CRS
 travels on the column, and per–row-group geospatial statistics enable efficient spatial filtering
-with no extra columns. The GeoParquet `geo` metadata remains as a layer on top, providing things
-Parquet core doesn't — like a guaranteed inline CRS definition and polygon winding order.
+with no extra columns. The GeoParquet `geo` metadata remains for tool compatibility, and it provides some small things
+beyond what the Parquet core does, including a guaranteed inline CRS definition, polygon winding
+order, epoch and the primary geometry column.
 
 The overall goal of 2.0 is to align the geospatial world with mainstream Parquet tooling: any
 Parquet file that uses the native geospatial types is compatible with the GeoParquet 2.0 ecosystem,
@@ -35,12 +36,13 @@ together.
 
 ## 1.1.0 (2024-06-19)
 
-The second stable release, fully backwards compatible with 1.0. Its two major additions were both
+The second stable release, fully backwards compatible with 1.0. Its two major additions are both
 aimed at making spatial queries faster by leveraging more of Parquet's native capabilities: a
 per-row bounding box column that works with the existing WKB encoding, and an alternative
-GeoArrow-based encoding that exposes coordinates directly to Parquet's statistics. Both were
-optional; in practice the bbox covering saw wide adoption, and in GeoParquet 2.0 the native Parquet
-geospatial types took over the role the GeoArrow encodings were exploring.
+GeoArrow-based encoding that exposes coordinates directly to Parquet's statistics. Both are
+completely optional, and only one is needed in practice — the bbox covering is easy to add to any
+1.0-style file, while the GeoArrow encodings take more implementation work but are more aligned
+with the Parquet way of doing things.
 
 ### Changes from 1.0
 
