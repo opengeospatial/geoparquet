@@ -16,10 +16,10 @@ Not every tool can write the native geospatial types yet, however. The types are
 support has been rolling out across Parquet libraries and engines at different speeds. The
 [compatibility guidelines](#compatibility-guidelines-for-tools-that-pre-date-the-parquet-geospatial-types)
 in the second half of this document are for data producers who are stuck on a tool or library version
-that pre-dates the Parquet geospatial types. They describe how to write plain Parquet files that
-GeoParquet readers can still interpret correctly, so that data can flow into the ecosystem even from
-older tools. See [when you need the compatibility guidelines](#when-you-need-the-compatibility-guidelines)
-for the library versions where this applies.
+that pre-dates the Parquet geospatial types and can't use GeoParquet 1.x. They describe how to write
+plain Parquet files that GeoParquet readers can still interpret correctly, so that data can flow into
+the ecosystem even from older tools. See [when you need the compatibility guidelines](#when-you-need-the-compatibility-guidelines)
+for how to tell which case your tool falls into.
 
 ## Native Parquet geospatial types
 
@@ -50,11 +50,12 @@ doing when:
   authority code against an external registry (important for offline use and for readers without a
   full CRS database).
 * **You know things about the data that Parquet cannot express.** The GeoParquet column metadata can
-  declare the exact [geometry types](./geoparquet.md#geometry_types) present, the polygon
-  [winding order](./geoparquet.md#orientation), the coordinate [epoch](./geoparquet.md#epoch) for
-  dynamic CRS's, and non-planar [edge interpretations](./geoparquet.md#edges) beyond spherical.
+  declare the polygon [winding order](./geoparquet.md#orientation) and the coordinate
+  [epoch](./geoparquet.md#epoch) for dynamic CRS's, neither of which has a place in the native
+  Parquet geospatial types.
 * **The file has multiple geometry columns.** The `primary_column` field tells readers which one to
-  use by default.
+  use by default. This isn't necessary for many use cases, but it can help renderers and GIS tools know
+  which column to use first.
 * **You want a [bbox covering](./geoparquet.md#covering) column.** The covering metadata points
   readers at a per-row bounding box column, which enables page-level spatial pruning and spatial
   filtering in readers that pre-date the native geospatial statistics — see
@@ -69,62 +70,13 @@ Whether the compatibility guidelines apply comes down to what the tool writing y
 
 1. **It can write the native Parquet geospatial types.** You are done — the file is fully compatible
    with the GeoParquet ecosystem, and you can optionally add the full GeoParquet metadata as described
-   above. See the table below for the library versions where this became available.
+   above.
 2. **It cannot write the native types, but it is a geospatial tool that writes GeoParquet 1.x
    metadata** (for example GeoPandas or Apache Sedona today). That output is valid GeoParquet, which
    every GeoParquet reader also understands — you do not need these compatibility guidelines either.
 3. **It is a general-purpose Parquet tool with no geospatial support at all** — it can write neither
    the native types nor GeoParquet metadata. This is the case the compatibility guidelines below are
    for.
-
-### Library support for the native geospatial types
-
-The native geospatial types were introduced in version 2.11 of the Parquet format in March 2025, and
-support has been rolling out across the ecosystem since then. The table below shows the first released
-version of common Parquet libraries and engines that can read and write the native types, as of
-September 2026. If you are on an older version, that library cannot write them:
-
-| Library / engine | First version with native geospatial types | Notes |
-| --- | --- | --- |
-| Apache Arrow C++ / PyArrow | 21.0.0 (July 2025) | Reads/writes via [GeoArrow](https://geoarrow.org) extension types; in Python, register them with the `geoarrow-pyarrow` package |
-| parquet-java | 1.16.0 (September 2025) | Logical types plus geospatial statistics |
-| DuckDB | 1.4.0 (September 2025) | Since 1.4.1, writing the native types is opt-in with the `GEOPARQUET_VERSION 'V2'` COPY option; the default writes GeoParquet 1.0 |
-| arrow-rs (Rust `parquet` crate) | 57.0.0 (October 2025) | Opt-in via the `geospatial` feature flag |
-| GDAL/OGR | 3.12.0 (November 2025) | Opt-in with the `USE_PARQUET_GEO_TYPES` layer creation option; requires Arrow ≥ 21 |
-| parquet-go | 0.27.0 (January 2026) | Geospatial statistics added in 0.30.0 |
-| SedonaDB | 0.3.0 (read) / 0.4.0 (write) (2026) | Write with `geoparquet_version="2.0"` |
-| Apache Spark | 4.2.0 (July 2026) | `GEOMETRY`/`GEOGRAPHY` SQL types, enabled by default |
-| Apache Arrow Go | 18.8.0 (September 2026) | Reads to GeoArrow extension types |
-
-Note that in most of these libraries writing the native types is currently *opt-in*: the default
-output is still GeoParquet 1.x (which is also fine — that is valid GeoParquet, case 2 above). Check
-your tool's documentation for how to enable it.
-
-Some commonly used Parquet writers still have no support for the native geospatial types (or
-GeoParquet metadata) as of September 2026. Data written with these falls under the compatibility
-guidelines:
-
-* **fastparquet** — no geospatial support.
-* **Polars** — no geospatial support (tracked in
-  [polars#20978](https://github.com/pola-rs/polars/issues/20978)); the `polars-st` community plugin
-  provides spatial operations, but writes plain WKB.
-* **cuDF (RAPIDS)** — no geospatial support in its Parquet reader/writer.
-* **Amazon Athena** — geospatial functions operate on WKT/WKB, and Parquet output has no geospatial
-  types or metadata.
-* **Snowflake** — loading and unloading plain Parquet still goes through WKB/WKT transforms with no
-  geospatial types (though Iceberg v3 tables, which store the native Parquet types in their data
-  files, are supported).
-
-Geospatial libraries that write GeoParquet 1.x but not yet the native types (case 2 above, no
-compatibility guidelines needed) include **GeoPandas** (native type support tracked in
-[geopandas#3632](https://github.com/geopandas/geopandas/issues/3632)) and **Apache Sedona** for Spark.
-BigQuery exports `GEOGRAPHY` columns with the native Parquet `GEOGRAPHY` logical type and GeoParquet
-metadata.
-
-Support is evolving quickly, so check your tool's current documentation — and if a tool you rely on
-is missing, we encourage advocating for native geospatial type support. Feel free to
-[start a discussion](https://github.com/opengeospatial/geoparquet/discussions) so the community can
-help encourage an implementation.
 
 ## Compatibility guidelines for tools that pre-date the Parquet geospatial types
 
