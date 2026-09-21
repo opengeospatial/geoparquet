@@ -170,7 +170,9 @@ splits larger countries into smaller files, using S2 cells.
 Wherobots.
 - [Planet Ag Field Boundaries over EU](https://source.coop/repositories/planet/eu-field-boundaries/description) - needs to be
 spatially partitioned, row group size is 25,000.
-- [Geomermaids OSM daily exports](https://parquetry.geomermaids.com/) - GeoParquet v2.0 OSM exports with Hilbert sorting and partitioning.
+- [Geomermaids OSM daily exports](https://parquetry.geomermaids.com/) - daily GeoParquet 2.0 OSM
+extracts for North America, Hilbert-ordered, zstd level 15, partitioned by admin region, with a STAC
+catalog. Carries a per-row bbox column that isn't declared as a covering.
 
 ## Tool Examples
 
