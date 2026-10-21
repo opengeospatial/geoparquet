@@ -34,7 +34,7 @@ type for the geometry column. A writer that does this gets, with no additional e
   that does not match a spatial query.
 
 If you are producing data this way, GeoParquet readers will read it. The one recommendation that goes
-beyond what the core Parquet specification requires: if your tool lets you control the `crs` property,
+beyond what the core Parquet specification requires: if your tool lets you control the `crs` property of the Parquet logical type,
 use inline [PROJJSON](https://proj.org/specifications/projjson.html) or an `<authority>:<code>` string
 (e.g. `EPSG:4326`), and use `srid:0` when the CRS is unknown, as described in the
 [`crs` Parquet property](./geoparquet.md#crs-parquet-property) section of the specification.
