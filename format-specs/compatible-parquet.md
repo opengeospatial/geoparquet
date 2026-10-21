@@ -61,8 +61,9 @@ doing when:
   filtering in readers that pre-date the native geospatial statistics — see
   [when to add a bbox covering column](./distributing-geoparquet.md#when-to-add-a-bbox-covering-column).
 * **You are writing a general-purpose geospatial tool or library.** Emitting the full metadata costs
-  little and maximizes what downstream readers can do with the data, so it is the recommended default
-  for tools whose job is producing geospatial output.
+  little and enables tools that do not support Parquet logical types (including many
+  GeoParquet 1.0 and GeoParquet 1.1 readers) to reconstruct the geometry type
+  so it is the recommended default for tools whose job is producing geospatial output.
 
 ## When you need the compatibility guidelines
 
