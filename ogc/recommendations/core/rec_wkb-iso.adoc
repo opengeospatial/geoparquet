@@ -1,0 +1,8 @@
+// Source: geoparquet.md 2.0.0, encoding (L112)
+[[rec_core_wkb-iso]]
+[recommendation]
+====
+[%metadata]
+identifier:: /rec/core/wkb-iso
+part:: The WKB encoding of the geometries SHOULD be the representation specified in <<ogc06-103r4>> (OpenGIS Implementation Specification for Geographic information - Simple feature access - Part 1: Common architecture).
+====

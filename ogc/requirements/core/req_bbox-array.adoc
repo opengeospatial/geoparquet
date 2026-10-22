@@ -1,0 +1,9 @@
+// Source: geoparquet.md 2.0.0, bbox (L55, L186-L194); schema.json `oneOf` 4/6/8 items
+[[req_core_bbox-array]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/bbox-array
+part:: If the `bbox` member of a column metadata object is present, its value SHALL be an array of numbers with either 4 elements `[xmin, ymin, xmax, ymax]`, 6 elements `[xmin, ymin, zmin, xmax, ymax, zmax]` or 8 elements `[xmin, ymin, zmin, mmin, xmax, ymax, zmax, mmax]`.
+part:: For a geometry column in a geographic coordinate reference system, the longitude and latitude values of `bbox` SHALL be those of the most southwesterly point followed by those of the most northeasterly point, as specified in <<rfc7946>>, section 5, including the representation given there for extents that cross the antimeridian.
+====

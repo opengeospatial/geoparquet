@@ -1,0 +1,15 @@
+[[ats_core_crs-projjson]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/core/crs-projjson
+target:: /req/core/crs-projjson
+test-purpose:: Verify that a non-null `crs` member is a PROJJSON object.
+test-method::
++
+--
+1. For each column metadata object that has a `crs` member whose value is not `null`, validate the value against the PROJJSON JSON Schema (<<projjson>>) and verify that no validation error is reported.
+
+NOTE: Implemented by GDAL `validate_geoparquet.py` (JSON Schema plus PROJ parse) and GPQ `optional crs must be null or a PROJJSON object`. `gpio validate` `crs_valid_*` checks only that a PROJJSON `type` member is present and known.
+--
+====

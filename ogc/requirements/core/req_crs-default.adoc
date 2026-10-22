@@ -1,0 +1,8 @@
+// Source: geoparquet.md 2.0.0, crs (L52, L66)
+[[req_core_crs-default]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/crs-default
+part:: If the `crs` member of a column metadata object is absent, the coordinates of the geometry column SHALL be longitude and latitude based on the WGS 84 datum, that is, the coordinate reference system of the column SHALL be OGC:CRS84.
+====

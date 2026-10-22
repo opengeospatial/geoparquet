@@ -1,0 +1,8 @@
+// Source: geoparquet.md 2.0.0, crs (L52, L72-L74, L91-L102)
+[[req_core_crs-consistency]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/crs-consistency
+part:: The coordinate reference system given by the `crs` member of the column metadata object (OGC:CRS84 when the member is absent) and the coordinate reference system given by the `crs` parameter of the column's `GEOMETRY` or `GEOGRAPHY` logical type (OGC:CRS84 when the parameter is unset) SHALL be the same coordinate reference system, or SHALL both indicate that the coordinate reference system is undefined or unknown.
+====

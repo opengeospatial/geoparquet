@@ -1,0 +1,8 @@
+// Source: Portolan formats.md, GeoParquet (STAC table extension SHOULD); distributing-geoparquet.md L23, L125-L136
+[[rec_distribution_stac-metadata]]
+[recommendation]
+====
+[%metadata]
+identifier:: /rec/distribution/stac-metadata
+part:: A published GeoParquet file or dataset SHOULD be described by STAC Collection and, for partitioned datasets, STAC Item metadata, using the media type `application/vnd.apache.parquet` and documenting the columns with the STAC table extension.
+====

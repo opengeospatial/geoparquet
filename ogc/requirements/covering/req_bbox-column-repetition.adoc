@@ -1,0 +1,9 @@
+// Source: geoparquet.md (PR #302), Bounding Box Columns
+[[req_covering_bbox-column-repetition]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/covering/bbox-column-repetition
+part:: The repetition of a bounding box column SHALL be the same as the repetition of the geometry column it describes.
+part:: A row SHALL contain a value for the bounding box column if and only if it contains a value for the geometry column.
+====

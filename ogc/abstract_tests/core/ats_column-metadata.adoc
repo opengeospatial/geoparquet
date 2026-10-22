@@ -1,0 +1,19 @@
+[[ats_core_column-metadata]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/core/column-metadata
+target:: /req/core/column-metadata
+test-purpose:: Verify that every geometry column is described in the column metadata and vice versa.
+test-method::
++
+--
+1. List every column at the root of the Parquet schema whose logical type is `GEOMETRY` or `GEOGRAPHY`.
+
+2. Verify that, for each such column, `columns` has a member with the same name.
+
+3. Verify that each member of `columns` is a JSON object that contains an `encoding` member and a `geometry_types` member.
+
+NOTE: Steps 1 (partly) and 3 are implemented by `gpio validate` (`encoding_valid_*`, `geometry_types_list_*` per listed column). No tool yet detects a `GEOMETRY`/`GEOGRAPHY` column that is missing from `columns` (step 2).
+--
+====

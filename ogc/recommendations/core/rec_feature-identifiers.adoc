@@ -1,0 +1,8 @@
+// Source: geoparquet.md 2.0.0, Feature identifiers (L202)
+[[rec_core_feature-identifiers]]
+[recommendation]
+====
+[%metadata]
+identifier:: /rec/core/feature-identifiers
+part:: If a GeoParquet file serializes features that have feature identifiers, the producer SHOULD add an implementation-specific key/value entry to the Parquet file metadata indicating the column that holds the identifier.
+====

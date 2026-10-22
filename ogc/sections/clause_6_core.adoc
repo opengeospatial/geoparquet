@@ -1,0 +1,266 @@
+[[clause_core]]
+== Requirements Class Core
+
+=== Overview
+
+include::../requirements/requirements_class_core.adoc[]
+
+Apache Parquet provides a standardized open-source columnar storage format. The GeoParquet specification originally defined how geospatial data should be stored in Parquet format, including the representation of geometries and the required additional metadata. As of Parquet format version 2.11, released in March 2025, the Parquet format itself specifies geospatial types and statistics (<<parquet-geospatial>>). GeoParquet 2.0 provides guidance for geospatial tools implementing the Parquet `GEOMETRY` and `GEOGRAPHY` types, together with additional metadata not covered by the Parquet specification.
+
+The Core requirements class applies to every GeoParquet file. It covers:
+
+* the Parquet file (<<clause_parquet_file>>);
+* the geometry columns: their Parquet type, nesting, repetition, the WKB encoding of their values and the coordinate axis order (<<clause_geometry_columns>>);
+* the GeoParquet metadata: the `geo` entry, the file metadata and the column metadata (<<clause_metadata>>);
+* the coordinate reference system and the coordinate epoch (<<clause_crs>>);
+* the `orientation`, `edges` and `bbox` properties of a geometry column (<<clause_orientation>>, <<clause_edges>>, <<clause_bbox>>);
+* the media type, file extension and feature identifiers (<<clause_media_type>>).
+
+[[clause_parquet_file]]
+=== Parquet file
+
+A GeoParquet file is an Apache Parquet file (<<parquet-format>>). Everything that this Standard does not specify (the file structure, encodings, compression, statistics, the semantics of logical types) is specified by <<parquet-format>>, and the requirements of this Standard are stated in terms of that specification: a file that is not a valid Parquet file cannot satisfy them.
+
+NOTE: The community specification does not state "a GeoParquet file is a Parquet file" as a requirement, and neither does this Standard; it is the premise of every requirement in this clause.
+
+[[clause_geometry_columns]]
+=== Geometry columns
+
+==== General
+
+Geometry columns are encoded as either the `GEOMETRY` or the `GEOGRAPHY` logical type of Parquet (<<parquet-logical-types>>). Both annotate a `BYTE_ARRAY` that encodes geospatial features in the Well-Known Binary (WKB) format. The `GEOMETRY` type is used for features whose edges are interpreted as straight lines in the coordinate reference system (planar edges); the `GEOGRAPHY` type is used for features whose edges are interpolated on the sphere or on the ellipsoid, with an explicit edge interpolation algorithm.
+
+The column metadata (<<clause_column_metadata>>) restates the encoding in its `encoding` member. In GeoParquet 2.0 the only value is `"WKB"`.
+
+include::../requirements/core/req_geometry-column-type.adoc[]
+
+==== Nesting
+
+Geometry columns are at the root of the schema. In practice, this means that when writing to GeoParquet from another format, geometries cannot be contained in complex or nested types such as structs, lists, arrays, or map types.
+
+include::../requirements/core/req_geometry-column-nesting.adoc[]
+
+==== Repetition
+
+The repetition for all geometry columns is `required` (exactly one) or `optional` (zero or one). A GeoParquet file may have multiple geometry columns with different names, but those geometry columns cannot be repeated.
+
+include::../requirements/core/req_geometry-column-repetition.adoc[]
+
+include::../permissions/core/per_multiple-geometry-columns.adoc[]
+
+[[clause_encoding]]
+==== Geometry encoding
+
+The values of a geometry column are geometries in WKB. <<parquet-geospatial>> specifies the WKB variant used by the `GEOMETRY` and `GEOGRAPHY` logical types: the representation of <<ogc06-103r4>>, which supports XY, XYZ, XYM and XYZM coordinates for the geometry types Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon and GeometryCollection.
+
+include::../requirements/core/req_wkb.adoc[]
+
+include::../recommendations/core/rec_wkb-iso.adoc[]
+
+NOTE: The geometry types that can appear in a geometry column are the seven listed above, because they are the only values admitted by the `geometry_types` member (<<clause_geometry_types>>). Non-linear geometry types (for example CircularString) are not supported.
+
+[[clause_axis_order]]
+==== Coordinate axis order
+
+The axis order of the coordinates in WKB stored in a GeoParquet file follows the de facto standard for axis order in WKB and is therefore always (x, y), where x is easting or longitude and y is northing or latitude. This ordering explicitly overrides the axis order specified by the coordinate reference system, and is the ordering specified by <<parquet-geospatial>> for the `GEOMETRY` and `GEOGRAPHY` logical types.
+
+include::../requirements/core/req_axis-order.adoc[]
+
+[[clause_metadata]]
+=== GeoParquet metadata
+
+==== General
+
+GeoParquet files include additional metadata at two levels:
+
+. file metadata, indicating for example the version of this Standard used;
+. column metadata, with additional metadata for each geometry column.
+
+Both are carried by a single entry of the Parquet file metadata (`FileMetaData::key_value_metadata`) with the key `geo`, whose value is a JSON object. The structure of that object is specified by the GeoParquet metadata JSON Schema (<<geoparquet-schema>>) and described in <<clause_file_metadata>> and <<clause_column_metadata>>.
+
+include::../requirements/core/req_geo-metadata.adoc[]
+
+[[clause_file_metadata]]
+==== File metadata
+
+[[tbl_file_metadata]]
+.File metadata members
+[cols="1,1,3",options="header"]
+|===
+|Member |Type |Description
+|`version` |string |*REQUIRED.* The version identifier for the GeoParquet specification: `"2.0.0"` for files conforming to this Standard.
+|`primary_column` |string |*REQUIRED.* The name of the primary geometry column. In cases where a GeoParquet file contains multiple geometry columns, the primary geometry may be used by default in geospatial operations.
+|`columns` |object |*REQUIRED.* Metadata about geometry columns. Each member name is the name of a geometry column in the table and each member value is a column metadata object (<<tbl_column_metadata>>).
+|===
+
+include::../requirements/core/req_file-metadata.adoc[]
+
+NOTE: The value of `primary_column` is necessarily one of the member names of `columns`: the primary geometry column is a geometry column, and every geometry column is described in `columns` (<<req_core_column-metadata>>). The community specification does not state this separately; validators check it directly.
+
+At this level, additional implementation-specific members (for example the name of the library that wrote the file) may be present; readers are expected to ignore members they do not understand (see <<clause_implementation>>).
+
+include::../permissions/core/per_additional-file-metadata.adoc[]
+
+[[clause_column_metadata]]
+==== Column metadata
+
+Each geometry column in the dataset is described by a member of the `columns` object, keyed by the column name, whose value is a column metadata object with the following members.
+
+[[tbl_column_metadata]]
+.Column metadata members
+[cols="1,1,3",options="header"]
+|===
+|Member |Type |Description
+|`encoding` |string |*REQUIRED.* Name of the geometry encoding format. Only `"WKB"` is supported (<<clause_geometry_columns>>).
+|`geometry_types` |array of strings |*REQUIRED.* The geometry types of all geometries, or an empty array if they are not known (<<clause_geometry_types>>).
+|`crs` |object or `null` |PROJJSON object representing the coordinate reference system of the geometry, or `null` if the CRS is undefined or unknown. It describes the same CRS as the `crs` parameter of the column's logical type. If the member is absent, the CRS is OGC:CRS84 (<<clause_crs>>).
+|`orientation` |string |Winding order of the exterior ring of polygons. If present, the value is `"counterclockwise"`; interior rings are wound in the opposite order. If absent, no assertion is made regarding the winding order (<<clause_orientation>>).
+|`edges` |string |Describes how to interpret the edges of the geometries: one of `"planar"`, `"spherical"`, `"vincenty"`, `"thomas"`, `"andoyer"`, `"karney"`. The default is `"planar"` (<<clause_edges>>).
+|`bbox` |array of numbers |Bounding box of the geometries in the column, formatted according to <<rfc7946>>, section 5 (<<clause_bbox>>).
+|`epoch` |number |Coordinate epoch in case of a dynamic CRS, expressed as a decimal year (<<clause_epoch>>).
+|`covering` |object |Names of the bounding box columns that hold a simplified representation of each geometry (<<rc_covering>>).
+|===
+
+include::../requirements/core/req_column-metadata.adoc[]
+
+NOTE: The community specification describes each member name of `columns` as "the name of a geometry column in the table" but does not state as a requirement that every member corresponds to an existing column. Existing validators reject a `columns` member that names a column absent from the Parquet schema. Making this a requirement has been proposed to the GeoParquet community; this Standard does not add it.
+
+[[clause_geometry_types]]
+==== geometry_types
+
+The `geometry_types` member captures the geometry types of the geometries in the column, when known. Accepted geometry types are `"Point"`, `"LineString"`, `"Polygon"`, `"MultiPoint"`, `"MultiLineString"`, `"MultiPolygon"` and `"GeometryCollection"`. In addition, the following rules apply:
+
+* in case of three-dimensional geometries (XYZ), a `" Z"` suffix is added (for example `["Point Z"]`);
+* in case of measured geometries (XYM), a `" M"` suffix is added (for example `["Point M"]`);
+* in case of three-dimensional measured geometries (XYZM), a `" ZM"` suffix is added (for example `["Point ZM"]`);
+* a list of multiple values indicates that multiple geometry types are present (for example `["Polygon", "MultiPolygon"]`);
+* an empty array explicitly signals that the geometry types are not known;
+* the geometry types in the list are unique (`["Point", "Point"]` is not valid).
+
+The member is strictly correct: if a column holds both polygons and multipolygons, it is not sufficient to specify `["MultiPolygon"]`; `["Polygon", "MultiPolygon"]` is expected. If a column holds three-dimensional points, it is not sufficient to specify `["Point"]`; `["Point Z"]` is expected.
+
+The geometry types match the geospatial types recorded in the Parquet `GeospatialStatistics` of the column (<<parquet-geospatial>>), which use the WKB integer codes of the same types (for example 1 for Point and 1001 for Point Z).
+
+include::../requirements/core/req_geometry-types.adoc[]
+
+[[clause_crs]]
+=== Coordinate reference system
+
+==== General
+
+The coordinate reference system (CRS) is an optional parameter for each geometry column defined in GeoParquet format.
+
+Since GeoParquet 2.0 the CRS travels with the geometry column on the `crs` parameter of the Parquet `GEOMETRY` or `GEOGRAPHY` logical type, which is the source of truth. That Parquet parameter is flexible and may identify the CRS in several forms (<<parquet-geospatial>>, section "CRS Customization"). The GeoParquet column metadata `crs` member restates the same CRS for files that carry GeoParquet metadata. Unlike the Parquet parameter, the GeoParquet `crs` member is always inline PROJJSON (or `null`), so that a reader of the GeoParquet metadata can always obtain a complete CRS definition directly, without resolving an authority code against an external registry.
+
+PROJJSON (<<projjson>>) is a JSON encoding of WKT2:2019 / ISO 19162:2019, which itself implements the model of OGC Topic 2 / <<ISO19111_2019>>. Apart from the difference of encodings, the semantics are intended to match WKT2:2019, and a CRS in one encoding can generally be represented in the other.
+
+include::../requirements/core/req_crs-projjson.adoc[]
+
+The value of the `crs` member may be explicitly set to `null` to indicate that there is no CRS assigned to the column (the CRS is undefined or unknown). A missing `crs` member has a different meaning than a `crs` member set to `null`.
+
+include::../permissions/core/per_crs-null.adoc[]
+
+If the `crs` member does not exist, all coordinates in the geometries use longitude, latitude based on the WGS 84 datum, and the default value is OGC:CRS84 for CRS-aware implementations. OGC:CRS84 is equivalent to the well-known EPSG:4326 but changes the axis order from latitude-longitude to longitude-latitude. Because this Standard overrides the coordinate axis order of the CRS to longitude-latitude (<<clause_axis_order>>), EPSG:4326 and OGC:CRS84 are equivalent with respect to this Standard. Likewise, when the Parquet `crs` parameter identifies the CRS by an `<authority>:<code>` string, the values `"OGC:CRS84"` and `"EPSG:4326"` are equivalent to OGC:CRS84 for the purposes of this Standard. See <<clause_crs84>> for the PROJJSON representation of OGC:CRS84 and for heuristics that non-CRS-aware implementations can use.
+
+include::../requirements/core/req_crs-default.adoc[]
+
+The GeoParquet column metadata `crs` member, when present, describes the same CRS as the Parquet `crs` parameter of the `GEOMETRY` or `GEOGRAPHY` logical type. Because the GeoParquet member is always inline PROJJSON (or `null`) while the Parquet parameter may use other forms, the two need not be byte-for-byte identical, but they do not describe different coordinate reference systems. The combinations are summarized in <<tbl_crs_combinations>>.
+
+[[tbl_crs_combinations]]
+.Correspondence between the Parquet `crs` parameter and the GeoParquet `crs` member
+[cols="2,2,2",options="header"]
+|===
+|Parquet logical-type `crs` parameter |GeoParquet column metadata `crs` member |Meaning
+|unset (Parquet default) |absent |OGC:CRS84
+|inline PROJJSON object |the same CRS as inline PROJJSON |CRS fully described in metadata
+|`<authority>:<code>` string |the resolved CRS as inline PROJJSON |CRS identified by an authority code
+|`srid:0` |`null` |CRS undefined or unknown
+|===
+
+include::../requirements/core/req_crs-consistency.adoc[]
+
+The Parquet geospatial definitions permit several forms for the `crs` parameter, among them inline PROJJSON, an `<authority>:<code>` string (for example `EPSG:4326`), `srid:<identifier>` and `projjson:<key_name>`. This Standard does not restrict which of these forms a writer uses for the Parquet parameter, but recommends the two self-contained ones. The Parquet specification does not assign a meaning to `srid:0`; GeoParquet adopts `srid:0` to mean an undefined or unknown CRS, following the convention of GeoPackage, where an SRID of 0 denotes an undefined CRS.
+
+include::../recommendations/core/rec_parquet-crs-form.adoc[]
+
+include::../recommendations/core/rec_crs-srid-zero.adoc[]
+
+NOTE: A writer that cannot generate PROJJSON may write the native Parquet geospatial types with an `<authority>:<code>` `crs` parameter and omit the GeoParquet `geo` metadata altogether. Such a file is not a GeoParquet file in the sense of this Standard, although GeoParquet readers are expected to read it (<<clause_implementation>>). Any file that does carry GeoParquet metadata expresses its CRS there as inline PROJJSON.
+
+[[clause_epoch]]
+==== Epoch
+
+In a dynamic CRS, coordinates of a point on the surface of the Earth may change with time. To be unambiguous, the coordinates are qualified with the epoch at which they are valid.
+
+The optional `epoch` member allows this to be specified in case the `crs` member defines a dynamic CRS. The coordinate epoch is expressed as a decimal year (for example `2021.47`). This Standard supports a single epoch per column, not per geometry.
+
+include::../requirements/core/req_epoch.adoc[]
+
+[[clause_orientation]]
+=== Orientation
+
+The `orientation` member indicates the winding order of polygons. The only available value is `"counterclockwise"`: all vertices of exterior polygon rings are ordered in the counterclockwise direction and all interior rings are ordered in the clockwise direction.
+
+include::../requirements/core/req_orientation-value.adoc[]
+
+include::../requirements/core/req_orientation-rings.adoc[]
+
+If no value is set, no assertions are made about winding order or about its consistency between exterior and interior rings or between individual geometries within a dataset. Readers are responsible for verifying and, if necessary, re-ordering vertices as required for their analytical representation.
+
+Writers are encouraged, but not required, to set `orientation` to `"counterclockwise"` for portability of the data within the broader ecosystem. It is recommended to always set the orientation when `edges` is not `"planar"` (<<clause_edges>>).
+
+[[clause_edges]]
+=== Edges
+
+The `edges` member indicates how to interpret the edges of the geometries: whether the line between two points is a straight cartesian line or the shortest line on the sphere or ellipsoid. Available values are:
+
+* `"planar"`: use a flat cartesian coordinate system.
+* `"spherical"`: edges in the longitude-latitude dimensions follow the shortest distance between vertices approximated as the shortest distance between the vertices on a perfect sphere. This edge interpretation is used by BigQuery Geography and Snowflake Geography; a common library for interpreting edges in this way is Google's s2geometry, and a common formula for calculating distances along this trajectory is the Haversine formula.
+* `"vincenty"`: edges in the longitude-latitude dimensions follow a path calculated using Vincenty's formulae and the ellipsoid specified by the CRS.
+* `"thomas"`: edges follow a path calculated by the formula in Thomas, Paul D., _Spheroidal geodesics, reference systems, & local geometry_, US Naval Oceanographic Office, 1970, using the ellipsoid specified by the CRS.
+* `"andoyer"`: edges follow a path calculated by the formula in Thomas, Paul D., _Mathematical models for navigation systems_, US Naval Oceanographic Office, 1965, using the ellipsoid specified by the CRS.
+* `"karney"`: edges follow a path calculated by the formula in Karney, Charles F.F., "Algorithms for geodesics", _Journal of Geodesy_ 87 (2013): 43-55, and GeographicLib, using the ellipsoid specified by the CRS. GeographicLib is available via modern versions of PROJ.
+
+If no value is set, the default value to assume is `"planar"`. These values are the edge interpolation algorithms defined in <<parquet-geospatial>>, plus `"planar"`.
+
+include::../requirements/core/req_edges-value.adoc[]
+
+If `edges` is not `"planar"`, it is recommended that `orientation` is always ensured to be `"counterclockwise"`. If it is not set, it is not clear how polygons should be interpreted within spherical coordinate systems, which can lead to major analytical errors if interpreted incorrectly. In this case, software will typically interpret the rings of a polygon such that it encloses at most half of the sphere (that is, the smaller of the two possible interpretations), but this Standard does not make any guarantee about this.
+
+include::../recommendations/core/rec_orientation-non-planar.adoc[]
+
+[[clause_bbox]]
+=== Bounding box
+
+Bounding boxes are used to help define the spatial extent of each geometry column. Implementations may use those bounding boxes to filter partitions (files) of a partitioned dataset.
+
+The `bbox`, if specified, is an array representing the range of values for each dimension in the geometry coordinates. For geometries in a geographic coordinate reference system, longitude and latitude values are listed for the most southwesterly coordinate followed by values for the most northeasterly coordinate. This follows the GeoJSON specification (<<rfc7946>>, section 5), which also describes how to represent the bbox for a set of geometries that cross the antimeridian.
+
+For non-geographic coordinate reference systems, the items in the bbox are the minimum values for each dimension followed by the maximum values for each dimension:
+
+* XY (two dimensions): `[xmin, ymin, xmax, ymax]`
+* XYZ (three dimensions): `[xmin, ymin, zmin, xmax, ymax, zmax]`
+* XYZM (three dimensions with measure): `[xmin, ymin, zmin, mmin, xmax, ymax, zmax, mmax]`
+
+It is not currently possible to specify M bounds without Z bounds in a GeoParquet metadata `bbox`; in this case producers may produce an XY bounding box and omit the M bounds. M bounds are typically encoded in Parquet statistics for consumers that benefit from this information.
+
+include::../requirements/core/req_bbox-array.adoc[]
+
+include::../requirements/core/req_bbox-extent.adoc[]
+
+include::../requirements/core/req_bbox-crs.adoc[]
+
+NOTE: The `bbox` member gives a single bounding box for the whole column. Per-row bounding boxes are provided by the bounding box covering (<<rc_covering>>). The Parquet `GeospatialStatistics` additionally provide a bounding box per row group.
+
+[[clause_media_type]]
+=== Media type, file extension and feature identifiers
+
+include::../requirements/core/req_media-type.adoc[]
+
+The media type `application/vnd.apache.parquet` is registered with IANA (<<iana-parquet>>). Using the `.parquet` file extension provides the best interoperability with existing Parquet tools.
+
+include::../recommendations/core/rec_file-extension.adoc[]
+
+If GeoParquet is used to serialize geospatial data with feature identifiers, the producer can indicate the column that represents the identifier in its own file key/value metadata. As an example, GDAL writes additional metadata using the `gdal:schema` key, including information about feature identifiers and other information outside the scope of this Standard.
+
+include::../recommendations/core/rec_feature-identifiers.adoc[]

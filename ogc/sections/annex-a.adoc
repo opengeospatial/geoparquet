@@ -1,0 +1,18 @@
+[appendix,obligation=normative]
+== Conformance Class Abstract Test Suite (Normative)
+
+=== General
+
+The abstract tests in this annex are organized by conformance class. Each test verifies one requirement of the corresponding requirements class. The test subject is a GeoParquet file. Tests that need to decode geometry values ("data scanning" tests) may be run on a sample of rows when a full scan is impractical, in which case the result is a partial verification.
+
+=== Conformance Class Core
+
+include::../abstract_tests/ATS_class_core.adoc[]
+
+=== Conformance Class Bounding Box Covering
+
+include::../abstract_tests/ATS_class_covering.adoc[]
+
+=== Conformance Class Cloud-Optimized Distribution
+
+include::../abstract_tests/ATS_class_distribution.adoc[]

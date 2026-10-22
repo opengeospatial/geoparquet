@@ -1,0 +1,8 @@
+// Source: geoparquet.md (PR #302), Bounding Box Columns
+[[req_covering_bbox-column-nesting]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/covering/bbox-column-nesting
+part:: A bounding box column SHALL be at the root of the Parquet schema and SHALL NOT be nested in a group field.
+====

@@ -1,0 +1,17 @@
+[[ats_core_media-type]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/core/media-type
+target:: /req/core/media-type
+test-purpose:: Verify the media type used for the file.
+test-method::
++
+--
+1. Where the file is served or described with a media type (for example in an HTTP `Content-Type` header or in a catalogue record), verify that the media type is `application/vnd.apache.parquet`.
+
+NOTE: This test is not applicable when no media type is used.
+
+NOTE: Not implemented by any tool; not testable on the file alone.
+--
+====

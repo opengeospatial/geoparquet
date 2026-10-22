@@ -1,0 +1,15 @@
+[[rc_covering]]
+[requirements_class]
+.Requirements Class Bounding Box Covering
+====
+[%metadata]
+identifier:: http://www.opengis.net/spec/geoparquet/2.0/req/covering
+subject:: GeoParquet file
+inherit:: http://www.opengis.net/spec/geoparquet/2.0/req/core
+requirement:: /req/covering/keys
+requirement:: /req/covering/bbox-paths
+requirement:: /req/covering/bbox-column-structure
+requirement:: /req/covering/bbox-column-type
+requirement:: /req/covering/bbox-column-repetition
+requirement:: /req/covering/bbox-column-nesting
+====

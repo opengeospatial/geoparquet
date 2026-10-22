@@ -1,0 +1,17 @@
+== Scope
+
+This Standard specifies the structure of a GeoParquet file: how geometry columns are stored in an Apache Parquet file using the Parquet `GEOMETRY` and `GEOGRAPHY` logical types, and how the GeoParquet metadata carried in the Parquet file metadata describes those columns.
+
+The Standard defines three requirements classes:
+
+* *Core*, which every GeoParquet file satisfies, covering the geometry columns, the `geo` metadata entry, the file and column metadata, the coordinate reference system and epoch, the `orientation`, `edges` and `bbox` properties, and the media type;
+* *Bounding Box Covering*, an optional class for files that additionally store a per-row bounding box column and declare it in the column metadata;
+* *Cloud-Optimized Distribution*, an optional class stating the practices (geospatial statistics, spatial ordering, row group size, compression) that make a GeoParquet file efficient to distribute and to query directly from object storage.
+
+The following are out of scope of this Standard:
+
+* the Apache Parquet file format itself, including the WKB encoding of the `GEOMETRY` and `GEOGRAPHY` logical types, the `crs` parameter syntax, the edge interpolation algorithms and the geospatial statistics, which are specified by the Apache Parquet format specification and referenced normatively;
+* the definition of coordinate reference systems, which are expressed in PROJJSON;
+* requirements on software that reads or writes GeoParquet files (the community specification's expectations on readers are reproduced as informative guidance in <<clause_implementation>>);
+* recommendations on spatial partitioning, ordering and distribution of GeoParquet datasets, which are published by the GeoParquet community as informative guides;
+* raster data.

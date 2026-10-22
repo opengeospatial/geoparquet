@@ -1,0 +1,8 @@
+// Source: geoparquet.md 2.0.0, Media Type (L287)
+[[req_core_media-type]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/media-type
+part:: If a media type is used to identify a GeoParquet file, the media type SHALL be `application/vnd.apache.parquet`.
+====

@@ -1,0 +1,15 @@
+This folder contains the requirements classes, requirements, recommendations and permissions
+of the GeoParquet OGC Standard.
+
+* `requirements_class_<class>.adoc` declares a requirements class (`/req/<class>`) and lists its
+  provisions.
+* `<class>/req_<name>.adoc` is one requirement with identifier `/req/<class>/<name>`.
+  Recommendations (`/rec/...`) live in `../recommendations/<class>/`, permissions (`/per/...`)
+  in `../permissions/<class>/`.
+* Each file starts with a `// Source:` comment giving the section and line of
+  `format-specs/geoparquet.md` (version 2.0.0) that the provision restates.
+* Every requirement has exactly one abstract test with the same `<class>/<name>` in
+  `../abstract_tests/`.
+
+The files are included into the main document from `../sections/clause_6_core.adoc` and
+`../sections/clause_7_covering.adoc` with `include::../requirements/<class>/req_<name>.adoc[]`.

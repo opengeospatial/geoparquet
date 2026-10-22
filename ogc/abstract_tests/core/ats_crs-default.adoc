@@ -1,0 +1,19 @@
+[[ats_core_crs-default]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/core/crs-default
+target:: /req/core/crs-default
+test-purpose:: Verify the default coordinate reference system.
+test-method::
++
+--
+1. For each column metadata object without a `crs` member, verify that the `crs` parameter of the column's logical type is unset or identifies OGC:CRS84 (or its equivalent EPSG:4326 with the axis order of this Standard).
+
+2. Decode a sample of geometry values and verify that the first coordinates lie within [-180, 180] and the second coordinates within [-90, 90].
+
+NOTE: Conformance to the WGS 84 datum itself cannot be verified from the file alone.
+
+NOTE: Heuristic only: `gpio validate` `coordinates_valid_for_crs_*` and `v2_crs_consistency_*` (absent metadata `crs` against an unset Parquet `crs`).
+--
+====

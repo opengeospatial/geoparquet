@@ -1,0 +1,74 @@
+[[clause_covering]]
+== Requirements Class Bounding Box Covering
+
+////
+EDITORIAL NOTE: this requirements class restates the `covering` member and the bounding box
+columns of GeoParquet 1.1, re-introduced into GeoParquet 2.0 by pull request #302
+(https://github.com/opengeospatial/geoparquet/pull/302), merged on 2026-09-07 as commit
+4c9f87e. The class is therefore no longer conditional. The merged text dropped the rule that
+the four child fields be ordered `xmin`, `ymin`, `xmax`, `ymax`; the requirement follows it
+(see docs/ogc/spec-issues.md, SI-26).
+////
+
+=== Overview
+
+include::../requirements/requirements_class_covering.adoc[]
+
+The `covering` member of a column metadata object declares optional simplified representations of each geometry, stored in additional columns of the same file. The only covering encoding defined by this Standard is `bbox`, which names the bounding box column holding the bounding box of the geometry in every row.
+
+Including a per-row bounding box can be useful for accelerating spatial queries by allowing consumers to inspect row group and page index bounding box summary statistics. Furthermore, a bounding box may be used to avoid complex spatial operations by first checking for bounding box overlaps.
+
+NOTE: The native Parquet `GEOMETRY` and `GEOGRAPHY` types write a bounding box in the geospatial statistics of every row group, which provides much of the original motivation for the bbox covering: readers can skip row groups that do not intersect a query without any extra column. A bounding box covering column can still be useful because, as an ordinary Parquet struct column, it gets a standard page index whose per-page minimum and maximum values let readers prune individual pages within a row group. It also enables spatial filtering in readers that predate the native geospatial statistics. The GeoParquet community's distribution best practices give guidance on when the covering is worth the extra file size.
+
+NOTE: The technique of using the bounding box to improve spatial queries does not apply to geometries that cross the antimeridian. Such geometries are unsupported by this method.
+
+This requirements class applies to a GeoParquet file when the column metadata object of any of its geometry columns contains a `covering` member. It depends on the Core requirements class.
+
+=== The covering member
+
+[[tbl_covering]]
+.Members of the `covering` object
+[cols="1,1,3",options="header"]
+|===
+|Member |Type |Description
+|`bbox` |object |*REQUIRED.* The Parquet schema paths of the four (or six) child fields of the bounding box column: `{"xmin": ["column_name", "xmin"], "ymin": ["column_name", "ymin"], "xmax": ["column_name", "xmax"], "ymax": ["column_name", "ymax"]}`.
+|===
+
+include::../requirements/covering/req_keys.adoc[]
+
+=== bbox covering encoding
+
+The format of the `bbox` covering encoding is `{"xmin": ["column_name", "xmin"], "ymin": ["column_name", "ymin"], "xmax": ["column_name", "xmax"], "ymax": ["column_name", "ymax"]}`. The arrays represent Parquet schema paths for nested groups. In this example, `column_name` is a Parquet group field with the child fields `xmin`, `ymin`, `xmax` and `ymax`. The named column exists in the Parquet file and meets the criteria of <<clause_bbox_columns>>. In order to constrain this value to a single bounding box group field, the second item in each array is the name of the child field (`xmin`, `ymin`, and so on) and all four arrays name the same column.
+
+[source,json]
+----
+"covering": {
+    "bbox": {
+        "xmin": ["bbox", "xmin"],
+        "ymin": ["bbox", "ymin"],
+        "xmax": ["bbox", "xmax"],
+        "ymax": ["bbox", "ymax"]
+    }
+}
+----
+
+The value specified in this member should not be confused with the column metadata `bbox` member (<<clause_bbox>>), which contains the single bounding box of the whole column.
+
+include::../requirements/covering/req_bbox-paths.adoc[]
+
+[[clause_bbox_columns]]
+=== Bounding box columns
+
+A bounding box column is a Parquet group field with four or six child fields representing the geometry's coordinate range. For two-dimensional data, the child fields are named `xmin`, `ymin`, `xmax` and `ymax`, in this order. As with the column metadata `bbox` member, the values follow the GeoJSON specification (<<rfc7946>>, section 5), which also describes how to represent the bbox for geometries that cross the antimeridian. For three dimensions the additional fields `zmin` and `zmax` may be present but are not required; if `zmin` is present then `zmax` is present and vice versa, and the child fields are then ordered `xmin`, `ymin`, `zmin`, `xmax`, `ymax`, `zmax`. The fields are of Parquet type `FLOAT` or `DOUBLE` and all use the same type. The repetition of a bounding box column matches the geometry column's repetition: a row contains a bounding box value if and only if it contains a geometry value.
+
+include::../requirements/covering/req_bbox-column-structure.adoc[]
+
+include::../requirements/covering/req_bbox-column-type.adoc[]
+
+include::../requirements/covering/req_bbox-column-repetition.adoc[]
+
+include::../requirements/covering/req_bbox-column-nesting.adoc[]
+
+The values of a bounding box column are the bounding box of the geometry in the same row: `xmin`, `ymin`, `xmax`, `ymax` (and `zmin`, `zmax`) hold the minimum and maximum coordinate values of that geometry, in the coordinate reference system of the geometry column, following <<rfc7946>>, section 5, for geographic coordinate reference systems.
+
+NOTE: The community specification describes the content of a bounding box column ("the bounding box of the geometry for every row") without an RFC 2119 keyword, so this Standard does not state a requirement on the values. Making it a requirement has been proposed to the GeoParquet community.

@@ -1,0 +1,21 @@
+[[ats_core_geometry-column-type]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/core/geometry-column-type
+target:: /req/core/geometry-column-type
+test-purpose:: Verify the Parquet type and the declared encoding of each geometry column.
+test-method::
++
+--
+1. For each member of `columns`, read the Parquet schema element of the column with that name.
+
+2. Verify that the primitive type of the column is `BYTE_ARRAY`.
+
+3. Verify that the column is annotated with the `GEOMETRY` or the `GEOGRAPHY` logical type.
+
+4. Verify that the `encoding` member of the column metadata object is the string `WKB`.
+
+NOTE: Implemented by `gpio validate` checks `geometry_byte_array_*`, `native_geo_type_present_*`, `v2_native_types_*` and `encoding_valid_*`.
+--
+====

@@ -1,0 +1,9 @@
+// Source: geoparquet.md 2.0.0, crs Parquet property (L84-L87)
+[[rec_core_parquet-crs-form]]
+[recommendation]
+====
+[%metadata]
+identifier:: /rec/core/parquet-crs-form
+part:: The `crs` parameter of a `GEOMETRY` or `GEOGRAPHY` logical type SHOULD be either an inline PROJJSON object or an `<authority>:<code>` string.
+part:: A writer that cannot readily generate PROJJSON SHOULD use the `<authority>:<code>` form for the `crs` parameter.
+====

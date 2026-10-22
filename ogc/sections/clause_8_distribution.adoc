@@ -1,0 +1,75 @@
+[[clause_distribution]]
+== Requirements Class Cloud-Optimized Distribution
+
+////
+PROPOSAL, NOT YET AGREED BY THE COMMUNITY. This requirements class is the "profile" suggested by
+Chris Holmes on PR #304: a citable baseline definition of a well-distributed GeoParquet file, so
+that downstream specifications (Portolan, https://github.com/portolan-sdi/portolan-spec) can
+require "GeoParquet 2.0 conforming to the Cloud-Optimized Distribution class" instead of restating
+the rules, and can evolve stricter or more specific rules on top of it.
+
+Following Chris's guidance, the statements are sourced from the Portolan specification's
+GeoParquet rules (specs/portolan/formats.md, section "GeoParquet"), which were written with
+testing in mind, and from format-specs/distributing-geoparquet.md. Only two rules are
+requirements: statistics present and rows spatially ordered. The numbers (150 000 rows per row
+group), the declared bounding box column and compression are recommendations, so that this
+Standard does not fix what Portolan and geoparquet-io are still tuning (Javier de la Torre,
+2026-09-05, after a first draft that had both as requirements; @cholmes to confirm). The class is
+optional and Core does not depend on it, so it can change or be dropped without affecting the
+approval of Core. See docs/ogc/CHANGES.md, section "Requirements Class Cloud-Optimized
+Distribution".
+////
+
+=== Overview
+
+include::../requirements/requirements_class_distribution.adoc[]
+
+Apache Parquet gives writers many options, and the defaults of most libraries are not tuned for geospatial data. The GeoParquet community has converged on a small set of practices that make a GeoParquet file efficient to distribute and to query directly from object storage without a server: keep the geospatial statistics that the Parquet `GEOMETRY` and `GEOGRAPHY` types provide, order the rows spatially so that those statistics let a reader skip data, keep row groups small enough to skip, and compress well. This requirements class states the two practices that every well-distributed file shares, statistics and spatial ordering, as testable requirements on a single file, and the rest as recommendations. It is intended as a baseline: specifications that publish GeoParquet, such as Portolan, can require conformance to this class and add stricter rules of their own as the community's understanding evolves.
+
+This requirements class is optional. It depends on the Core requirements class (<<rc_core>>) and, when a file declares a bounding box covering, on the Bounding Box Covering requirements class (<<rc_covering>>). A file that does not claim conformance to this class is still a GeoParquet file.
+
+NOTE: The practices in this class are those that `geoparquet-io` (`gpio check`) and the Portolan validator verify. Each abstract test in <<ats_distribution>> names the corresponding tool.
+
+=== Geospatial statistics
+
+Parquet writes geospatial statistics for `GEOMETRY` and `GEOGRAPHY` columns (<<parquet-geospatial>>), most importantly a bounding box for each column chunk (row group). Readers use these statistics to skip, from the file footer alone, any row group whose bounding box does not intersect a query's area of interest. The statistics are optional in Parquet; a well-distributed file has them for every row group.
+
+include::../requirements/distribution/req_geospatial-statistics.adoc[]
+
+=== Spatial ordering
+
+Row-group statistics only help when the rows of the file are spatially ordered, so that each row group covers a compact part of the extent and a query touches few of them. GeoParquet does not prescribe an ordering method: Hilbert curve, GeoHash, S2 or R-tree based orderings all work. The requirement is stated on the outcome, the pruning that the row-group bounding boxes allow, not on a particular ordering.
+
+include::../requirements/distribution/req_spatial-order.adoc[]
+
+NOTE: How much pruning counts as "most" depends on the number of row groups: two row groups can never let a reader skip more than about half of the file, while several hundred well-ordered row groups let it skip nearly all of them. The executable test therefore compares the pruning a file achieves with the pruning an ideal tiling into the same number of row groups would achieve, and the threshold is maintained in the test suite rather than in this Standard, because the community is still refining it (Portolan specification and `geoparquet-io`, 2026).
+
+=== Row group size
+
+A reader can only skip a row group as a whole, so if row groups are too large the statistics let it skip little. The upper bound the community currently uses is stated as a recommendation rather than a requirement: the number is still being tuned, a lower bound is still being measured, and a figure fixed in this Standard could not follow either. The Portolan specification and `geoparquet-io` hold the current values.
+
+include::../recommendations/distribution/rec_row-group-size.adoc[]
+
+=== Compression
+
+Parquet compresses each column chunk. ZSTD achieves a better compression ratio than the usual default, Snappy, at similar decompression speed, and its decompression time is nearly independent of the compression level, so a producer distributing data can spend the extra time on a high level while readers pay no penalty.
+
+include::../recommendations/distribution/rec_compression.adoc[]
+
+NOTE: The compression level is not recorded in the Parquet file, so only the codec can be verified.
+
+=== Bounding box covering
+
+With native geospatial statistics a separate bounding box column is not required for row-group pruning, but its ordinary Parquet page index gives per-page minimum and maximum values, which let a reader prune pages within a row group, and it serves readers that predate the native statistics (<<rc_covering>>). A bounding box column that no `covering` entry points at costs file size and cannot be used by any reader.
+
+include::../recommendations/distribution/rec_bbox-covering.adoc[]
+
+include::../recommendations/distribution/rec_bbox-column-declared.adoc[]
+
+=== Dataset-level recommendations
+
+The following practices concern a dataset rather than a single file and cannot be verified on a file alone. They are recommendations of this class.
+
+include::../recommendations/distribution/rec_spatial-partitioning.adoc[]
+
+include::../recommendations/distribution/rec_stac-metadata.adoc[]

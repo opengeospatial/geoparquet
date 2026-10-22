@@ -1,0 +1,75 @@
+== Terms and definitions
+
+// Metanorma inserts the OGC boilerplate on terms and on the use of "shall" automatically.
+
+NOTE: The GeoParquet community specification uses the keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY" and "OPTIONAL" as described in <<rfc2119>>. In this document "MUST" of the community specification is rendered as "SHALL".
+
+=== bounding box column
+
+Parquet group field that stores, for each row of a GeoParquet file, the bounding box of the geometry in that row
+
+NOTE: Bounding box columns are declared in the `covering` member of the column metadata (see <<rc_covering>>).
+
+=== column metadata object
+
+JSON object that is a member of the `columns` object of the GeoParquet metadata and describes one geometry column
+
+=== coordinate reference system
+
+coordinate system that is related to an object by a datum
+
+NOTE: For geodetic and vertical reference frames, the object will be the Earth.
+
+[.source]
+<<ISO19111_2019>>
+
+=== covering
+
+simplified representation of every geometry of a geometry column, stored in additional columns of the same file and declared in the `covering` member of the column metadata object
+
+=== dynamic coordinate reference system
+
+coordinate reference system that has a dynamic reference frame
+
+NOTE: Coordinates of a point on the surface of the Earth expressed in a dynamic coordinate reference system change with time and are qualified with a coordinate epoch.
+
+[.source]
+<<ISO19111_2019>>
+
+=== epoch
+
+point in time
+
+NOTE: In this document an epoch is expressed as a decimal year in the Gregorian calendar.
+
+[.source]
+<<ISO19111_2019>>
+
+[example]
+2017-03-25 in the Gregorian calendar is epoch 2017.23.
+
+=== geometry column
+
+column of a GeoParquet file whose values are geometries
+
+NOTE: In GeoParquet 2.0 every geometry column is annotated with the Parquet `GEOMETRY` or `GEOGRAPHY` logical type and is described by a column metadata object.
+
+=== GeoParquet file
+
+Apache Parquet file that satisfies the Core requirements class of this Standard
+
+=== GeoParquet metadata
+
+JSON object stored as the value of the `geo` key of the Parquet file metadata, consisting of the file metadata and the column metadata
+
+=== primary geometry column
+
+geometry column named by the `primary_column` member of the GeoParquet metadata
+
+NOTE: When a file contains several geometry columns, the primary geometry column is the one used by default in geospatial operations.
+
+=== Well-Known Binary
+
+alt:[WKB]
+
+binary representation of geometries specified in <<ogc06-103r4>>

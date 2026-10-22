@@ -1,0 +1,15 @@
+[[ats_core_orientation-value]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/core/orientation-value
+target:: /req/core/orientation-value
+test-purpose:: Verify the `orientation` member.
+test-method::
++
+--
+1. For each column metadata object that has an `orientation` member, verify that its value is the string `counterclockwise`.
+
+NOTE: Implemented by `gpio validate` check `orientation_valid_*`, GPQ and the JSON Schema.
+--
+====

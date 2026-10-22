@@ -1,0 +1,17 @@
+[[ats_covering_bbox-column-type]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/covering/bbox-column-type
+target:: /req/covering/bbox-column-type
+test-purpose:: Verify the type of the child fields of a bounding box column.
+test-method::
++
+--
+1. Verify that each child field of the bounding box column has the Parquet primitive type `FLOAT` or `DOUBLE`.
+
+2. Verify that all child fields have the same primitive type.
+
+NOTE: Implemented by `gpio validate` `covering_bbox_field_types_*` for the first four children.
+--
+====

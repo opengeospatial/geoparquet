@@ -1,2 +1,13 @@
 /scripts/data/
 /scripts/__pycache__/
+/ogc/relaton/
+/ogc/iev/
+.DS_Store
+/ogc/document.err.html
+/ogc/document.presentation.xml
+/ogc/document.html
+/ogc/document.xml
+/ogc/document.pdf
+/ogc/document.doc
+/ogc/document.asciidoc.log.txt
+/ogc/_site/

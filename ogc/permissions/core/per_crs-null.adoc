@@ -1,0 +1,8 @@
+// Source: geoparquet.md 2.0.0, crs (L52, L72)
+[[per_core_crs-null]]
+[permission]
+====
+[%metadata]
+identifier:: /per/core/crs-null
+part:: The `crs` member of a column metadata object MAY be `null`, indicating that no coordinate reference system is assigned to the geometry column (the coordinate reference system is undefined or unknown).
+====

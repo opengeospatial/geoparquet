@@ -1,0 +1,8 @@
+// Source: Portolan formats.md, GeoParquet: 'Files MUST provide per-row-group spatial statistics ... native GeospatialStatistics per geometry column chunk'; distributing-geoparquet.md L46-L60
+[[req_distribution_geospatial-statistics]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/distribution/geospatial-statistics
+part:: Every column chunk of every geometry column SHALL carry Parquet `GeospatialStatistics` that include a bounding box, as specified in <<parquet-geospatial>>.
+====

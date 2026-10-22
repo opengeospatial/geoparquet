@@ -1,0 +1,11 @@
+// Source: geoparquet.md (PR #302), bbox covering encoding; schema.json `covering.bbox`
+[[req_covering_bbox-paths]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/covering/bbox-paths
+part:: The `bbox` member of the `covering` object SHALL be a JSON object with the members `xmin`, `ymin`, `xmax` and `ymax`, each of which SHALL be an array of exactly two strings: the name of a bounding box column followed by the name of a child field of that column.
+part:: The second element of each array SHALL be equal to the name of the member that contains it (`xmin`, `ymin`, `xmax` or `ymax`).
+part:: The first element SHALL be the same column name in all four arrays.
+part:: The named column SHALL exist in the Parquet schema of the file and SHALL satisfy /req/covering/bbox-column-structure, /req/covering/bbox-column-type, /req/covering/bbox-column-repetition and /req/covering/bbox-column-nesting.
+====

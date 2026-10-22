@@ -1,0 +1,21 @@
+[[ats_core_geometry-types]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/core/geometry-types
+target:: /req/core/geometry-types
+test-purpose:: Verify the content of the `geometry_types` member.
+test-method::
++
+--
+1. Verify that each element of `geometry_types` matches the regular expression `^(GeometryCollection|(Multi)?(Point|LineString|Polygon))( Z| M| ZM)?$`.
+
+2. Verify that no two elements of `geometry_types` are equal.
+
+3. If `geometry_types` is not empty, decode every non-null geometry value of the column, determine its geometry type and dimension (XY, XYZ, XYM or XYZM), and verify that the corresponding string is an element of `geometry_types`.
+
+4. For every column chunk of the geometry column that carries `GeospatialStatistics` with a `geospatial_types` list, verify that each listed WKB integer code corresponds to an element of `geometry_types` (for example code 1001 corresponds to `Point Z`).
+
+NOTE: Steps 1 and 3 implemented by `gpio validate` `geometry_types_list_*` and `geometry_types_match_data_*` (dimension suffixes included) and by GDAL `--check-data`. Step 2 (uniqueness) only through the JSON Schema. Step 4 is not implemented by any tool; gpio's `native_geo_types_match_*` compares the Parquet statistics with the data, not with `geometry_types`.
+--
+====

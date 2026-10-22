@@ -1,0 +1,17 @@
+== Conformance
+
+This Standard defines requirements for one standardization target type: the *GeoParquet file*, an Apache Parquet file that carries geospatial data and GeoParquet metadata.
+
+Three conformance classes are defined, corresponding to the three requirements classes of this Standard:
+
+* *Core* (<<ats_core>>), which every GeoParquet file shall satisfy;
+* *Bounding Box Covering* (<<ats_covering>>), which a GeoParquet file shall additionally satisfy when the column metadata of any of its geometry columns contains a `covering` member;
+* *Cloud-Optimized Distribution* (<<ats_distribution>>), an optional class for files that are prepared for efficient distribution and direct access from object storage. A file may claim conformance to it in addition to Core.
+
+Conformance with this Standard shall be checked using all the relevant tests specified in Annex A (normative) of this document. The framework, concepts, and methodology for testing, and the criteria to be achieved to claim conformance are specified in the OGC Compliance Testing Policies and Procedures and the OGC Compliance Testing web site.
+
+In order to conform to this OGC Standard, a GeoParquet file shall satisfy all requirements of the Core requirements class, and, if it declares a covering, all requirements of the Bounding Box Covering requirements class. Conformance to the Cloud-Optimized Distribution requirements class is claimed separately.
+
+This Standard does not define a conformance class for software that reads or writes GeoParquet files. The GeoParquet community specification states expectations on readers (for example, that a reader interprets the Parquet `crs` parameter in both PROJJSON and authority-code form, and that it does not reject metadata containing unknown members). These expectations are reproduced as informative guidance in <<clause_implementation>> and are not tested by this Standard.
+
+All requirements classes and conformance classes described in this document are owned by this Standard.
