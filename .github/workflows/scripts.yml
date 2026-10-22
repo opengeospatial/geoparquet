@@ -14,7 +14,10 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
-          python-version: '3.x'
+          # Pinned: the scripts' locked dependencies (rpds-py, numpy, pyarrow,
+          # shapely, ...) do not ship wheels for Python 3.15 yet, and building
+          # them from source fails on the runner. Bump once wheels are available.
+          python-version: '3.14'
 
       - uses: astral-sh/setup-uv@v7
 
