@@ -4,7 +4,7 @@ This changelog records the changes in each release, focused on the key things im
 to know when moving to a new version. For the complete list of every change see
 the [GitHub releases](https://github.com/opengeospatial/geoparquet/releases).
 
-## 2.0.0 (2026-07-19, pending final OGC approval)
+## 2.0.0 (2026-11-05)
 
 GeoParquet 2.0 re-centers the specification on the
 [Parquet Geospatial Logical Types](https://github.com/apache/parquet-format/blob/master/Geospatial.md)
@@ -16,9 +16,10 @@ with no extra columns. The GeoParquet `geo` metadata remains for tool compatibil
 beyond what the Parquet core does, including a guaranteed inline CRS definition, polygon winding
 order, epoch and the primary geometry column.
 
-The overall goal of 2.0 is to align the geospatial world with mainstream Parquet tooling: any
-Parquet file that uses the native geospatial types is compatible with the GeoParquet 2.0 ecosystem,
-whether or not it carries GeoParquet metadata. See the
+The overall goal of 2.0 is to align the geospatial world with mainstream Parquet tooling: any tool
+that writes the native Parquet geospatial types correctly produces a file the GeoParquet 2.0
+ecosystem can read, whether or not it carries GeoParquet metadata, and the spec supplies that
+metadata in the same way previous GeoParquet versions did. See the
 [Parquet Geospatial Compatibility guide](format-specs/compatible-parquet.md) for how the pieces fit
 together.
 
