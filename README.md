@@ -24,30 +24,31 @@ The latest version is 2.0.0, which is based on [Parquet Geospatial Logical Types
 
 ## Validating GeoParquet
 
-There are two tools that validate the metadata and the actual data. It is recommended to use one of them to ensure any GeoParquet you produce or are given is completely valid according to the specification:
+Several tools check a file against the specification, and it is worth running one over any GeoParquet you produce or are handed. The two most complete cover every released version of the spec — 1.0, 1.1 and 2.0:
 
-* **[GPQ](https://github.com/planetlabs/gpq)** - the `validate` command generates a report with `gpq validate example.parquet`.
-* **[GDAL/OGR Validation Script](https://gdal.org/drivers/vector/parquet.html#validation-script)** - a Python script that can check compliance with `python3 validate_geoparquet.py --check-data my_geo.parquet`
+* **[geoparquet-validator](https://github.com/geoparquet/geoparquet-validator)** - `geoparquet-validator check example.parquet` reports conformance by class (core, bbox covering, cloud-optimized distribution), with the 2.0 checks following the OGC abstract tests. It also runs in the browser at [validator.geoparquet.org](https://validator.geoparquet.org/), where files never leave your machine, and reads remote files with range requests. Installable for Python, Rust, Node (WebAssembly) and C, or as a standalone binary.
+* **[geoparquet-io](https://geoparquet.io/guide/check/#spec-validation)** - `gpio check spec example.parquet` validates 1.0, 1.1 and 2.0, as well as plain Parquet files using the native geospatial types. It detects the version automatically, or you can pin it with `--geoparquet-version`. The broader `gpio check` also reports on the [distribution best practices](format-specs/distributing-geoparquet.md).
 
-## Goals
+Two other validators are still in use:
 
-There are a few core goals driving the initial development.
+* **[GDAL/OGR Validation Script](https://gdal.org/drivers/vector/parquet.html#validation-script)** - a Python script run with `python3 validate_geoparquet.py --check-data my_geo.parquet`. It checks the `geo` metadata against the published JSON Schema for whichever version the file declares, covering 1.0, 1.1 and 2.0.
+* **[GPQ](https://github.com/planetlabs/gpq)** - `gpq validate example.parquet` generates a report. Its most recent release predates both the 1.1 GeoArrow encodings and the 2.0 native types, so treat its result as a check against 1.0: files with WKB geometry columns and 1.0-era metadata.
 
-* **Establish a great geospatial format for workflows that excel with columnar data** - Most data science and 'business intelligence' workflows have been moving
- towards columnar data, but current geospatial formats can not be as efficiently loaded as other data. So we aim to bring geospatial data best practices to one
- of the most popular formats, and hopefully establish a good pattern for how to do so.
-* **Introduce columnar data formats to the geospatial world** - And most of the geospatial world is not yet benefitting from all the breakthroughs in data analysis
- in the broader IT world, so we are excited to enable interesting geospatial analysis with a wider range of tools.
-* **Enable interoperability among cloud data warehouses** - BigQuery, Snowflake, Redshift and others all support spatial operations but importing and exporting data
- with existing formats can be problematic. All support and often recommend Parquet, so defining a solid GeoParquet can help enable interoperability.
-* **Persist geospatial data from Apache Arrow** - GeoParquet is developed in parallel with a [GeoArrow spec](https://github.com/geoarrow/geoarrow), to
- enable cross-language in-memory analytics of geospatial information with Arrow. Parquet is already well-supported by Arrow as the key on-disk persistence format.
+## Test Data for Implementations
 
-And our broader goal is to innovate with 'cloud-native vector' providing a stable base to try out new ideas for cloud-native & streaming workflows.
+[geoparquet-testing](https://github.com/geoparquet/geoparquet-testing) is the official test corpus for the format, modeled on Apache's [parquet-testing](https://github.com/apache/parquet-testing). If you maintain a GeoParquet reader or writer, running against it is the quickest way to find where your implementation disagrees with everyone else's. It targets 2.0.0, and every geometry column in it uses the native Parquet `GEOMETRY`/`GEOGRAPHY` logical type.
+
+The files come in three tiers:
+
+* **`data/`** - small conformance fixtures, each exercising one axis of the spec, so a failure points at a specific requirement.
+* **`samples/`** - plausibly-real datasets that combine spec features at non-trivial scale.
+* **`bad_data/`** - files that deliberately violate the spec, with a `manifest.json` giving the expected failure for each. A reader can walk the manifest, try to open every file and assert that it fails the way the manifest says, which tests error handling rather than just the happy path.
+
+Each tier has a README indexing every file and what it tests. Most projects pull the corpus in as a git submodule, though tagged tarballs are published for those that would rather not. The fixtures are generated deterministically and CI enforces it, so a given tag is always the same bytes.
 
 ## Features
 
-A quick overview of what GeoParquet supports (or at least plans to support).
+A quick overview of what GeoParquet supports.
 
 * **Multiple spatial reference systems** - Many tools will use GeoParquet for high-performance analysis, so it's important to be able to use data in its
  native projection. But we do provide a clear default recommendation to better enable interoperability, giving a clear target for implementations that don't want to
@@ -62,7 +63,10 @@ A quick overview of what GeoParquet supports (or at least plans to support).
 * **Support for data partitioning** - Parquet has a nice ability to partition data into different files for efficiency, and we aim to enable geospatial partitions.
 
 It should be noted what GeoParquet is less good for. The biggest one is that it is not a good choice for write-heavy interactions. A row-based format
-will work much better if it is backing a system that is constantly updating the data and adding new data.
+will work much better if it is backing a system that is constantly updating the data and adding new data. For data that must be updated in place while
+staying cloud-native, [Apache Iceberg](https://iceberg.apache.org/spec/#appendix-g-geospatial-notes) is a promising option: its v3 format adds native
+`geometry` and `geography` types built on the same Parquet geospatial types that GeoParquet 2.0 uses, so a table can take appends, updates and deletes
+while its underlying data files stay ordinary Parquet that the GeoParquet ecosystem can read.
 
 ## Versioning
 
