@@ -19,7 +19,9 @@ order, epoch and the primary geometry column.
 The overall goal of 2.0 is to align the geospatial world with mainstream Parquet tooling: any tool
 that writes the native Parquet geospatial types correctly produces a file the GeoParquet 2.0
 ecosystem can read, whether or not it carries GeoParquet metadata, and the spec supplies that
-metadata in the same way previous GeoParquet versions did. See the
+metadata in the same way previous GeoParquet versions did. In practice 
+that already covers engines writing native types, so their files are 
+first-class input for GeoParquet 2.0 readers. See the
 [Parquet Geospatial Compatibility guide](format-specs/compatible-parquet.md) for how the pieces fit
 together.
 
