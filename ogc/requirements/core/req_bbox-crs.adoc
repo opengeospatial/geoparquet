@@ -1,0 +1,8 @@
+// Source: geoparquet.md 2.0.0, bbox (L196)
+[[req_core_bbox-crs]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/bbox-crs
+part:: The values of the `bbox` member SHALL be expressed in the coordinate reference system of the geometry column.
+====

@@ -1,0 +1,8 @@
+// Source: geoparquet.md 2.0.0, Geometry columns (L15) and encoding (L112)
+[[req_core_wkb]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/wkb
+part:: Each non-null value of a geometry column SHALL be a geometry encoded in Well-Known Binary (WKB) as specified for the `GEOMETRY` and `GEOGRAPHY` logical types in <<parquet-geospatial>>.
+====

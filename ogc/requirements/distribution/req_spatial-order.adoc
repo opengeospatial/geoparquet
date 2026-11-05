@@ -1,0 +1,8 @@
+// Source: Portolan formats.md, GeoParquet: 'Rows MUST be spatially ordered so nearby features are nearby in the file'; distributing-geoparquet.md L20, L68-L79
+[[req_distribution_spatial-order]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/distribution/spatial-order
+part:: The rows of the file SHALL be spatially ordered, so that features that are near each other in space are near each other in the file and the bounding boxes recorded in the geospatial statistics of the row groups allow a reader to skip most row groups that do not intersect a query window.
+====

@@ -1,0 +1,23 @@
+[[ats_distribution_spatial-order]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/distribution/spatial-order
+target:: /req/distribution/spatial-order
+test-purpose:: Verify that the rows are spatially ordered, measured by the pruning the row-group statistics allow.
+test-method::
++
+--
+1. Read the bounding box from the geospatial statistics of each row group of the primary geometry column and compute the extent of the file.
+
+2. Generate a set of sample query windows covering a fixed fraction of the extent (the executable test suite fixes the fraction, the number of windows and the random seed).
+
+3. For each window, count the row groups whose bounding box does not intersect it (the row groups a reader can skip), and average the skip fraction over the windows.
+
+4. Compute the same average for an ideal tiling of the extent into the same number of equal, non-overlapping row groups; verify that the file achieves the fraction of that ideal skip rate fixed by the executable test suite.
+
+NOTE: The achievable skip rate depends on the number of row groups (two row groups can never skip more than about half), so the verdict is relative to the ideal tiling rather than an absolute threshold. The metric and its threshold are maintained in the test suite (geoparquet-io `gpio check spatial`, Portolan's validator) rather than in this Standard, because the community is still refining them.
+
+NOTE: Implemented by `gpio check spatial` and `gpio check optimization` (factor 3), and by Portolan's validator. The metric is being changed from consecutive-pair overlap to the pruning-based measure described above (geoparquet-io PR #774, Portolan spec PR #188); the threshold lives in those tools.
+--
+====

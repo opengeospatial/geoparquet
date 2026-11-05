@@ -1,0 +1,9 @@
+// Source: geoparquet.md (PR #302), Bounding Box Columns
+[[req_covering_bbox-column-type]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/covering/bbox-column-type
+part:: Each child field of a bounding box column SHALL be of Parquet type `FLOAT` or `DOUBLE`.
+part:: All child fields of a bounding box column SHALL have the same Parquet type.
+====

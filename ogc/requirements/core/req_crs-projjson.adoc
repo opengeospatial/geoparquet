@@ -1,0 +1,8 @@
+// Source: geoparquet.md 2.0.0, crs (L52, L62-L64, L89, L95)
+[[req_core_crs-projjson]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/crs-projjson
+part:: If the `crs` member of a column metadata object is present and its value is not `null`, the value SHALL be a PROJJSON object (<<projjson>>) describing the coordinate reference system of the geometry column.
+====

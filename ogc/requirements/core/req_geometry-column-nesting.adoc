@@ -1,0 +1,8 @@
+// Source: geoparquet.md 2.0.0, Nesting (L19)
+[[req_core_geometry-column-nesting]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/geometry-column-nesting
+part:: A geometry column SHALL be at the root of the Parquet schema (that is, it is not contained in a group field such as a struct, list or map).
+====

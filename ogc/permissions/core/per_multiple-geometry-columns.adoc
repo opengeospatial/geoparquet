@@ -1,0 +1,8 @@
+// Source: geoparquet.md 2.0.0, Repetition (L23)
+[[per_core_multiple-geometry-columns]]
+[permission]
+====
+[%metadata]
+identifier:: /per/core/multiple-geometry-columns
+part:: A GeoParquet file MAY contain more than one geometry column, each with a distinct name.
+====

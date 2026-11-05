@@ -1,0 +1,10 @@
+// Source: geoparquet.md 2.0.0, File metadata table (L36-L40); schema.json `required`, `const`, `minLength`, `minProperties`
+[[req_core_file-metadata]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/file-metadata
+part:: The `version` member SHALL be present and its value SHALL be the string `"2.0.0"`.
+part:: The `primary_column` member SHALL be present and its value SHALL be a non-empty string.
+part:: The `columns` member SHALL be present and its value SHALL be a JSON object with at least one member.
+====

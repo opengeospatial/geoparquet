@@ -1,0 +1,9 @@
+// Source: geoparquet.md 2.0.0, File Extension (L283)
+[[rec_core_file-extension]]
+[recommendation]
+====
+[%metadata]
+identifier:: /rec/core/file-extension
+part:: The file extension `.parquet` SHOULD be used for a GeoParquet file.
+part:: The file extension `.geoparquet` SHOULD NOT be used.
+====

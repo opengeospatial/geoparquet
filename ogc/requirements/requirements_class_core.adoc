@@ -1,0 +1,37 @@
+[[rc_core]]
+[requirements_class]
+.Requirements Class Core
+====
+[%metadata]
+identifier:: http://www.opengis.net/spec/geoparquet/2.0/req/core
+subject:: GeoParquet file
+requirement:: /req/core/geo-metadata
+requirement:: /req/core/file-metadata
+requirement:: /req/core/column-metadata
+requirement:: /req/core/geometry-column-type
+requirement:: /req/core/geometry-column-nesting
+requirement:: /req/core/geometry-column-repetition
+requirement:: /req/core/wkb
+requirement:: /req/core/axis-order
+requirement:: /req/core/geometry-types
+requirement:: /req/core/crs-projjson
+requirement:: /req/core/crs-default
+requirement:: /req/core/crs-consistency
+requirement:: /req/core/epoch
+requirement:: /req/core/orientation-value
+requirement:: /req/core/orientation-rings
+requirement:: /req/core/edges-value
+requirement:: /req/core/bbox-array
+requirement:: /req/core/bbox-extent
+requirement:: /req/core/bbox-crs
+requirement:: /req/core/media-type
+recommendation:: /rec/core/wkb-iso
+recommendation:: /rec/core/parquet-crs-form
+recommendation:: /rec/core/crs-srid-zero
+recommendation:: /rec/core/orientation-non-planar
+recommendation:: /rec/core/file-extension
+recommendation:: /rec/core/feature-identifiers
+permission:: /per/core/multiple-geometry-columns
+permission:: /per/core/additional-file-metadata
+permission:: /per/core/crs-null
+====

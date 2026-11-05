@@ -1,0 +1,108 @@
+[[ats_core]]
+[conformance_class]
+====
+[%metadata]
+identifier:: http://www.opengis.net/spec/geoparquet/2.0/conf/core
+target:: http://www.opengis.net/spec/geoparquet/2.0/req/core
+classification:: Target Type:GeoParquet file
+abstract-test:: /conf/core/geo-metadata
+abstract-test:: /conf/core/file-metadata
+abstract-test:: /conf/core/column-metadata
+abstract-test:: /conf/core/geometry-column-type
+abstract-test:: /conf/core/geometry-column-nesting
+abstract-test:: /conf/core/geometry-column-repetition
+abstract-test:: /conf/core/wkb
+abstract-test:: /conf/core/axis-order
+abstract-test:: /conf/core/geometry-types
+abstract-test:: /conf/core/crs-projjson
+abstract-test:: /conf/core/crs-default
+abstract-test:: /conf/core/crs-consistency
+abstract-test:: /conf/core/epoch
+abstract-test:: /conf/core/orientation-value
+abstract-test:: /conf/core/orientation-rings
+abstract-test:: /conf/core/edges-value
+abstract-test:: /conf/core/bbox-array
+abstract-test:: /conf/core/bbox-extent
+abstract-test:: /conf/core/bbox-crs
+abstract-test:: /conf/core/media-type
+====
+
+==== Geo metadata
+
+include::./core/ats_geo-metadata.adoc[]
+
+==== File metadata
+
+include::./core/ats_file-metadata.adoc[]
+
+==== Column metadata
+
+include::./core/ats_column-metadata.adoc[]
+
+==== Geometry column type
+
+include::./core/ats_geometry-column-type.adoc[]
+
+==== Geometry column nesting
+
+include::./core/ats_geometry-column-nesting.adoc[]
+
+==== Geometry column repetition
+
+include::./core/ats_geometry-column-repetition.adoc[]
+
+==== Wkb
+
+include::./core/ats_wkb.adoc[]
+
+==== Axis order
+
+include::./core/ats_axis-order.adoc[]
+
+==== Geometry types
+
+include::./core/ats_geometry-types.adoc[]
+
+==== Crs projjson
+
+include::./core/ats_crs-projjson.adoc[]
+
+==== Crs default
+
+include::./core/ats_crs-default.adoc[]
+
+==== Crs consistency
+
+include::./core/ats_crs-consistency.adoc[]
+
+==== Epoch
+
+include::./core/ats_epoch.adoc[]
+
+==== Orientation value
+
+include::./core/ats_orientation-value.adoc[]
+
+==== Orientation rings
+
+include::./core/ats_orientation-rings.adoc[]
+
+==== Edges value
+
+include::./core/ats_edges-value.adoc[]
+
+==== Bbox array
+
+include::./core/ats_bbox-array.adoc[]
+
+==== Bbox extent
+
+include::./core/ats_bbox-extent.adoc[]
+
+==== Bbox crs
+
+include::./core/ats_bbox-crs.adoc[]
+
+==== Media type
+
+include::./core/ats_media-type.adoc[]

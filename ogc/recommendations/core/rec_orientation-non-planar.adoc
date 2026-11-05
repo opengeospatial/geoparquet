@@ -1,0 +1,8 @@
+// Source: geoparquet.md 2.0.0, orientation (L146) and edges (L180)
+[[rec_core_orientation-non-planar]]
+[recommendation]
+====
+[%metadata]
+identifier:: /rec/core/orientation-non-planar
+part:: If the `edges` member of a column metadata object has a value other than `"planar"`, the `orientation` member SHOULD be present with the value `"counterclockwise"`.
+====

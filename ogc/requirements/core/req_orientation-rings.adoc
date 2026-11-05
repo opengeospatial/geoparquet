@@ -1,0 +1,8 @@
+// Source: geoparquet.md 2.0.0, orientation (L140-L142)
+[[req_core_orientation-rings]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/orientation-rings
+part:: If the `orientation` member of a column metadata object is present, all vertices of exterior polygon rings in the geometry column SHALL be ordered in the counterclockwise direction and all vertices of interior rings SHALL be ordered in the clockwise direction.
+====

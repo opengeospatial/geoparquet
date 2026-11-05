@@ -1,0 +1,21 @@
+[[ats_core_file-metadata]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/core/file-metadata
+target:: /req/core/file-metadata
+test-purpose:: Verify the required file-level members of the GeoParquet metadata.
+test-method::
++
+--
+1. Verify that the `version` member is present and equal to the string `2.0.0`.
+
+2. Verify that the `primary_column` member is present and is a string of length greater than zero.
+
+3. Verify that the `columns` member is present, is a JSON object, and has at least one member.
+
+NOTE: That the value of `primary_column` is one of the member names of `columns` follows from /req/core/column-metadata (the primary geometry column is a geometry column, and every geometry column is described in `columns`); it is verified by step 2 of /conf/core/column-metadata.
+
+NOTE: Implemented by `gpio validate` checks `version_present`, `version_known`, `version_features_match`, `primary_column_present`, `columns_present` and `primary_column_in_columns`. gpio accepts any `1.x`/`2.x` version string; the exact value `2.0.0` is enforced only through the JSON Schema.
+--
+====

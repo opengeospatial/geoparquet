@@ -1,0 +1,21 @@
+[[ats_covering_bbox-paths]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/covering/bbox-paths
+target:: /req/covering/bbox-paths
+test-purpose:: Verify the `bbox` covering paths.
+test-method::
++
+--
+1. Verify that `covering.bbox` is a JSON object with exactly the members `xmin`, `ymin`, `xmax` and `ymax`, each an array of two strings.
+
+2. Verify that the second string of each array equals the name of its member.
+
+3. Verify that the first string is identical in all four arrays.
+
+4. Verify that a column with that name exists at the root of the Parquet schema, and run the tests /conf/covering/bbox-column-structure, /conf/covering/bbox-column-type, /conf/covering/bbox-column-repetition and /conf/covering/bbox-column-nesting on it.
+
+NOTE: Partly implemented by `gpio validate` `covering_bbox_paths_*` (members present, two-element arrays) and `covering_bbox_column_exists_*`. Steps 2 and 3 (second element equals the member name; same column in all four arrays) are not implemented.
+--
+====

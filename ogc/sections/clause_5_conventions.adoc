@@ -1,0 +1,29 @@
+== Conventions
+
+This section provides details and examples for any conventions used in the document.
+
+=== Identifiers
+
+The normative provisions in this Standard are denoted by the URI
+
+`http://www.opengis.net/spec/geoparquet/2.0`
+
+All requirements, recommendations, permissions and conformance tests that appear in this document are denoted by partial URIs which are relative to this base.
+
+=== Requirement keywords
+
+Requirements are stated with SHALL and SHALL NOT, recommendations with SHOULD and SHOULD NOT, and permissions with MAY, as prescribed for OGC Standards. The GeoParquet community specification states the same provisions with the <<rfc2119>> keywords MUST, MUST NOT, SHOULD, SHOULD NOT and MAY. SHALL in this document is equivalent to MUST in the community specification.
+
+=== JSON notation
+
+Members of JSON objects are referred to by name in code font, for example `primary_column`. Nested members are referred to with dot notation, for example `crs.id.authority`. A member is *present* when the object contains it, whatever its value, including `null`; a member is *absent* when the object does not contain it. The distinction matters for the `crs` member (<<clause_crs>>).
+
+The GeoParquet metadata is described in prose and in tables; the GeoParquet metadata JSON Schema (<<geoparquet-schema>>) is the authoritative machine-readable statement of its structure and is a normative reference of this Standard (see <<req_core_geo-metadata>>). Where this document restates a constraint of the schema, the two are intended to be identical; a discrepancy is a defect to be reported to the GeoParquet repository.
+
+=== Parquet terminology
+
+The terms Parquet schema, root of the schema, group field, primitive type, logical type, repetition (`required`, `optional`, `repeated`), row group, column chunk, `FileMetaData`, `key_value_metadata` and `GeospatialStatistics` are used as defined in <<parquet-format>>. `GEOMETRY` and `GEOGRAPHY` denote the geospatial logical types defined in <<parquet-logical-types>>, and "the `crs` parameter" denotes the `crs` type parameter of those logical types.
+
+=== Geometry types and dimensions
+
+The seven geometry types Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon and GeometryCollection are those of <<ogc06-103r4>>. A geometry has two (XY), three (XYZ or XYM) or four (XYZM) coordinate dimensions; in JSON metadata the dimension is written as the suffix `" Z"`, `" M"` or `" ZM"` of the geometry type name.

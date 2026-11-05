@@ -1,0 +1,8 @@
+// Source: geoparquet.md 2.0.0, edges (L54, L150-L178)
+[[req_core_edges-value]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/edges-value
+part:: If the `edges` member of a column metadata object is present, its value SHALL be one of the strings `"planar"`, `"spherical"`, `"vincenty"`, `"thomas"`, `"andoyer"`, `"karney"`.
+====

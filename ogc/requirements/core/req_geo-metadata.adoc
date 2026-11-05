@@ -1,0 +1,10 @@
+// Source: geoparquet.md 2.0.0, Metadata (L32)
+[[req_core_geo-metadata]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/core/geo-metadata
+part:: A GeoParquet file SHALL include a `geo` key in the Parquet file metadata (`FileMetaData::key_value_metadata`).
+part:: The value of the `geo` key SHALL be a JSON-encoded UTF-8 string representing the GeoParquet file metadata and column metadata.
+part:: The JSON value SHALL validate against the GeoParquet metadata JSON Schema for version 2.0.0 (<<geoparquet-schema>>).
+====

@@ -1,0 +1,12 @@
+[appendix,obligation=informative]
+== Revision History
+
+[[tbl_history]]
+.Revision history
+[width="90%",options="header"]
+|===
+|Date |Release |Editor |Primary clauses modified |Description
+|2022-04-18 |0.1 |GeoParquet SWG |all |Initial version (community draft)
+|2024-05-10 |1.0 draft |G. Hobona, M. Mohr, C. Holmes |all |Migration of the 1.0.0 community specification to the OGC document template (PR #224, PR #247)
+|2026-09-03 |2.0 draft |GeoParquet SWG |all |Rewritten for GeoParquet 2.0.0: Parquet `GEOMETRY`/`GEOGRAPHY` logical types, CRS on the logical type, one requirement per normative statement of the community specification, Bounding Box Covering requirements class
+|===

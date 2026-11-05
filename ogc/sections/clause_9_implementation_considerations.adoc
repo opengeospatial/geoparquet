@@ -1,0 +1,84 @@
+[[clause_implementation]]
+[obligation=informative]
+== Implementation considerations (informative)
+
+=== General
+
+This clause is informative. It reproduces guidance from the GeoParquet community specification that applies to software rather than to files, and therefore is not expressed as requirements of this Standard (see <<clause_conformance_note>>).
+
+[[clause_conformance_note]]
+=== Reading GeoParquet files
+
+The community specification states the following expectations on software that reads GeoParquet 2.0 files. They are not tested by this Standard, whose only standardization target is the file.
+
+* A GeoParquet 2.0 reader is expected to interpret the Parquet `crs` parameter in both inline PROJJSON and `<authority>:<code>` form. Readers are encouraged to also parse the other representations permitted by <<parquet-geospatial>> (`srid:<identifier>` and `projjson:<key_name>`), to improve interoperability with the broader Parquet geospatial ecosystem.
+* Readers are expected to be robust to additional, implementation-specific members in the GeoParquet metadata and not to reject metadata with unknown members.
+* Readers are expected to validate explicitly all member values they rely on, even where only one value is currently allowed (for example `encoding`), because new values may be added in future minor versions.
+* Where a geometry column carries the `GEOGRAPHY` logical type or a non-planar `edges` value without an `orientation`, readers typically interpret polygon rings so that the polygon encloses at most half of the sphere; the specification makes no guarantee about this (<<clause_edges>>).
+
+=== Files without GeoParquet metadata
+
+Producing the native Parquet geospatial types is the foundation of GeoParquet 2.0. A writer that cannot generate PROJJSON may write the `GEOMETRY` or `GEOGRAPHY` logical types with an `<authority>:<code>` `crs` parameter and omit the `geo` metadata. Such a file does not conform to this Standard, because the Core requirements class requires the `geo` entry, but any GeoParquet 2.0 reader is expected to read it: the Parquet logical type, its `crs` parameter and its statistics carry the information a reader needs.
+
+=== Version compatibility
+
+GeoParquet version numbers follow Semantic Versioning: patch releases are for bug fixes, minor releases represent backwards compatible changes, and major releases represent breaking changes. A backwards compatible change means that a file written with the older specification is always compatible with the newer specification. Minor releases are also intended to be forward compatible up to the next major release: an implementation that is only aware of the older specification is expected to interpret data written according to the newer specification correctly, or to recognize that it cannot.
+
+Examples of a forward compatible change include adding a new member to the file or column metadata that can be ignored without changing the interpretation of the data (for example an index that can improve query performance), and adding a new option to an existing member. Examples of a breaking change include adding a new member that cannot be ignored without changing the interpretation of the data, changing the default value of an existing member, and changing the meaning of an existing member value.
+
+=== Relationship to GeoParquet 1.x
+
+GeoParquet 1.0 and 1.1 files declare `version` `"1.0.0"` or `"1.1.0"` and store geometry columns as plain `BYTE_ARRAY` columns without a logical type. GeoParquet 1.1 additionally allows six native (GeoArrow-based) column encodings (`"point"`, `"linestring"`, `"polygon"`, `"multipoint"`, `"multilinestring"`, `"multipolygon"`) that store coordinates in nested groups of `DOUBLE` values, and defines the `covering` member restated in <<rc_covering>>. Readers that support both versions distinguish them by the `version` member and by the presence of the `GEOMETRY`/`GEOGRAPHY` logical type. This Standard does not specify GeoParquet 1.x; the community specification remains the reference for those files.
+
+[[clause_crs84]]
+=== OGC:CRS84 details
+
+The PROJJSON object for OGC:CRS84 is:
+
+[source,json]
+----
+{
+    "$schema": "https://proj.org/schemas/v0.5/projjson.schema.json",
+    "type": "GeographicCRS",
+    "name": "WGS 84 longitude-latitude",
+    "datum": {
+        "type": "GeodeticReferenceFrame",
+        "name": "World Geodetic System 1984",
+        "ellipsoid": {
+            "name": "WGS 84",
+            "semi_major_axis": 6378137,
+            "inverse_flattening": 298.257223563
+        }
+    },
+    "coordinate_system": {
+        "subtype": "ellipsoidal",
+        "axis": [
+        {
+            "name": "Geodetic longitude",
+            "abbreviation": "Lon",
+            "direction": "east",
+            "unit": "degree"
+        },
+        {
+            "name": "Geodetic latitude",
+            "abbreviation": "Lat",
+            "direction": "north",
+            "unit": "degree"
+        }
+        ]
+    },
+    "id": {
+        "authority": "OGC",
+        "code": "CRS84"
+    }
+}
+----
+
+For implementations that operate entirely with longitude, latitude coordinates and are not CRS-aware, or do not have easy access to CRS-aware libraries that can fully parse PROJJSON, it may be possible to infer that coordinates conform to OGC:CRS84 from properties of the `crs` member. The CRS is likely equivalent to OGC:CRS84 if the `id` property is present and either
+
+* `id.authority` is `"OGC"` and `id.code` is `"CRS84"`, or
+* `id.authority` is `"EPSG"` and `id.code` is `4326` (because of the longitude, latitude ordering of this Standard).
+
+It is reasonable for implementations to require that one of the above `id` combinations is present and to skip further tests to determine whether the CRS is functionally equivalent to OGC:CRS84. Likewise, when the Parquet `crs` parameter identifies the CRS by an `<authority>:<code>` string, the values `"OGC:CRS84"` and `"EPSG:4326"` are equivalent to OGC:CRS84 for the purposes of this Standard.
+
+Due to the large number of CRSs available and the difficulty of implementing all of them, a number of implementations start without support for CRSs other than OGC:CRS84. Users are advised to store data in longitude, latitude (OGC:CRS84, or omitting the `crs` member) for it to work with the widest number of tools. Data that are more appropriately represented in particular projections may use an alternate CRS; users are encouraged to check that their chosen tools support their chosen CRS.

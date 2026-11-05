@@ -1,0 +1,17 @@
+[[ats_core_geometry-column-repetition]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/core/geometry-column-repetition
+target:: /req/core/geometry-column-repetition
+test-purpose:: Verify the repetition of geometry columns.
+test-method::
++
+--
+1. For each member of `columns`, read the repetition type of the schema element with that name.
+
+2. Verify that the repetition type is `REQUIRED` or `OPTIONAL` and is not `REPEATED`.
+
+NOTE: Implemented by `gpio validate` check `geometry_not_repeated_*` and by GPQ `geometry columns must be required or optional, not repeated`.
+--
+====

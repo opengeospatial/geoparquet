@@ -1,0 +1,21 @@
+[[ats_core_crs-consistency]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/core/crs-consistency
+target:: /req/core/crs-consistency
+test-purpose:: Verify that the GeoParquet `crs` member and the Parquet `crs` logical-type parameter agree.
+test-method::
++
+--
+1. For each geometry column, obtain the coordinate reference system A from the `crs` member of the column metadata object (OGC:CRS84 if absent, undefined if `null`).
+
+2. Obtain the coordinate reference system B from the `crs` parameter of the column's `GEOMETRY` or `GEOGRAPHY` logical type (OGC:CRS84 if unset; undefined if `srid:0`; resolve `<authority>:<code>` strings through a CRS registry; parse inline PROJJSON).
+
+3. Verify that A and B are the same coordinate reference system, or that both are undefined.
+
+NOTE: Equivalence of two CRS definitions is determined with a CRS library (for example PROJ); differences in encoding only (PROJJSON versus authority code) are not a failure.
+
+NOTE: Implemented by `gpio validate` check `v2_crs_consistency_*` (semantic comparison through pyproj). A Parquet `crs` given as a bare `<authority>:<code>` string is currently read as unset (geoparquet-io issue #814), so that combination is not yet verified. GDAL checks the form combinations only.
+--
+====

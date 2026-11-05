@@ -1,0 +1,9 @@
+// Source: geoparquet.md (PR #302), covering; schema.json `covering.required`
+[[req_covering_keys]]
+[requirement]
+====
+[%metadata]
+identifier:: /req/covering/keys
+part:: Each member name of the `covering` object SHALL be the name of a covering encoding defined by this Standard.
+part:: The `covering` object SHALL contain a `bbox` member.
+====

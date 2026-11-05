@@ -1,0 +1,37 @@
+[appendix,obligation=informative]
+== Example GeoParquet metadata (Informative)
+
+The following is the value of the `geo` entry of the Parquet file metadata for a file with a single geometry column named `geometry`, stored as a `GEOMETRY` logical type in OGC:CRS84 (the `crs` member is therefore absent), holding two-dimensional polygons and multipolygons with counterclockwise exterior rings.
+
+[source,json]
+----
+{
+  "version": "2.0.0",
+  "primary_column": "geometry",
+  "columns": {
+    "geometry": {
+      "encoding": "WKB",
+      "geometry_types": ["Polygon", "MultiPolygon"],
+      "orientation": "counterclockwise",
+      "edges": "planar",
+      "bbox": [-180.0, -90.0, 180.0, 83.6]
+    }
+  }
+}
+----
+
+The same file with a bounding box covering (<<rc_covering>>) additionally has a root-level group column, here also named `bbox`, with the `DOUBLE` child fields `xmin`, `ymin`, `xmax`, `ymax`, and the column metadata gains:
+
+[source,json]
+----
+"covering": {
+  "bbox": {
+    "xmin": ["bbox", "xmin"],
+    "ymin": ["bbox", "ymin"],
+    "xmax": ["bbox", "xmax"],
+    "ymax": ["bbox", "ymax"]
+  }
+}
+----
+
+Complete example files, including files with a non-default CRS, an epoch, `GEOGRAPHY` columns and XYZ/XYM/XYZM geometries, as well as files that deliberately violate individual requirements, are published by the GeoParquet community at https://github.com/geoparquet/geoparquet-testing.

@@ -1,0 +1,17 @@
+[[ats_core_bbox-crs]]
+[abstract_test]
+====
+[%metadata]
+identifier:: /conf/core/bbox-crs
+target:: /req/core/bbox-crs
+test-purpose:: Verify that the `bbox` values are in the coordinate reference system of the geometry column.
+test-method::
++
+--
+1. For each geometry column whose column metadata object has a `bbox` member, verify that the `bbox` values are plausible for the coordinate reference system of the column (for example, within [-180, 180] and [-90, 90] for a geographic CRS, or within the area of use of a projected CRS).
+
+NOTE: This test can only detect gross inconsistencies; the test in /conf/core/bbox-extent provides the complementary check against the geometry values.
+
+NOTE: Heuristic only: `gpio validate` `coordinates_valid_for_crs_*`; GDAL geographic range checks.
+--
+====

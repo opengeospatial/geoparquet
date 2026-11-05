@@ -1,0 +1,15 @@
+[bibliography]
+== Normative references
+
+The following documents are referred to in the text in such a way that some or all of their content constitutes requirements of this document. For dated references, only the edition cited applies. For undated references, the latest edition of the referenced document (including any amendments) applies.
+
+* [[[parquet-format,Apache Parquet Format 2.12.0]]], Apache Software Foundation: Apache Parquet Format Specification, version 2.12.0 (2025). https://github.com/apache/parquet-format/tree/apache-parquet-format-2.12.0
+* [[[parquet-logical-types,Apache Parquet Logical Types 2.12.0]]], Apache Software Foundation: Parquet Logical Type Definitions, version 2.12.0, sections "GEOMETRY" and "GEOGRAPHY". https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/LogicalTypes.md
+* [[[parquet-geospatial,Apache Parquet Geospatial Definitions 2.12.0]]], Apache Software Foundation: Parquet Geospatial Definitions, version 2.12.0. https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md
+* [[[geoparquet-schema,GeoParquet JSON Schema 2.0.0]]], GeoParquet community: GeoParquet metadata JSON Schema, version 2.0.0. https://geoparquet.org/releases/v2.0.0/schema.json
+* [[[projjson,PROJJSON]]], PROJ contributors: PROJJSON specification, schema version 0.7. https://proj.org/en/stable/specifications/projjson.html
+* [[[ogc06-103r4,OGC 06-103r4]]]
+* [[[rfc7946,IETF RFC 7946]]]
+* [[[rfc2119,IETF RFC 2119]]]
+* [[[ISO19111_2019,ISO 19111:2019]]]
+* [[[iana-parquet,Apache Parquet media type registration]]], Internet Assigned Numbers Authority: Media type registration for `application/vnd.apache.parquet`. https://www.iana.org/assignments/media-types/application/vnd.apache.parquet

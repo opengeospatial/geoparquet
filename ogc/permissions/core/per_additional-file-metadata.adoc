@@ -1,0 +1,8 @@
+// Source: geoparquet.md 2.0.0, File metadata (L42)
+[[per_core_additional-file-metadata]]
+[permission]
+====
+[%metadata]
+identifier:: /per/core/additional-file-metadata
+part:: The file metadata MAY contain additional implementation-specific members in addition to `version`, `primary_column` and `columns`.
+====

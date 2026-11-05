@@ -1,0 +1,18 @@
+[[ats_distribution]]
+[conformance_class]
+====
+[%metadata]
+identifier:: http://www.opengis.net/spec/geoparquet/2.0/conf/distribution
+target:: http://www.opengis.net/spec/geoparquet/2.0/req/distribution
+classification:: Target Type:GeoParquet file
+abstract-test:: /conf/distribution/geospatial-statistics
+abstract-test:: /conf/distribution/spatial-order
+====
+
+==== Geospatial statistics
+
+include::./distribution/ats_geospatial-statistics.adoc[]
+
+==== Spatial order
+
+include::./distribution/ats_spatial-order.adoc[]
