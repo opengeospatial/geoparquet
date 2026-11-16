@@ -214,7 +214,7 @@ Example:
 
 > [!NOTE]
 > The native Parquet `GEOMETRY`/`GEOGRAPHY` types write a bounding box in the
-> [geospatial statistics](https://github.com/apache/parquet-format/blob/master/Geospatial.md#geospatial-statistics)
+> [geospatial statistics](https://github.com/apache/parquet-format/blob/master/Geospatial.md#statistics)
 > of every row group, which provides much of the original motivation for the bbox covering: readers can skip row groups
 > that do not intersect a query without any extra column. A bbox covering column can still be useful because, as an
 > ordinary Parquet struct column, it gets a standard [page index](https://github.com/apache/parquet-format/blob/master/PageIndex.md),

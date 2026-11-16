@@ -29,7 +29,7 @@ type for the geometry column. A writer that does this gets, with no additional e
 * An unambiguous, self-describing declaration that the column contains geospatial data (no guessing
   from column names or sniffing binary blobs).
 * The coordinate reference system carried on the column itself, via the logical type's `crs` property.
-* [Geospatial statistics](https://github.com/apache/parquet-format/blob/master/Geospatial.md#geospatial-statistics)
+* [Geospatial statistics](https://github.com/apache/parquet-format/blob/master/Geospatial.md#statistics)
   — per-row-group bounding boxes and geometry type lists — that let readers efficiently skip data
   that does not match a spatial query.
 
