@@ -78,7 +78,7 @@ The GeoParquet column-metadata `crs` field, when present, MUST describe the same
 
 In GeoParquet 2.0 the geometry columns are stored using the native Parquet `GEOMETRY`/`GEOGRAPHY` logical types, and the CRS travels with the column on the logical type's `crs` property. Producing these native geospatial Parquet types is the foundation of GeoParquet 2.0 and is what every writer should do; the GeoParquet `geo` metadata layers additional, more explicit information on top — including a restatement of the CRS that is guaranteed to be inline PROJJSON.
 
-The Parquet Geospatial definitions have a [crs customization](https://github.com/apache/parquet-format/blob/master/Geospatial.md#crs-customization) section that permits several forms for the `crs` property: inline PROJJSON, an `<authority>:<code>` string (e.g. `EPSG:4326`), `srid:<identifier>`, and `projjson:<key_name>`.
+The Parquet Geospatial definitions have a [crs customization](https://github.com/apache/parquet-format/blob/master/Geospatial.md#coordinate-reference-system) section that permits several forms for the `crs` property: inline PROJJSON, an `<authority>:<code>` string (e.g. `EPSG:4326`), `srid:<identifier>`, and `projjson:<key_name>`.
 
 The rules in the rest of this subsection govern the **native Parquet `crs` property** on the `GEOMETRY`/`GEOGRAPHY` logical type. They do not relax the requirement on the GeoParquet column-metadata `crs` field, which is always inline PROJJSON or `null` (see [crs](#crs)).
 
