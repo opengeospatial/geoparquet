@@ -36,7 +36,7 @@ Two other validators are still in use:
 
 ## Test Data for Implementations
 
-[geoparquet-testing](https://github.com/geoparquet/geoparquet-testing) is the official test corpus for the format, modeled on Apache's [parquet-testing](https://github.com/apache/parquet-testing). If you maintain a GeoParquet reader or writer, running against it is the quickest way to find where your implementation disagrees with everyone else's. It targets 2.0.0, and every geometry column in it uses the native Parquet `GEOMETRY`/`GEOGRAPHY` logical type.
+[geoparquet-testing](https://github.com/geoparquet/geoparquet-testing) is the official test corpus for the format, modeled on Apache's [parquet-testing](https://github.com/apache/parquet-testing). If you maintain a GeoParquet reader or writer, running against it is the quickest way to find where your implementation disagrees with everyone else's. It targets 2.0.0, and every geometry column in it uses the native Parquet `GEOMETRY`/`GEOGRAPHY` logical type. It may eventually add older GeoParquet versions, but for now the best place for GeoParquet 1.1 test data is [geoarrow-data](https://github.com/geoarrow/geoarrow-data/).
 
 The files come in three tiers:
 
