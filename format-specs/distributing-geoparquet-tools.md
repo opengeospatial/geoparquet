@@ -18,7 +18,7 @@ Out of the box:
 ogr2ogr out.parquet in.geojson
 ```
 
-Out of the box GDAL/OGR defaults to snappy compression, with max row group size of 65536.
+Out of the box GDAL/OGR defaults to snappy compression, with max row group size of 65 536.
 Version 3.9 and later will write out the `bbox` column by default, producing GeoParquet 1.1. There is a built-in
 option (`SORT_BY_BBOX=YES`) to spatially order the data that works by creating a temporary GeoPackage file and
 using its r-tree spatial index. It defaults to false since it can be an intensive operation,
@@ -106,7 +106,7 @@ In DuckDB 1.5 the `GEOMETRY` type and GeoParquet reading and writing are part of
 [spatial extension](https://duckdb.org/docs/stable/core_extensions/spatial/overview.html) just to read a GeoParquet file,
 write one, or convert/recompress/repartition it. CRS information is carried through a read/write round-trip in core as well.
 DuckDB automatically writes GeoParquet metadata for any output containing a geometry column. The default compression is snappy,
-the max row group size is 122880 rows, by default it writes GeoParquet 1.0.0, and the data is not spatially ordered.
+the max row group size is 122 880 rows, by default it writes GeoParquet 1.0.0, and the data is not spatially ordered.
 
 You can choose the GeoParquet version written with the `GEOPARQUET_VERSION` copy option. Pass `GEOPARQUET_VERSION 'V2'` to write
 GeoParquet 2.0: the geometry column is stored using the native Parquet `GEOMETRY`/`GEOGRAPHY` logical types (with the geospatial
@@ -196,7 +196,7 @@ one area still being finalized is 2.0 output, so by default it writes GeoParquet
 pipx install geoparquet-io   # or: pip install geoparquet-io
 ```
 
-A plain conversion applies ZSTD compression at level 15, Hilbert spatial ordering, a `bbox` covering column, and 100000-row
+A plain conversion applies ZSTD compression at level 15, Hilbert spatial ordering, a `bbox` covering column, and 100 000-row
 row groups, then validates the result:
 
 ```bash
@@ -215,7 +215,7 @@ gpio convert geoparquet input.gpkg output.parquet --geoparquet-version 2.0
 
 gpio partitions large datasets with `gpio partition`, which supports KD-tree, quadkey, S2, H3, A5, and
 [admin](https://medium.com/radiant-earth-insights/the-admin-partitioned-geoparquet-distribution-59f0ca1c6d96) schemes. The
-KD-tree scheme auto-selects a partition count targeting ~120000 rows per file, and adds the partition column for you if it is
+KD-tree scheme auto-selects a partition count targeting ~120 000 rows per file, and adds the partition column for you if it is
 missing:
 
 ```bash

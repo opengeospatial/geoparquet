@@ -18,7 +18,7 @@ And if you're building a tool or library then consider these as good defaults.
 - Use GeoParquet 2.0, which stores geometries in the native Parquet `GEOMETRY`/`GEOGRAPHY` types,
   or GeoParquet 1.1 with the [bbox covering](https://github.com/opengeospatial/geoparquet/blob/v1.1.0/format-specs/geoparquet.md#bbox-covering-encoding) for efficient spatial access.
 - Spatially order the data within the file.
-- Set the maximum row group size to between 50000 and 150000 rows.
+- Set the maximum row group size to between 50 000 and 150 000 rows.
 - If the data is larger than ~2 gigabytes consider spatially partitioning the files.
 - Use [STAC Metadata](https://stacspec.org/) metadata to describe the data.
 
@@ -111,7 +111,7 @@ which can slow things down if there are a lot of files.
 Unfortunately there's no single 'best' size for row groups, and it will depend on the size of the data and the access patterns.
 The community is still learning what works best, so there are no solid recommendations at this point - hopefully we'll learn
 more and update this section in the future. As of this writing there are several larger global datasets that are being distributed with
-row group sizes of 50000 to 150000 rows, so that's what we recommend as a starting point.
+row group sizes of 50 000 to 150 000 rows, so that's what we recommend as a starting point.
 
 Most geospatial tools give you the ability to set the maximum number of rows per row group, but some tools may let you set
 the byte size for the row group. The core thing that really matters is the byte size for the row group, as that will be
@@ -175,7 +175,7 @@ here as reference and as a way to see what it looks like when all the recommenda
 [Overture Maps](https://overturemaps.org/) provides a number of different 'themes' of data in well-organized GeoParquet files, with larger datasets. See [their documentation](https://docs.overturemaps.org/getting-data/) for instructions on how to get
 the data. Their buildings data is more than 2.2 billion rows. It is distributed as GeoParquet 1.1 and follows the core
 recommendations for that version. The row group
-size seems to be around 150000 rows, and it's zstd compressed with the bbox column, ordered by a GeoHash. The data is partitioned
+size seems to be around 150 000 rows, and it's zstd compressed with the bbox column, ordered by a GeoHash. The data is partitioned
 spatially, see [this discussion comment](https://github.com/opengeospatial/geoparquet/discussions/251#discussioncomment-11478379)
 for more details.
 
@@ -191,7 +191,7 @@ splits larger countries into smaller files, using S2 cells.
 - [US Structures from Oak Ridge National Laboratory](https://source.coop/wherobots/usa-structures/geoparquet) formatted by
 Wherobots.
 - [Planet Ag Field Boundaries over EU](https://source.coop/repositories/planet/eu-field-boundaries/description) - needs to be
-spatially partitioned, row group size is 25000 rows.
+spatially partitioned, row group size is 25 000 rows.
 
 ## Tool Examples
 
