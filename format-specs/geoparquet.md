@@ -2,7 +2,7 @@
 
 ## Overview
 
-The [Apache Parquet](https://parquet.apache.org/) provides a standardized open-source columnar storage format. The GeoParquet specification originally defined how geospatial data should be stored in Parquet format, including the representation of geometries and the required additional metadata. As of Parquet version 2.11, released in March 2025, the Parquet format specifies [geospatial types and statistics](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md). The 2.0 version of the GeoParquet specification provides guidance for geospatial tools to implement Parquet Geometry and Geography types, along with some optional metadata not covered in the core Parquet specification.
+The [Apache Parquet](https://parquet.apache.org/) provides a standardized open-source columnar storage format. The GeoParquet specification originally defined how geospatial data should be stored in Parquet format, including the representation of geometries and the required additional metadata. As of Parquet version 2.11, released in March 2025, the Parquet format specifies [geospatial types and statistics](https://github.com/apache/parquet-format/blob/master/Geospatial.md). The 2.0 version of the GeoParquet specification provides guidance for geospatial tools to implement Parquet Geometry and Geography types, along with some optional metadata not covered in the core Parquet specification.
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt).
 
@@ -12,7 +12,7 @@ This is version 2.0.0 of the GeoParquet specification.  See the [JSON Schema](sc
 
 ## Geometry columns
 
-Geometry columns MUST be encoded as either [`GEOMETRY`](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/LogicalTypes.md#geometry) or [`GEOGRAPHY`](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/LogicalTypes.md#geography) logical types in Parquet, which both annotate a BYTE_ARRAY that encodes geospatial features in the [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary) format.
+Geometry columns MUST be encoded as either [`GEOMETRY`](https://github.com/apache/parquet-format/blob/master/LogicalTypes.md#geometry) or [`GEOGRAPHY`](https://github.com/apache/parquet-format/blob/master/LogicalTypes.md#geography) logical types in Parquet, which both annotate a BYTE_ARRAY that encodes geospatial features in the [WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry#Well-known_binary) format.
 
 ### Nesting
 
@@ -29,7 +29,7 @@ GeoParquet files include additional metadata at two levels:
 1. File metadata indicating things like the version of this specification used
 2. Column metadata with additional metadata for each geometry column
 
-A GeoParquet file MUST include a `geo` key in the Parquet metadata (see [`FileMetaData::key_value_metadata`](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/README.md#metadata).  The value of this key MUST be a JSON-encoded UTF-8 string representing the file and column metadata that validates against the [GeoParquet metadata schema](schema.json). The file and column metadata fields are described below.
+A GeoParquet file MUST include a `geo` key in the Parquet metadata (see [`FileMetaData::key_value_metadata`](https://github.com/apache/parquet-format/blob/master/README.md#metadata).  The value of this key MUST be a JSON-encoded UTF-8 string representing the file and column metadata that validates against the [GeoParquet metadata schema](schema.json). The file and column metadata fields are described below.
 
 ## File metadata
 
@@ -78,7 +78,7 @@ The GeoParquet column-metadata `crs` field, when present, MUST describe the same
 
 In GeoParquet 2.0 the geometry columns are stored using the native Parquet `GEOMETRY`/`GEOGRAPHY` logical types, and the CRS travels with the column on the logical type's `crs` property. Producing these native geospatial Parquet types is the foundation of GeoParquet 2.0 and is what every writer should do; the GeoParquet `geo` metadata layers additional, more explicit information on top — including a restatement of the CRS that is guaranteed to be inline PROJJSON.
 
-The Parquet Geospatial definitions have a [crs customization](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md#crs-customization) section that permits several forms for the `crs` property: inline PROJJSON, an `<authority>:<code>` string (e.g. `EPSG:4326`), `srid:<identifier>`, and `projjson:<key_name>`.
+The Parquet Geospatial definitions have a [crs customization](https://github.com/apache/parquet-format/blob/master/Geospatial.md#coordinate-reference-system) section that permits several forms for the `crs` property: inline PROJJSON, an `<authority>:<code>` string (e.g. `EPSG:4326`), `srid:<identifier>`, and `projjson:<key_name>`.
 
 The rules in the rest of this subsection govern the **native Parquet `crs` property** on the `GEOMETRY`/`GEOGRAPHY` logical type. They do not relax the requirement on the GeoParquet column-metadata `crs` field, which is always inline PROJJSON or `null` (see [crs](#crs)).
 
@@ -110,13 +110,13 @@ The optional `epoch` field allows to specify this in case the `crs` field define
 
 #### encoding
 
-This is the memory layout used to encode geometries in the geometry column. The only supported value is `"WKB"`. This SHOULD be the ["OpenGIS® Implementation Specification for Geographic information - Simple feature access - Part 1: Common architecture"](https://portal.ogc.org/files/?artifact_id=18241) WKB representation. The [Parquet Geospatial Definitions](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md) provide full details on implementing the encoding and the Parquet logical types.
+This is the memory layout used to encode geometries in the geometry column. The only supported value is `"WKB"`. This SHOULD be the ["OpenGIS® Implementation Specification for Geographic information - Simple feature access - Part 1: Common architecture"](https://portal.ogc.org/files/?artifact_id=18241) WKB representation. The [Parquet Geospatial Definitions](https://github.com/apache/parquet-format/blob/master/Geospatial.md) provide full details on implementing the encoding and the Parquet logical types.
 
 WKB geometry columns MUST be stored using the `BYTE_ARRAY` parquet type, with either a `GEOMETRY` or `GEOGRAPHY` logical type, as specified by the Parquet format.
 
 #### Coordinate axis order
 
-The axis order of the coordinates in WKB stored in a GeoParquet follows the de facto standard for axis order in WKB and is therefore always (x, y) where x is easting or longitude and y is northing or latitude. This ordering explicitly overrides the axis order as specified in the CRS. This is aligned with [Parquet Coordinate Axis Order](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md#coordinate-axis-order).
+The axis order of the coordinates in WKB stored in a GeoParquet follows the de facto standard for axis order in WKB and is therefore always (x, y) where x is easting or longitude and y is northing or latitude. This ordering explicitly overrides the axis order as specified in the CRS. This is aligned with [Parquet Coordinate Axis Order](https://github.com/apache/parquet-format/blob/master/Geospatial.md#coordinate-axis-order).
 
 #### geometry_types
 
@@ -133,7 +133,7 @@ In addition, the following rules are used:
 
 It is expected that this field is strictly correct. For example, if having both polygons and multipolygons, it is not sufficient to specify `["MultiPolygon"]`, but it is expected to specify `["Polygon", "MultiPolygon"]`. Or if having 3D points, it is not sufficient to specify `["Point"]`, but it is expected to list `["Point Z"]`.
 
-These MUST match the corresponding [Geospatial Types](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md#geospatial-types)
+These MUST match the corresponding [Geospatial Types](https://github.com/apache/parquet-format/blob/master/Geospatial.md#geospatial-types)
 in the Parquet statistics.
 
 #### orientation
@@ -214,10 +214,10 @@ Example:
 
 > [!NOTE]
 > The native Parquet `GEOMETRY`/`GEOGRAPHY` types write a bounding box in the
-> [geospatial statistics](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/Geospatial.md#geospatial-statistics)
+> [geospatial statistics](https://github.com/apache/parquet-format/blob/master/Geospatial.md#statistics)
 > of every row group, which provides much of the original motivation for the bbox covering: readers can skip row groups
 > that do not intersect a query without any extra column. A bbox covering column can still be useful because, as an
-> ordinary Parquet struct column, it gets a standard [page index](https://github.com/apache/parquet-format/blob/apache-parquet-format-2.12.0/PageIndex.md),
+> ordinary Parquet struct column, it gets a standard [page index](https://github.com/apache/parquet-format/blob/master/PageIndex.md),
 > whose per-page min/max values let readers prune individual pages *within* a row group. It also enables spatial
 > filtering in readers that predate the native geospatial statistics. See
 > [when to add a bbox covering column](distributing-geoparquet.md#when-to-add-a-bbox-covering-column) in the
