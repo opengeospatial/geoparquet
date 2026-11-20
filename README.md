@@ -26,7 +26,7 @@ The latest version is 2.0.0, which is based on [Parquet Geospatial Logical Types
 
 Several tools check a file against the specification, and it is worth running one over any GeoParquet you produce or are handed. The two most complete cover every released version of the spec — 1.0, 1.1 and 2.0:
 
-* **[geoparquet-validator](https://github.com/geoparquet/geoparquet-validator)** - `geoparquet-validator check example.parquet` reports conformance by class (core, bbox covering, cloud-optimized distribution), with the 2.0 checks following the OGC abstract tests. It also runs in the browser at [validator.geoparquet.org](https://validator.geoparquet.org/), where files never leave your machine, and reads remote files with range requests. Installable for Python, Rust, Node (WebAssembly) and C, or as a standalone binary.
+* **[geoparquet-validator](https://github.com/geoparquet/geoparquet-validator)** - `geoparquet-validator check example.parquet` reports conformance by class (core, bbox covering, cloud-optimized distribution). It also runs in the browser at [validator.geoparquet.org](https://validator.geoparquet.org/), where files never leave your machine, and reads remote files with range requests. Installable for Python, Rust, Node (WebAssembly) and C, or as a standalone binary.
 * **[geoparquet-io](https://geoparquet.io/guide/check/#spec-validation)** - `gpio check spec example.parquet` validates 1.0, 1.1 and 2.0, as well as plain Parquet files using the native geospatial types. It detects the version automatically, or you can pin it with `--geoparquet-version`. The broader `gpio check` also reports on the [distribution best practices](format-specs/distributing-geoparquet.md).
 
 Two other validators are still in use:
